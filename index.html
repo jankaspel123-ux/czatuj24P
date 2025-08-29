@@ -33,7 +33,7 @@ header{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:14px 16px;
+  padding:10px 16px;
   border-bottom:1px solid rgba(57,255,20,.15);
   background:rgba(0,0,0,.6);
 }
@@ -60,15 +60,21 @@ body.light header{
 }
 .online-indicator{
   font-family:'Share Tech Mono',monospace;
-  padding:6px 10px;
-  border-radius:8px;
+  padding:4px 8px;
+  border-radius:6px;
   border:1px solid rgba(57,255,20,.18);
   background:rgba(0,0,0,.2);
+  font-size:0.85rem;
 }
 .small-status{
-  font-family:'Press Start 2P',monospace;
-  font-size:12px;
-  opacity:.95;
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.75rem;
+  opacity:.9;
+}
+.header-buttons{
+  display:flex;
+  align-items:center;
+  gap:6px;
 }
 .main{flex:1;display:flex;gap:12px;padding:12px;overflow:hidden;}
 .chat{flex:1;display:flex;flex-direction:column;border-radius:8px;overflow:hidden;}
@@ -80,54 +86,53 @@ body.light .messages{background:rgba(255,255,255,.75);}
 .bubble{padding:8px 12px;border-radius:12px;background:#111;border:1px solid rgba(57,255,20,.06);color:var(--lime);}
 .self .bubble{background:var(--lime);color:#000;}
 .self{align-self:flex-end;flex-direction:row-reverse;}
-.profile-panel{position:fixed;right:0;top:0;width:320px;height:100%;transform:translateX(100%);background:rgba(0,0,0,.95);padding:12px;display:flex;flex-direction:column;gap:8px;border-left:2px solid rgba(57,255,20,.12);transition:transform .22s;z-index:10;}
+.profile-panel{position:fixed;right:0;top:0;width:320px;height:100%;transform:translateX(100%);background:rgba(0,0,0,.95);padding:12px;display:flex;flex-direction:column;gap:8px;border-left:2px solid rgba(57,255,20,.12);transition:transform .22s;z-index:100;}
 .profile-panel.open{transform:translateX(0);}
 .profile-top{display:flex;justify-content:space-between;align-items:center;}
 .profile-top h3{margin:0;font-family:'Share Tech Mono',monospace;color:var(--lime);}
 .profile-actions button{background:transparent;border:1px dashed rgba(57,255,20,.14);color:var(--lime);padding:6px;border-radius:8px;cursor:pointer;}
 .profile-panel label{font-weight:600;font-size:.9rem;}
 .profile-panel input[type=text],.profile-panel input[type=number],.profile-panel select,.profile-panel textarea{
-  padding:8px;border-radius:8px;border:1px solid rgba(57,255,20,.12);background:#0f0f0f;color:var(--lime);width:100%;transition:0.2s;}
+  padding:8px;border-radius:8px;border:1px solid rgba(57,255,20,.12);background:#0f0f0f;color:var(--lime);width:100%;}
 body.light .profile-panel input,body.light .profile-panel select,body.light .profile-panel textarea{background:#fff;color:#000;}
 .profile-avatar{width:90px;height:90px;border-radius:50%;object-fit:cover;box-shadow:0 0 12px rgba(57,255,20,.12);}
 .panel-row{display:flex;gap:8px;}
 .panel-row>div{flex:1;}
-.controls{display:flex;align-items:center;gap:8px;padding:12px;border-top:1px solid rgba(57,255,20,.06);background:rgba(0,0,0,.6);}
+.controls{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:12px;
+  border-top:1px solid rgba(57,255,20,.06);
+  background:rgba(0,0,0,.6);
+}
 body.light .controls{background:rgba(255,255,255,.9);}
 .text-input{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(57,255,20,.12);background:#0f0f0f;color:var(--lime);}
 body.light .text-input{background:#fff;color:#000;}
-.btn{padding:10px 14px;border-radius:10px;border:none;font-weight:700;cursor:pointer;font-family:'Press Start 2P',monospace;transition:0.2s;}
-.btn:hover{transform:scale(1.05);}
-.btn-start{background:var(--lime);color:#000;animation:buttonPulse 1.5s infinite;}
-.btn-stop{background:transparent;color:var(--lime);border:1px solid rgba(57,255,20,.18);animation:buttonWave 2s infinite;}
-@keyframes buttonPulse{
+.btn{padding:10px 14px;border-radius:10px;border:none;font-weight:700;cursor:pointer;font-family:'Press Start 2P',monospace;position:relative;animation:buttonGlow 2s infinite alternate;}
+@keyframes buttonGlow{
   0%{box-shadow:0 0 6px rgba(57,255,20,.25);}
   50%{box-shadow:0 0 18px rgba(57,255,20,.55);}
   100%{box-shadow:0 0 6px rgba(57,255,20,.25);}
 }
-@keyframes buttonWave{
-  0%{transform:translateY(0);}
-  50%{transform:translateY(-2px);}
-  100%{transform:translateY(0);}
-}
+.btn-start{background:var(--lime);color:#000;}
+.btn-stop{background:transparent;color:var(--lime);border:1px solid rgba(57,255,20,.18);}
 #toggleTheme,#muteToggle,#openProfile{
   font-family:'Share Tech Mono',monospace;
   font-size:1.1rem;
   background:transparent;
   border:none;
   color:var(--lime);
-  margin-left:6px;
   cursor:pointer;
-  transition:0.2s;
 }
-#toggleTheme:hover,#muteToggle:hover,#openProfile:hover{transform:scale(1.1);}
 img.chat-img{max-width:120px;max-height:120px;border-radius:8px;cursor:pointer;transition:transform .2s;}
 img.chat-img:hover{transform:scale(1.5);}
 @media(max-width:760px){
-  .profile-panel{width:92vw;}
-  .logo{font-size:1.35rem;}
-  .controls {flex-direction: column; gap: 6px;}
-  .text-input, .btn {width: 100%;}
+  .profile-panel{width:92vw}
+  .logo{font-size:1.25rem}
+  .controls {flex-direction:column; gap:4px;}
+  .text-input, .btn {width:100%;}
 }
 </style>
 </head>
@@ -139,7 +144,7 @@ img.chat-img:hover{transform:scale(1.5);}
     <div class="online-indicator"><span id="onlineCount">Online: 0</span></div>
     <div class="small-status" id="statusInfo">Twój status: offline • Partner: brak</div>
   </div>
-  <div>
+  <div class="header-buttons">
     <button id="toggleTheme">🌙</button>
     <button id="muteToggle">🔊</button>
     <button id="openProfile">🧑‍💻 Profil</button>
@@ -150,10 +155,10 @@ img.chat-img:hover{transform:scale(1.5);}
   <div class="chat">
     <div class="messages" id="messages"></div>
     <div class="controls">
-      <input id="msgInput" class="text-input" placeholder="Napisz wiadomość..." readonly />
+      <input id="msgInput" class="text-input" placeholder="Napisz wiadomość..." />
       <button id="sendBtn" class="btn btn-start" disabled>Wyślij</button>
       <button id="startBtn" class="btn btn-start">Start</button>
-      <button id="stopBtn" class="btn btn-stop">Stop</button>
+      <button id="stopBtn" class="btn btn-stop" disabled>Stop</button>
     </div>
   </div>
 </div>
@@ -223,46 +228,29 @@ img.chat-img:hover{transform:scale(1.5);}
 <script>
 const socket = io();
 
-// --- ELEMENTY ---
-const toggleTheme = document.getElementById('toggleTheme');
-const body = document.body;
-const profilePanel = document.getElementById('profilePanel');
-const ageSlider = document.getElementById('profileAge');
-const ageValue = document.getElementById('ageValue');
-const bioTextarea = document.getElementById('profileBio');
-const bioCount = document.getElementById('bioCount');
-const avatarInput = document.getElementById('avatarInput');
-const avatarPreview = document.getElementById('avatarPreview');
-const bgInput = document.getElementById('bgInput');
-const messages = document.getElementById('messages');
-const msgInput = document.getElementById('msgInput');
-const sendBtn = document.getElementById('sendBtn');
-const startBtn = document.getElementById('startBtn');
-const stopBtn = document.getElementById('stopBtn');
-const muteToggle = document.getElementById('muteToggle');
-
-let chatRunning = false;
-let muted = false;
-let photoCount = 0;
-
-// --- FUNKCJE PODSTAWOWE ---
-toggleTheme.addEventListener('click', ()=>{body.classList.toggle('light');});
+// --- PROFILE PANEL ---
+const profilePanel=document.getElementById('profilePanel');
 document.getElementById('openProfile').addEventListener('click',()=>{profilePanel.classList.add('open');});
 document.getElementById('closeProfile').addEventListener('click',()=>{profilePanel.classList.remove('open');});
 document.getElementById('hideProfile').addEventListener('click',()=>{profilePanel.classList.toggle('open');});
 
+// --- AVATAR & BACKGROUND ---
+const avatarInput=document.getElementById('avatarInput');
+const avatarPreview=document.getElementById('avatarPreview');
+avatarInput.addEventListener('change',e=>{const file=e.target.files[0];if(file){avatarPreview.src=URL.createObjectURL(file);}});
+const bgInput=document.getElementById('bgInput');
+bgInput.addEventListener('change',e=>{const file=e.target.files[0];if(file){document.body.style.backgroundImage=`url(${URL.createObjectURL(file)})`;}});
+
+// --- PROFILE FORM ---
+const ageSlider=document.getElementById('profileAge');
+const ageValue=document.getElementById('ageValue');
 ageSlider.addEventListener('input',()=>{ageValue.textContent=ageSlider.value;});
+const bioTextarea=document.getElementById('profileBio');
+const bioCount=document.getElementById('bioCount');
 bioTextarea.addEventListener('input',()=>{bioCount.textContent=bioTextarea.value.length;});
-
-avatarInput.addEventListener('change',e=>{const file=e.target.files[0]; if(file) avatarPreview.src=URL.createObjectURL(file);});
-bgInput.addEventListener('change',e=>{const file=e.target.files[0]; if(file){body.style.backgroundImage = `url(${URL.createObjectURL(file)})`; body.style.backgroundSize='cover'; body.style.backgroundPosition='center';}});
-
-muteToggle.addEventListener('click', ()=>{muted = !muted; muteToggle.textContent = muted ? "🔇" : "🔊";});
-function playSound(sound){if(!muted) sound.play();}
-
-document.getElementById('resetProfile').addEventListener('click', ()=>{
-  avatarPreview.src = "https://i.pravatar.cc/90";
-  body.style.backgroundImage='';
+document.getElementById('resetProfile').addEventListener('click',()=>{
+  avatarPreview.src="https://i.pravatar.cc/90";
+  document.body.style.backgroundImage="";
   document.getElementById('profileNick').value='';
   document.getElementById('profileSex').value='kobieta';
   document.getElementById('profileTarget').value='kobieta';
@@ -274,72 +262,139 @@ document.getElementById('resetProfile').addEventListener('click', ()=>{
   document.getElementById('profileStatus').value='dostepny';
 });
 
-// --- CZAT ---
-startBtn.addEventListener('click', ()=>{
-  chatRunning = true;
-  msgInput.removeAttribute('readonly');
+// --- CHAT & BUTTONS ---
+const msgInput=document.getElementById('msgInput');
+const sendBtn=document.getElementById('sendBtn');
+const startBtn=document.getElementById('startBtn');
+const stopBtn=document.getElementById('stopBtn');
+const muteToggle = document.getElementById('muteToggle');
+let chatRunning=false;
+let muted=false;
+let photoQueue=[];
+const messages=document.getElementById('messages');
+
+// --- SOUNDS ---
+const soundSend = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
+const soundReceive = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
+const soundStart = new Audio('https://actions.google.com/sounds/v1/cartoon/slide_whistle_to_drum_hit.ogg');
+const soundStop = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
+
+muteToggle.addEventListener('click',()=>{muted=!muted; muteToggle.textContent=muted?"🔇":"🔊";});
+function playSound(sound){if(!muted) sound.play();}
+
+// --- START & STOP ---
+startBtn.addEventListener('click',()=>{
+  chatRunning=true;
+  msgInput.disabled=false;
   sendBtn.disabled=false;
-  messages.innerHTML='';
+  stopBtn.disabled=false;
   addSystemMsg("Łączenie z partnerem...");
   socket.emit('startChat');
+  playSound(soundStart);
 });
-
-stopBtn.addEventListener('click', ()=>{
-  if(chatRunning){
+stopBtn.addEventListener('click',()=>{
+  if(!chatRunning) return;
+  if(confirm("Czy zakończyć czat?")){
     chatRunning=false;
-    msgInput.setAttribute('readonly',true);
+    msgInput.disabled=true;
     sendBtn.disabled=true;
+    stopBtn.disabled=true;
     addSystemMsg("Czat zakończony.");
     socket.emit('stopChat');
+    playSound(soundStop);
   }
 });
 
-sendBtn.addEventListener('click', sendMsg);
-msgInput.addEventListener('keypress', e=>{if(e.key==='Enter') sendMsg();});
-
+// --- SEND TEXT ---
+sendBtn.addEventListener('click',sendMsg);
+msgInput.addEventListener('keypress',e=>{if(e.key==='Enter') sendMsg();});
 function sendMsg(){
   if(!chatRunning) return;
-  const text = msgInput.value.trim();
-  if(!text && !msgInput.files) return;
-  addMsg('self', text || '', avatarPreview.src);
-  socket.emit('sendMessage', text);
+  const text=msgInput.value.trim();
+  if(!text) return;
+  addMsg('self',text,avatarPreview.src);
+  socket.emit('sendMessage',text);
+  playSound(soundSend);
   msgInput.value='';
 }
 
-// --- SOCKET EVENTS ---
-socket.on('receiveMessage', msg=>{
-  if(msg.type==='text') addMsg('partner', msg.content, 'https://i.pravatar.cc/90');
-  else if(msg.type==='photo') addPhotoMsg('partner', msg.content, 'https://i.pravatar.cc/90');
+// --- RECEIVE ---
+socket.on('receiveMessage',msg=>{
+  if(msg.type==='text') addMsg('partner',msg.content,'https://i.pravatar.cc/90');
+  else if(msg.type==='photo') addPhotoMsg('partner',msg.content,'https://i.pravatar.cc/90');
+  playSound(soundReceive);
 });
-socket.on('partnerFound', ()=>{addSystemMsg("Partner połączony. Możesz pisać!");});
-socket.on('partnerStopped', ()=>{if(chatRunning){addSystemMsg("Partner zakończył rozmowę."); chatRunning=false; msgInput.setAttribute('readonly',true); sendBtn.disabled=true;}});
+socket.on('partnerFound',()=>{addSystemMsg("Partner połączony. Możesz pisać!")});
+socket.on('partnerStopped',()=>{chatRunning=false; msgInput.disabled=true; sendBtn.disabled=true; stopBtn.disabled=true; addSystemMsg("Partner zakończył rozmowę.")});
 
-// --- FUNKCJE WIADOMOŚCI ---
+// --- ADD MSG ---
 function addMsg(cls,text,avatar){
-  const div=document.createElement('div'); div.className='msg '+cls;
-  const img=document.createElement('img'); img.className='avatar'; img.src=avatar;
-  const bubble=document.createElement('div'); bubble.className='bubble'; bubble.textContent=text;
-  div.appendChild(img); div.appendChild(bubble); messages.appendChild(div);
+  const div=document.createElement('div');
+  div.className='msg '+cls;
+  const img=document.createElement('img');
+  img.className='avatar';
+  img.src=avatar;
+  const bubble=document.createElement('div');
+  bubble.className='bubble';
+  bubble.textContent=text;
+  div.appendChild(img);
+  div.appendChild(bubble);
+  messages.appendChild(div);
   messages.scrollTop=messages.scrollHeight;
 }
 
+// --- ADD PHOTO MSG ---
 function addPhotoMsg(cls,url,avatar){
-  if(photoCount>=3) return; photoCount++;
-  const div=document.createElement('div'); div.className='msg '+cls;
-  const imgAvatar=document.createElement('img'); imgAvatar.className='avatar'; imgAvatar.src=avatar;
-  const photo=document.createElement('img'); photo.className='chat-img'; photo.src=url;
+  const div=document.createElement('div');
+  div.className='msg '+cls;
+  const imgAvatar=document.createElement('img');
+  imgAvatar.className='avatar';
+  imgAvatar.src=avatar;
+  const photo=document.createElement('img');
+  photo.className='chat-img';
+  photo.src=url;
   photo.addEventListener('click',()=>{window.open(url,'_self');});
-  div.appendChild(imgAvatar); div.appendChild(photo); messages.appendChild(div);
+  div.appendChild(imgAvatar);
+  div.appendChild(photo);
+  messages.appendChild(div);
   messages.scrollTop=messages.scrollHeight;
 }
 
+// --- SYSTEM MSG ---
 function addSystemMsg(text){
-  const div=document.createElement('div'); div.className='msg';
-  const bubble=document.createElement('div'); bubble.className='bubble';
-  bubble.style.background='transparent'; bubble.style.border='1px dashed rgba(57,255,20,.25)'; bubble.textContent=text;
-  div.appendChild(bubble); messages.appendChild(div);
+  const div=document.createElement('div');
+  div.className='msg';
+  const bubble=document.createElement('div');
+  bubble.className='bubble';
+  bubble.style.background='transparent';
+  bubble.style.border='1px dashed rgba(57,255,20,.25)';
+  bubble.textContent=text;
+  div.appendChild(bubble);
+  messages.appendChild(div);
   messages.scrollTop=messages.scrollHeight;
 }
+
+// --- SEND PHOTO ---
+function sendPhoto(file){
+  if(photoQueue.length>=3){alert("Max 3 zdjęcia w czacie"); return;}
+  const formData=new FormData();
+  formData.append('photo',file);
+  fetch('/upload',{method:'POST',body:formData})
+    .then(res=>res.json())
+    .then(data=>{
+      addPhotoMsg('self',data.url,avatarPreview.src);
+      socket.emit('sendPhoto',data.url);
+      photoQueue.push(data.url);
+    })
+    .catch(err=>console.error(err));
+}
+
+// --- DRAG & DROP ---
+msgInput.addEventListener('drop',e=>{
+  e.preventDefault();
+  if(e.dataTransfer.files.length>0) sendPhoto(e.dataTransfer.files[0]);
+});
+msgInput.addEventListener('dragover',e=>{e.preventDefault();});
 </script>
 
 </body>
