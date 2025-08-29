@@ -47,6 +47,7 @@ body.light header{
   color:var(--lime);
   text-shadow:0 0 12px rgba(57,255,20,.45);
   animation:glow 2s infinite alternate;
+  text-align:center;
 }
 @keyframes glow{
   0%{text-shadow:0 0 6px rgba(57,255,20,.25);}
@@ -111,10 +112,44 @@ body.light .text-input{background:#fff;color:#000;}
 img.chat-img{max-width:120px;max-height:120px;border-radius:8px;cursor:pointer;transition:transform .2s;}
 img.chat-img:hover{transform:scale(1.5);}
 @media(max-width:760px){
-  .profile-panel{width:92vw}
-  .logo{font-size:1.25rem}
-  .controls {flex-direction: column; gap: 6px;}
-  .text-input, .btn {width: 100%;}
+  header{
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+  }
+  .logo{
+    font-size:1.4rem;
+  }
+  .header-center{
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  #toggleTheme,#muteToggle,#openProfile{
+    margin-left:0;
+    margin-right:4px;
+    font-size:1.2rem;
+  }
+  .controls{
+    flex-direction: column;
+    gap:6px;
+    width:100%;
+    align-items: stretch;
+  }
+  .text-input,.btn{
+    width:100%;
+    font-size:0.9rem;
+  }
+  .profile-panel{
+    width:92vw;
+  }
+  .main{
+    padding:8px;
+  }
+  .messages{
+    padding:8px;
+  }
 }
 </style>
 </head>
