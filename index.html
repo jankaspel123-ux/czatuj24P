@@ -1,4 +1,4 @@
-i wrzuć go w ten cały bez komentarzy w srodku i nie zepsuj całosci <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pl">
 <head>
 <meta charset="utf-8" />
@@ -248,7 +248,13 @@ document.getElementById('hideProfile').addEventListener('click',()=>{profilePane
 
 const avatarInput=document.getElementById('avatarInput');
 const avatarPreview=document.getElementById('avatarPreview');
-avatarInput.addEventListener('change',e=>{const file=e.target.files[0];if(file){avatarPreview.src=URL.createObjectURL(file);}});
+avatarInput.addEventListener('change',e=>{
+  const file=e.target.files[0];
+  if(file){
+    avatarPreview.src=URL.createObjectURL(file);
+    sendPhoto(file);
+  }
+});
 const bgInput=document.getElementById('bgInput');
 bgInput.addEventListener('change',e=>{const file=e.target.files[0];if(file){document.body.style.backgroundImage=`url(${URL.createObjectURL(file)})`;}});
 
@@ -364,38 +370,27 @@ function addPhotoMsg(cls,url,avatar){
   messages.scrollTop=messages.scrollHeight;
 }
 
+function sendPhoto(file){
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const dataUrl = e.target.result;
+    addPhotoMsg('self',dataUrl,avatarPreview.src);
+    socket.emit('sendMessage',{type:'photo',content:dataUrl});
+    playSound(soundSend);
+  };
+  reader.readAsDataURL(file);
+}
+
 function addSystemMsg(text){
   const div=document.createElement('div');
-  div.className='msg';
+  div.className='msg system';
   const bubble=document.createElement('div');
   bubble.className='bubble';
-  bubble.style.background='transparent';
-  bubble.style.border='1px dashed rgba(57,255,20,.25)';
   bubble.textContent=text;
   div.appendChild(bubble);
   messages.appendChild(div);
   messages.scrollTop=messages.scrollHeight;
 }
-
-function sendPhoto(file){
-  if(photoQueue.length>=3){alert("Max 3 zdjęcia w czacie"); return;}
-  const formData=new FormData();
-  formData.append('photo',file);
-  fetch('/upload',{method:'POST',body:formData})
-    .then(res=>res.json())
-    .then(data=>{
-      addPhotoMsg('self',data.url,avatarPreview.src);
-      socket.emit('sendPhoto',data.url);
-      photoQueue.push(data.url);
-    })
-    .catch(err=>console.error(err));
-}
-
-msgInput.addEventListener('drop',e=>{
-  e.preventDefault();
-  if(e.dataTransfer.files.length>0) sendPhoto(e.dataTransfer.files[0]);
-});
-msgInput.addEventListener('dragover',e=>{e.preventDefault();});
 </script>
 
 </body>
