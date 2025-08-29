@@ -2,14 +2,33 @@ const express = require('express');
 const http = require('http');
 const path = require('path');
 const { Server } = require('socket.io');
+const multer = require('multer');
+const fs = require('fs');
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-// Ścieżka do folderu z plikami frontendu
+// Ścieżka do frontendu
 const publicPath = path.join(__dirname, './');
 app.use(express.static(publicPath));
+
+// Folder do uploadu zdjęć
+const uploadFolder = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadFolder)) fs.mkdirSync(uploadFolder);
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadFolder),
+  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
+});
+const upload = multer({ storage });
+
+// ROUTE DO UPLOADU ZDJĘCIA
+app.post('/upload', upload.single('photo'), (req, res) => {
+  if (!req.file) return res.status(400).send({ error: 'Brak pliku' });
+  res.send({ url: '/uploads/' + req.file.filename });
+});
+app.use('/uploads', express.static(uploadFolder));
 
 let waitingUsers = [];
 let pairs = {};
@@ -32,11 +51,19 @@ io.on('connection', (socket) => {
     }
   });
 
-  // WIADOMOŚCI (tekst + zdjęcia)
+  // WIADOMOŚCI TEKSTOWE
   socket.on('sendMessage', msg => {
     const partnerId = pairs[socket.id];
     if (partnerId) {
-      io.to(partnerId).emit('receiveMessage', msg);
+      io.to(partnerId).emit('receiveMessage', { type: 'text', content: msg });
+    }
+  });
+
+  // WIADOMOŚCI ZDJĘCIOWE
+  socket.on('sendPhoto', url => {
+    const partnerId = pairs[socket.id];
+    if (partnerId) {
+      io.to(partnerId).emit('receiveMessage', { type: 'photo', content: url });
     }
   });
 
