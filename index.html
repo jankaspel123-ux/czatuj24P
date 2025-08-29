@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="pl">
 <head>
 <meta charset="utf-8" />
@@ -45,13 +46,13 @@ body.light header{
   font-weight:700;
   font-size:1.6rem;
   color:var(--lime);
-  text-shadow:0 0 12px rgba(57,255,20,.45);
-  animation:glow 2s infinite alternate;
+  text-shadow:0 0 20px rgba(57,255,20,.9);
+  animation:glow 1s infinite alternate;
 }
 @keyframes glow{
-  0%{text-shadow:0 0 6px rgba(57,255,20,.25);}
-  50%{text-shadow:0 0 18px rgba(57,255,20,.55);}
-  100%{text-shadow:0 0 6px rgba(57,255,20,.25);}
+  0%{text-shadow:0 0 12px rgba(57,255,20,.5);}
+  50%{text-shadow:0 0 28px rgba(57,255,20,1);}
+  100%{text-shadow:0 0 12px rgba(57,255,20,.5);}
 }
 .header-center{
   display:flex;
@@ -62,14 +63,21 @@ body.light header{
   font-family:'Share Tech Mono',monospace;
   padding:4px 8px;
   border-radius:6px;
-  border:1px solid rgba(57,255,20,.18);
-  background:rgba(0,0,0,.2);
-  font-size:0.85rem;
+  border:1px solid rgba(57,255,20,0.3);
+  background:rgba(0,0,0,0.25);
+  font-size:0.95rem;
+  font-weight:700;
+  color:var(--lime);
+  text-shadow:0 0 10px rgba(57,255,20,0.9);
+  animation:glow 1s infinite alternate;
 }
 .small-status{
   font-family:'Share Tech Mono',monospace;
-  font-size:0.75rem;
-  opacity:.9;
+  font-size:0.8rem;
+  opacity:1;
+  color:var(--lime);
+  text-shadow:0 0 8px rgba(57,255,20,0.9);
+  animation:glow 1s infinite alternate;
 }
 .header-buttons{
   display:flex;
@@ -82,20 +90,22 @@ body.light header{
 body.light .messages{background:rgba(255,255,255,.75);}
 .msg{display:flex;align-items:flex-start;gap:8px;max-width:75%;animation:msgIn .18s ease;}
 @keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.msg .avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(57,255,20,.18);}
-.bubble{padding:8px 12px;border-radius:12px;background:#111;border:1px solid rgba(57,255,20,.06);color:var(--lime);}
+.msg .avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(57,255,20,.3);}
+.bubble{padding:8px 12px;border-radius:12px;background:#111;border:1px solid rgba(57,255,20,.08);color:var(--lime);}
 .self .bubble{background:var(--lime);color:#000;}
 .self{align-self:flex-end;flex-direction:row-reverse;}
-.profile-panel{position:fixed;right:0;top:0;width:320px;height:100%;transform:translateX(100%);background:rgba(0,0,0,.95);padding:12px;display:flex;flex-direction:column;gap:8px;border-left:2px solid rgba(57,255,20,.12);transition:transform .22s;z-index:100;}
+.profile-panel{position:fixed;right:0;top:0;width:320px;height:100%;transform:translateX(100%);background:rgba(0,0,0,.95);padding:12px;display:flex;flex-direction:column;gap:8px;border-left:2px solid rgba(57,255,20,.2);transition:transform .22s;z-index:100;}
 .profile-panel.open{transform:translateX(0);}
 .profile-top{display:flex;justify-content:space-between;align-items:center;}
-.profile-top h3{margin:0;font-family:'Share Tech Mono',monospace;color:var(--lime);}
-.profile-actions button{background:transparent;border:1px dashed rgba(57,255,20,.14);color:var(--lime);padding:6px;border-radius:8px;cursor:pointer;}
-.profile-panel label{font-weight:600;font-size:.9rem;}
+.profile-top h3{margin:0;font-family:'Share Tech Mono',monospace;color:var(--lime);font-weight:700;text-shadow:0 0 10px rgba(57,255,20,.9);animation:glow 1s infinite alternate;}
+.profile-actions button{background:transparent;border:1px dashed rgba(57,255,20,.25);color:var(--lime);padding:6px;border-radius:8px;cursor:pointer;transition:all .2s;text-shadow:0 0 8px rgba(57,255,20,0.9);animation:glow 1s infinite alternate;}
+.profile-actions button:hover{transform:translateY(-2px) scale(1.05);}
+.profile-panel label{font-weight:700;font-size:.95rem;color:var(--lime);text-shadow:0 0 6px rgba(57,255,20,0.9);}
 .profile-panel input[type=text],.profile-panel input[type=number],.profile-panel select,.profile-panel textarea{
-  padding:8px;border-radius:8px;border:1px solid rgba(57,255,20,.12);background:#0f0f0f;color:var(--lime);width:100%;}
+  padding:8px;border-radius:8px;border:1px solid rgba(57,255,20,.2);background:#0f0f0f;color:var(--lime);width:100%;text-shadow:0 0 4px rgba(57,255,20,0.7);}
 body.light .profile-panel input,body.light .profile-panel select,body.light .profile-panel textarea{background:#fff;color:#000;}
-.profile-avatar{width:90px;height:90px;border-radius:50%;object-fit:cover;box-shadow:0 0 12px rgba(57,255,20,.12);}
+.profile-avatar{width:90px;height:90px;border-radius:50%;object-fit:cover;box-shadow:0 0 16px rgba(57,255,20,.3);transition:all .2s;animation:glow 1s infinite alternate;}
+.profile-avatar:hover{transform:scale(1.05);}
 .panel-row{display:flex;gap:8px;}
 .panel-row>div{flex:1;}
 .controls{
@@ -104,20 +114,26 @@ body.light .profile-panel input,body.light .profile-panel select,body.light .pro
   justify-content:center;
   gap:6px;
   padding:12px;
-  border-top:1px solid rgba(57,255,20,.06);
+  border-top:1px solid rgba(57,255,20,.08);
   background:rgba(0,0,0,.6);
 }
 body.light .controls{background:rgba(255,255,255,.9);}
-.text-input{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(57,255,20,.12);background:#0f0f0f;color:var(--lime);}
+.text-input{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(57,255,20,.2);background:#0f0f0f;color:var(--lime);text-shadow:0 0 4px rgba(57,255,20,0.7);}
 body.light .text-input{background:#fff;color:#000;}
-.btn{padding:10px 14px;border-radius:10px;border:none;font-weight:700;cursor:pointer;font-family:'Press Start 2P',monospace;position:relative;animation:buttonGlow 2s infinite alternate;}
+.btn{padding:10px 14px;border-radius:10px;border:none;font-weight:700;cursor:pointer;font-family:'Press Start 2P',monospace;position:relative;animation:buttonGlow 1s infinite alternate;transition:all .2s;text-shadow:0 0 6px rgba(57,255,20,0.8);}
+.btn:hover{transform:translateY(-2px) scale(1.05);}
 @keyframes buttonGlow{
-  0%{box-shadow:0 0 6px rgba(57,255,20,.25);}
-  50%{box-shadow:0 0 18px rgba(57,255,20,.55);}
-  100%{box-shadow:0 0 6px rgba(57,255,20,.25);}
+  0%{box-shadow:0 0 8px rgba(57,255,20,.5);}
+  50%{box-shadow:0 0 24px rgba(57,255,20,1);}
+  100%{box-shadow:0 0 8px rgba(57,255,20,.5);}
 }
-.btn-start{background:var(--lime);color:#000;}
-.btn-stop{background:transparent;color:var(--lime);border:1px solid rgba(57,255,20,.18);}
+.btn-start{background:var(--lime);color:#000;animation:btnPulse 1.5s infinite alternate;}
+.btn-stop{background:transparent;color:var(--lime);border:1px solid rgba(57,255,20,.3);animation:btnPulse 1.5s infinite alternate;}
+@keyframes btnPulse{
+  0%{transform:scale(1) translateY(0);}
+  50%{transform:scale(1.02) translateY(-1px);}
+  100%{transform:scale(1) translateY(0);}
+}
 #toggleTheme,#muteToggle,#openProfile{
   font-family:'Share Tech Mono',monospace;
   font-size:1.1rem;
@@ -125,9 +141,13 @@ body.light .text-input{background:#fff;color:#000;}
   border:none;
   color:var(--lime);
   cursor:pointer;
+  transition:all .2s;
+  text-shadow:0 0 6px rgba(57,255,20,0.9);
+  animation:glow 1s infinite alternate;
 }
-img.chat-img{max-width:120px;max-height:120px;border-radius:8px;cursor:pointer;transition:transform .2s;}
-img.chat-img:hover{transform:scale(1.5);}
+#toggleTheme:hover,#muteToggle:hover,#openProfile:hover{transform:scale(1.1);}
+img.chat-img{max-width:120px;max-height:120px;border-radius:8px;cursor:pointer;transition:all .2s;}
+img.chat-img:hover{transform:scale(1.2);}
 @media(max-width:760px){
   .profile-panel{width:92vw}
   .logo{font-size:1.25rem}
@@ -178,8 +198,7 @@ img.chat-img:hover{transform:scale(1.5);}
     <input id="bgInput" type="file" accept="image/*" />
   </div>
 
-  <label>Nick:</label>
-  <input type="text" id="profileNick" maxlength="20" />
+<label>Nick:</label> <input type="text" id="profileNick" maxlength="20" />
 
   <div class="panel-row">
     <div>
@@ -200,48 +219,39 @@ img.chat-img:hover{transform:scale(1.5);}
     </div>
   </div>
 
-  <label>Cel czatu:</label>
-  <select id="profilePurpose">
-    <option value="randka">Randka</option>
-    <option value="spotkanie">Spotkanie</option>
-    <option value="seks">Seks</option>
-    <option value="rozmowa">Rozmowa</option>
-  </select>
+<label>Cel czatu:</label> <select id="profilePurpose"> <option value="randka">Randka</option> <option value="spotkanie">Spotkanie</option> <option value="seks">Seks</option> <option value="rozmowa">Rozmowa</option> </select>
 
-  <label>Wiek: <span id="ageValue">25</span></label>
-  <input type="range" id="profileAge" min="18" max="100" value="25" />
+<label>Wiek: <span id="ageValue">25</span></label> <input type="range" id="profileAge" min="18" max="100" value="25" />
 
-  <label>Biogram (max 200 znaków):</label>
+<label>Biogram (max 200 znaków):</label>
+
   <textarea id="profileBio" maxlength="200" placeholder="Krótki opis..."></textarea>
+
   <div style="text-align:right;font-size:11px;"><span id="bioCount">0</span>/200</div>
 
-  <label>Status:</label>
-  <select id="profileStatus">
-    <option value="dostepny">Dostępny</option>
-    <option value="zaraz">Zaraz wracam</option>
-  </select>
+<label>Status:</label> <select id="profileStatus"> <option value="dostepny">Dostępny</option> <option value="zaraz">Zaraz wracam</option> </select>
 
-  <button id="resetProfile" class="btn btn-stop">Przywróć ustawienia</button>
+<button id="resetProfile" class="btn btn-stop">Przywróć ustawienia</button>
+
 </aside>
 
 <script src="/socket.io/socket.io.js"></script>
+
 <script>
 const socket = io();
+const profilePanel=document.getElementById
 
-// --- PROFILE PANEL ---
-const profilePanel=document.getElementById('profilePanel');
+
+('profilePanel');
 document.getElementById('openProfile').addEventListener('click',()=>{profilePanel.classList.add('open');});
 document.getElementById('closeProfile').addEventListener('click',()=>{profilePanel.classList.remove('open');});
 document.getElementById('hideProfile').addEventListener('click',()=>{profilePanel.classList.toggle('open');});
-
-// --- AVATAR & BACKGROUND ---
 const avatarInput=document.getElementById('avatarInput');
 const avatarPreview=document.getElementById('avatarPreview');
-avatarInput.addEventListener('change',e=>{const file=e.target.files[0];if(file){avatarPreview.src=URL.createObjectURL(file);}});
+avatarInput.addEventListener('change',e=>{const file=e.target.files\[0];if(file){avatarPreview\.src=URL.createObjectURL(file);}});
 const bgInput=document.getElementById('bgInput');
-bgInput.addEventListener('change',e=>{const file=e.target.files[0];if(file){document.body.style.backgroundImage=`url(${URL.createObjectURL(file)})`;}});
+bgInput.addEventListener('change',e=>{const file=e.target.files\[0];if(file){document.body.style.backgroundImage=`url(${URL.createObjectURL(file)})`;}});
 
-// --- PROFILE FORM ---
 const ageSlider=document.getElementById('profileAge');
 const ageValue=document.getElementById('ageValue');
 ageSlider.addEventListener('input',()=>{ageValue.textContent=ageSlider.value;});
@@ -249,20 +259,19 @@ const bioTextarea=document.getElementById('profileBio');
 const bioCount=document.getElementById('bioCount');
 bioTextarea.addEventListener('input',()=>{bioCount.textContent=bioTextarea.value.length;});
 document.getElementById('resetProfile').addEventListener('click',()=>{
-  avatarPreview.src="https://i.pravatar.cc/90";
-  document.body.style.backgroundImage="";
-  document.getElementById('profileNick').value='';
-  document.getElementById('profileSex').value='kobieta';
-  document.getElementById('profileTarget').value='kobieta';
-  document.getElementById('profilePurpose').value='randka';
-  document.getElementById('profileAge').value=25;
-  ageValue.textContent=25;
-  document.getElementById('profileBio').value='';
-  bioCount.textContent=0;
-  document.getElementById('profileStatus').value='dostepny';
+avatarPreview\.src="[https://i.pravatar.cc/90](https://i.pravatar.cc/90)";
+document.body.style.backgroundImage="";
+document.getElementById('profileNick').value='';
+document.getElementById('profileSex').value='kobieta';
+document.getElementById('profileTarget').value='kobieta';
+document.getElementById('profilePurpose').value='randka';
+document.getElementById('profileAge').value=25;
+ageValue.textContent=25;
+document.getElementById('profileBio').value='';
+bioCount.textContent=0;
+document.getElementById('profileStatus').value='dostepny';
 });
 
-// --- CHAT & BUTTONS ---
 const msgInput=document.getElementById('msgInput');
 const sendBtn=document.getElementById('sendBtn');
 const startBtn=document.getElementById('startBtn');
@@ -270,132 +279,123 @@ const stopBtn=document.getElementById('stopBtn');
 const muteToggle = document.getElementById('muteToggle');
 let chatRunning=false;
 let muted=false;
-let photoQueue=[];
+let photoQueue=\[];
 const messages=document.getElementById('messages');
 
-// --- SOUNDS ---
-const soundSend = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
-const soundReceive = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
-const soundStart = new Audio('https://actions.google.com/sounds/v1/cartoon/slide_whistle_to_drum_hit.ogg');
-const soundStop = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
+const soundSend = new Audio('[https://actions.google.com/sounds/v1/cartoon/wood\_plank\_flicks.ogg](https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg)');
+const soundReceive = new Audio('[https://actions.google.com/sounds/v1/cartoon/clang\_and\_wobble.ogg](https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg)');
+const soundStart = new Audio('[https://actions.google.com/sounds/v1/cartoon/slide\_whistle\_to\_drum\_hit.ogg](https://actions.google.com/sounds/v1/cartoon/slide_whistle_to_drum_hit.ogg)');
+const soundStop = new Audio('[https://actions.google.com/sounds/v1/cartoon/wood\_plank\_flicks.ogg](https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg)');
 
 muteToggle.addEventListener('click',()=>{muted=!muted; muteToggle.textContent=muted?"🔇":"🔊";});
 function playSound(sound){if(!muted) sound.play();}
 
-// --- START & STOP ---
 startBtn.addEventListener('click',()=>{
-  chatRunning=true;
-  msgInput.disabled=false;
-  sendBtn.disabled=false;
-  stopBtn.disabled=false;
-  addSystemMsg("Łączenie z partnerem...");
-  socket.emit('startChat');
-  playSound(soundStart);
+chatRunning=true;
+msgInput.disabled=false;
+sendBtn.disabled=false;
+stopBtn.disabled=false;
+addSystemMsg("Łączenie z partnerem...");
+socket.emit('startChat');
+playSound(soundStart);
 });
 stopBtn.addEventListener('click',()=>{
-  if(!chatRunning) return;
-  if(confirm("Czy zakończyć czat?")){
-    chatRunning=false;
-    msgInput.disabled=true;
-    sendBtn.disabled=true;
-    stopBtn.disabled=true;
-    addSystemMsg("Czat zakończony.");
-    socket.emit('stopChat');
-    playSound(soundStop);
-  }
+if(!chatRunning) return;
+if(confirm("Czy zakończyć czat?")){
+chatRunning=false;
+msgInput.disabled=true;
+sendBtn.disabled=true;
+stopBtn.disabled=true;
+addSystemMsg("Czat zakończony.");
+socket.emit('stopChat');
+playSound(soundStop);
+}
 });
 
-// --- SEND TEXT ---
 sendBtn.addEventListener('click',sendMsg);
 msgInput.addEventListener('keypress',e=>{if(e.key==='Enter') sendMsg();});
 function sendMsg(){
-  if(!chatRunning) return;
-  const text=msgInput.value.trim();
-  if(!text) return;
-  addMsg('self',text,avatarPreview.src);
-  socket.emit('sendMessage',text);
-  playSound(soundSend);
-  msgInput.value='';
+if(!chatRunning) return;
+const text=msgInput.value.trim();
+if(!text) return;
+addMsg('self',text,avatarPreview\.src);
+socket.emit('sendMessage',text);
+playSound(soundSend);
+msgInput.value='';
 }
 
-// --- RECEIVE ---
 socket.on('receiveMessage',msg=>{
-  if(msg.type==='text') addMsg('partner',msg.content,'https://i.pravatar.cc/90');
-  else if(msg.type==='photo') addPhotoMsg('partner',msg.content,'https://i.pravatar.cc/90');
-  playSound(soundReceive);
+if(msg.type==='text') addMsg('partner',msg.content,'[https://i.pravatar.cc/90](https://i.pravatar.cc/90)');
+else if(msg.type==='photo') addPhotoMsg('partner',msg.content,'[https://i.pravatar.cc/90](https://i.pravatar.cc/90)');
+playSound(soundReceive);
 });
 socket.on('partnerFound',()=>{addSystemMsg("Partner połączony. Możesz pisać!")});
 socket.on('partnerStopped',()=>{chatRunning=false; msgInput.disabled=true; sendBtn.disabled=true; stopBtn.disabled=true; addSystemMsg("Partner zakończył rozmowę.")});
 
-// --- ADD MSG ---
 function addMsg(cls,text,avatar){
-  const div=document.createElement('div');
-  div.className='msg '+cls;
-  const img=document.createElement('img');
-  img.className='avatar';
-  img.src=avatar;
-  const bubble=document.createElement('div');
-  bubble.className='bubble';
-  bubble.textContent=text;
-  div.appendChild(img);
-  div.appendChild(bubble);
-  messages.appendChild(div);
-  messages.scrollTop=messages.scrollHeight;
+const div=document.createElement('div');
+div.className='msg '+cls;
+const img=document.createElement('img');
+img.className='avatar';
+img.src=avatar;
+const bubble=document.createElement('div');
+bubble.className='bubble';
+bubble.textContent=text;
+div.appendChild(img);
+div.appendChild(bubble);
+messages.appendChild(div);
+messages.scrollTop=messages.scrollHeight;
 }
 
-// --- ADD PHOTO MSG ---
 function addPhotoMsg(cls,url,avatar){
-  const div=document.createElement('div');
-  div.className='msg '+cls;
-  const imgAvatar=document.createElement('img');
-  imgAvatar.className='avatar';
-  imgAvatar.src=avatar;
-  const photo=document.createElement('img');
-  photo.className='chat-img';
-  photo.src=url;
-  photo.addEventListener('click',()=>{window.open(url,'_self');});
-  div.appendChild(imgAvatar);
-  div.appendChild(photo);
-  messages.appendChild(div);
-  messages.scrollTop=messages.scrollHeight;
+const div=document.createElement('div');
+div.className='msg '+cls;
+const imgAvatar=document.createElement('img');
+imgAvatar.className='avatar';
+imgAvatar.src=avatar;
+const photo=document.createElement('img');
+photo.className='chat-img';
+photo.src=url;
+photo.style.maxWidth='120px';
+photo.style.maxHeight='120px';
+div.appendChild(imgAvatar);
+div.appendChild(photo);
+messages.appendChild(div);
+messages.scrollTop=messages.scrollHeight;
 }
 
-// --- SYSTEM MSG ---
 function addSystemMsg(text){
-  const div=document.createElement('div');
-  div.className='msg';
-  const bubble=document.createElement('div');
-  bubble.className='bubble';
-  bubble.style.background='transparent';
-  bubble.style.border='1px dashed rgba(57,255,20,.25)';
-  bubble.textContent=text;
-  div.appendChild(bubble);
-  messages.appendChild(div);
-  messages.scrollTop=messages.scrollHeight;
+const div=document.createElement('div');
+div.className='msg';
+const bubble=document.createElement('div');
+bubble.className='bubble';
+bubble.style.background='transparent';
+bubble.style.border='1px dashed rgba(57,255,20,.25)';
+bubble.textContent=text;
+div.appendChild(bubble);
+messages.appendChild(div);
+messages.scrollTop=messages.scrollHeight;
 }
 
-// --- SEND PHOTO ---
 function sendPhoto(file){
-  if(photoQueue.length>=3){alert("Max 3 zdjęcia w czacie"); return;}
-  const formData=new FormData();
-  formData.append('photo',file);
-  fetch('/upload',{method:'POST',body:formData})
-    .then(res=>res.json())
-    .then(data=>{
-      addPhotoMsg('self',data.url,avatarPreview.src);
-      socket.emit('sendPhoto',data.url);
-      photoQueue.push(data.url);
-    })
-    .catch(err=>console.error(err));
+if(photoQueue.length>=3){alert("Max 3 zdjęcia w czacie"); return;}
+const formData=new FormData();
+formData.append('photo',file);
+fetch('/upload',{method:'POST',body\:formData})
+.then(res=>res.json())
+.then(data=>{
+addPhotoMsg('self',data.url,avatarPreview\.src);
+socket.emit('sendPhoto',data.url);
+photoQueue.push(data.url);
+})
+.catch(err=>console.error(err));
 }
 
-// --- DRAG & DROP ---
 msgInput.addEventListener('drop',e=>{
-  e.preventDefault();
-  if(e.dataTransfer.files.length>0) sendPhoto(e.dataTransfer.files[0]);
+e.preventDefault();
+if(e.dataTransfer.files.length>0) sendPhoto(e.dataTransfer.files\[0]);
 });
-msgInput.addEventListener('dragover',e=>{e.preventDefault();});
-</script>
+msgInput.addEventListener('dragover',e=>{e.preventDefault();}); </script>
 
 </body>
 </html>
