@@ -110,7 +110,12 @@ body.light .text-input{background:#fff;color:#000;}
 }
 img.chat-img{max-width:120px;max-height:120px;border-radius:8px;cursor:pointer;transition:transform .2s;}
 img.chat-img:hover{transform:scale(1.5);}
-@media(max-width:760px){.profile-panel{width:92vw}.logo{font-size:1.25rem}}
+@media(max-width:760px){
+  .profile-panel{width:92vw}
+  .logo{font-size:1.25rem}
+  .controls {flex-direction: column; gap: 6px;}
+  .text-input, .btn {width: 100%;}
+}
 </style>
 </head>
 <body>
@@ -204,65 +209,40 @@ img.chat-img:hover{transform:scale(1.5);}
 <script src="/socket.io/socket.io.js"></script>
 <script>
 const socket = io();
-
-// --- THEME ---
 const toggleTheme=document.getElementById('toggleTheme');
 const body=document.body;
 toggleTheme.addEventListener('click',()=>{body.classList.toggle('light');});
-
-// --- PROFILE PANEL ---
 const profilePanel=document.getElementById('profilePanel');
 document.getElementById('openProfile').addEventListener('click',()=>{profilePanel.classList.add('open');});
 document.getElementById('closeProfile').addEventListener('click',()=>{profilePanel.classList.remove('open');});
 document.getElementById('hideProfile').addEventListener('click',()=>{profilePanel.classList.toggle('open');});
-
 const ageSlider=document.getElementById('profileAge');
 const ageValue=document.getElementById('ageValue');
 ageSlider.addEventListener('input',()=>{ageValue.textContent=ageSlider.value;});
 const bioTextarea=document.getElementById('profileBio');
 const bioCount=document.getElementById('bioCount');
 bioTextarea.addEventListener('input',()=>{bioCount.textContent=bioTextarea.value.length;});
-
 const avatarInput=document.getElementById('avatarInput');
 const avatarPreview=document.getElementById('avatarPreview');
-avatarInput.addEventListener('change',e=>{
-  const file=e.target.files[0];
-  if(file){avatarPreview.src=URL.createObjectURL(file);}
-});
-
+avatarInput.addEventListener('change',e=>{const file=e.target.files[0];if(file){avatarPreview.src=URL.createObjectURL(file);}});
 const bgInput=document.getElementById('bgInput');
 let bgImage=null;
-bgInput.addEventListener('change',e=>{
-  const file=e.target.files[0];
-  if(file){
-    bgImage = URL.createObjectURL(file);
-    body.style.backgroundImage = `url(${bgImage})`;
-    body.style.backgroundSize = 'cover';
-    body.style.backgroundPosition = 'center';
-  }
-});
-
-// --- CHAT ---
+bgInput.addEventListener('change',e=>{const file=e.target.files[0];if(file){bgImage = URL.createObjectURL(file);body.style.backgroundImage = `url(${bgImage})`;body.style.backgroundSize = 'cover';body.style.backgroundPosition = 'center';}});
 const messages=document.getElementById('messages');
 const msgInput=document.getElementById('msgInput');
 const sendBtn=document.getElementById('sendBtn');
 const startBtn=document.getElementById('startBtn');
 const stopBtn=document.getElementById('stopBtn');
 const muteToggle = document.getElementById('muteToggle');
-
 let chatRunning=false;
 let muted=false;
 let photoTimer=null;
-
 const soundSend = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
 const soundReceive = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
 const soundStart = new Audio('https://actions.google.com/sounds/v1/cartoon/slide_whistle_to_drum_hit.ogg');
 const soundStop = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
-
 muteToggle.addEventListener('click', ()=>{muted = !muted; muteToggle.textContent = muted ? "🔇" : "🔊";});
 function playSound(sound){if(!muted) sound.play();}
-
-// --- RESET PROFILE ---
 document.getElementById('resetProfile').addEventListener('click', ()=>{
   avatarPreview.src = "https://i.pravatar.cc/90";
   bgImage=null;
@@ -277,20 +257,17 @@ document.getElementById('resetProfile').addEventListener('click', ()=>{
   bioCount.textContent=0;
   document.getElementById('profileStatus').value='dostepny';
 });
-
-// --- START / STOP ---
 startBtn.addEventListener('click', () => {
   playSound(soundStart);
   chatRunning = true;
   msgInput.disabled = false;
-  sendBtn.disabled = true; // blokada na 1 min
-  messages.innerHTML=''; // czyści czat
+  sendBtn.disabled = true;
+  messages.innerHTML='';
   addSystemMsg("Łączenie z partnerem...");
   socket.emit('startChat');
   if(photoTimer) clearTimeout(photoTimer);
   photoTimer = setTimeout(()=>{sendBtn.disabled=false;},60000);
 });
-
 stopBtn.addEventListener('click', () => {
   if(!chatRunning) return;
   if(confirm("Czy na pewno zakończyć rozmowę?")){
@@ -302,8 +279,6 @@ stopBtn.addEventListener('click', () => {
     playSound(soundStop);
   }
 });
-
-// --- SEND MESSAGE ---
 sendBtn.addEventListener('click', sendMsg);
 msgInput.addEventListener('keypress', e=>{if(e.key==='Enter') sendMsg();});
 function sendMsg(){
@@ -314,8 +289,6 @@ function sendMsg(){
   playSound(soundSend);
   msgInput.value='';
 }
-
-// --- SOCKET EVENTS ---
 socket.on('receiveMessage', msg => {
   if(msg.type==='text'){
     addMsg('partner', msg.content, 'https://i.pravatar.cc/90');
@@ -325,11 +298,7 @@ socket.on('receiveMessage', msg => {
   playSound(soundReceive);
 });
 socket.on('partnerFound', () => {addSystemMsg("Partner połączony. Możesz pisać!");});
-socket.on('partnerStopped', () => {
-  if(chatRunning){addSystemMsg("Partner zakończył rozmowę."); chatRunning=false; msgInput.disabled=true; sendBtn.disabled=true;}
-});
-
-// --- MESSAGE FUNCTIONS ---
+socket.on('partnerStopped', () => {if(chatRunning){addSystemMsg("Partner zakończył rozmowę."); chatRunning=false; msgInput.disabled=true; sendBtn.disabled=true;}});
 function addMsg(cls,text,avatar){
   const div=document.createElement('div');
   div.className='msg '+cls;
@@ -353,7 +322,7 @@ function addPhotoMsg(cls,url,avatar){
   const photo=document.createElement('img');
   photo.className='chat-img';
   photo.src=url;
-  photo.addEventListener('click',()=>{window.open(url,'_self');}); // powiększenie w tym samym oknie
+  photo.addEventListener('click',()=>{window.open(url,'_self');});
   div.appendChild(imgAvatar);
   div.appendChild(photo);
   messages.appendChild(div);
