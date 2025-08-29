@@ -25,53 +25,128 @@ body{
   transition:background .2s,color .2s;
   overflow:hidden;
 }
-body.light{background:var(--bg-light); color:#000;}
-header{display:flex; align-items:center; justify-content:space-between; padding:10px 16px; border-bottom:1px solid rgba(57,255,20,.15); background:rgba(0,0,0,.6);}
-body.light header{background:rgba(255,255,255,.9);}
-.logo{font-family:'Press Start 2P',monospace; font-weight:700; font-size:1.6rem; color:var(--lime); text-shadow:0 0 20px rgba(57,255,20,.8); animation:glow 1.5s infinite alternate;}
-@keyframes glow{0%{text-shadow:0 0 12px rgba(57,255,20,.4);}50%{text-shadow:0 0 28px rgba(57,255,20,.85);}100%{text-shadow:0 0 12px rgba(57,255,20,.4);}}
-.header-center{display:flex; align-items:center; gap:12px;}
-.online-indicator{font-family:'Roboto Mono',monospace; font-size:0.85rem; font-weight:700; padding:4px 8px; border-radius:6px; border:1px solid rgba(57,255,20,.18); background:rgba(0,0,0,.25); text-shadow:0 0 8px rgba(57,255,20,.6);}
-.small-status{font-family:'Roboto Mono',monospace; font-size:0.75rem; opacity:.95; text-shadow:0 0 6px rgba(57,255,20,.5);}
-.header-buttons{display:flex; align-items:center; gap:6px;}
-.main{flex:1; display:flex; gap:12px; padding:12px; overflow:hidden;}
-.chat{flex:1; display:flex; flex-direction:column; border-radius:8px; overflow:hidden;}
-.messages{flex:1; padding:12px; display:flex; flex-direction:column; gap:8px; overflow:auto; background:rgba(0,0,0,.45); border-radius:8px;}
+body.light{
+  background:var(--bg-light);
+  color:#000;
+}
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 16px;
+  border-bottom:1px solid rgba(57,255,20,.15);
+  background:rgba(0,0,0,.6);
+}
+body.light header{
+  background:rgba(255,255,255,.9);
+}
+.logo{
+  font-family:'Press Start 2P',monospace;
+  font-weight:700;
+  font-size:1.6rem;
+  color:var(--lime);
+  text-shadow:0 0 20px rgba(57,255,20,.8);
+  animation:glow 1.5s infinite alternate;
+}
+@keyframes glow{
+  0%{text-shadow:0 0 12px rgba(57,255,20,.4);}
+  50%{text-shadow:0 0 28px rgba(57,255,20,.85);}
+  100%{text-shadow:0 0 12px rgba(57,255,20,.4);}
+}
+.header-center{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.online-indicator{
+  font-family:'Roboto Mono',monospace;
+  font-size:0.85rem;
+  font-weight:700;
+  padding:4px 8px;
+  border-radius:6px;
+  border:1px solid rgba(57,255,20,.18);
+  background:rgba(0,0,0,.25);
+  text-shadow:0 0 8px rgba(57,255,20,.6);
+}
+.small-status{
+  font-family:'Roboto Mono',monospace;
+  font-size:0.75rem;
+  opacity:.95;
+  text-shadow:0 0 6px rgba(57,255,20,.5);
+}
+.header-buttons{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.main{flex:1;display:flex;gap:12px;padding:12px;overflow:hidden;}
+.chat{flex:1;display:flex;flex-direction:column;border-radius:8px;overflow:hidden;}
+.messages{flex:1;padding:12px;display:flex;flex-direction:column;gap:8px;overflow:auto;background:rgba(0,0,0,.45);border-radius:8px;}
 body.light .messages{background:rgba(255,255,255,.75);}
-.msg{display:flex; align-items:flex-start; gap:8px; max-width:75%; animation:msgIn .18s ease;}
-@keyframes msgIn{from{opacity:0; transform:translateY(6px)}to{opacity:1; transform:none}}
-.msg .avatar{width:36px; height:36px; border-radius:50%; object-fit:cover; border:2px solid rgba(57,255,20,.18);}
-.bubble{padding:8px 12px; border-radius:12px; background:#111; border:1px solid rgba(57,255,20,.06); color:var(--lime);}
-.self .bubble{background:var(--lime); color:#000;}
-.self{align-self:flex-end; flex-direction:row-reverse;}
-.profile-panel{position:fixed; right:0; top:0; width:320px; height:100%; transform:translateX(100%); background:rgba(0,0,0,.95); padding:12px; display:flex; flex-direction:column; gap:8px; border-left:2px solid rgba(57,255,20,.12); transition:transform .22s; z-index:100;}
+.msg{display:flex;align-items:flex-start;gap:8px;max-width:75%;animation:msgIn .18s ease;}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg .avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(57,255,20,.18);}
+.bubble{padding:8px 12px;border-radius:12px;background:#111;border:1px solid rgba(57,255,20,.06);color:var(--lime);}
+.self .bubble{background:var(--lime);color:#000;}
+.self{align-self:flex-end;flex-direction:row-reverse;}
+.profile-panel{position:fixed;right:0;top:0;width:320px;height:100%;transform:translateX(100%);background:rgba(0,0,0,.95);padding:12px;display:flex;flex-direction:column;gap:8px;border-left:2px solid rgba(57,255,20,.12);transition:transform .22s;z-index:100;}
 .profile-panel.open{transform:translateX(0);}
-.profile-top{display:flex; justify-content:space-between; align-items:center;}
-.profile-top h3{margin:0; font-family:'Share Tech Mono',monospace; color:var(--lime);}
-.profile-actions button{background:transparent; border:1px dashed rgba(57,255,20,.14); color:var(--lime); padding:6px; border-radius:8px; cursor:pointer; transition:all .2s;}
+.profile-top{display:flex;justify-content:space-between;align-items:center;}
+.profile-top h3{margin:0;font-family:'Share Tech Mono',monospace;color:var(--lime);}
+.profile-actions button{background:transparent;border:1px dashed rgba(57,255,20,.14);color:var(--lime);padding:6px;border-radius:8px;cursor:pointer;transition:all .2s;}
 .profile-actions button:hover{transform:translateY(-2px) scale(1.05);}
-.profile-panel label{font-weight:600; font-size:.9rem;}
-.profile-panel input[type=text], .profile-panel input[type=number], .profile-panel select, .profile-panel textarea{padding:8px; border-radius:8px; border:1px solid rgba(57,255,20,.12); background:#0f0f0f; color:var(--lime); width:100%; transition:all .2s;}
-body.light .profile-panel input, body.light .profile-panel select, body.light .profile-panel textarea{background:#fff;color:#000;}
-.profile-avatar{width:90px; height:90px; border-radius:50%; object-fit:cover; box-shadow:0 0 16px rgba(57,255,20,.25); transition:all .3s;}
+.profile-panel label{font-weight:600;font-size:.9rem;}
+.profile-panel input[type=text],.profile-panel input[type=number],.profile-panel select,.profile-panel textarea{
+  padding:8px;border-radius:8px;border:1px solid rgba(57,255,20,.12);background:#0f0f0f;color:var(--lime);width:100%;transition:all .2s;}
+body.light .profile-panel input,body.light .profile-panel select,body.light .profile-panel textarea{background:#fff;color:#000;}
+.profile-avatar{width:90px;height:90px;border-radius:50%;object-fit:cover;box-shadow:0 0 16px rgba(57,255,20,.25);transition:all .3s;}
 .profile-avatar:hover{transform:scale(1.05);}
-.panel-row{display:flex; gap:8px;}
+.panel-row{display:flex;gap:8px;}
 .panel-row>div{flex:1;}
-.controls{display:flex; align-items:center; justify-content:center; gap:6px; padding:12px; border-top:1px solid rgba(57,255,20,.06); background:rgba(0,0,0,.6);}
+.controls{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:12px;
+  border-top:1px solid rgba(57,255,20,.06);
+  background:rgba(0,0,0,.6);
+}
 body.light .controls{background:rgba(255,255,255,.9);}
-.text-input{flex:1; padding:10px; border-radius:10px; border:1px solid rgba(57,255,20,.12); background:#0f0f0f; color:var(--lime); transition:all .2s;}
+.text-input{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(57,255,20,.12);background:#0f0f0f;color:var(--lime);transition:all .2s;}
 body.light .text-input{background:#fff;color:#000;}
-.btn{padding:10px 14px; border-radius:10px; border:none; font-weight:700; cursor:pointer; font-family:'Press Start 2P',monospace; position:relative; animation:buttonGlow 2s infinite alternate; transition:all .2s;}
+.btn{padding:10px 14px;border-radius:10px;border:none;font-weight:700;cursor:pointer;font-family:'Press Start 2P',monospace;position:relative;animation:buttonGlow 2s infinite alternate;transition:all .2s;}
 .btn:hover{transform:translateY(-2px) scale(1.05);}
-@keyframes buttonGlow{0%{box-shadow:0 0 8px rgba(57,255,20,.35);}50%{box-shadow:0 0 22px rgba(57,255,20,.85);}100%{box-shadow:0 0 8px rgba(57,255,20,.35);}}
-.btn-start{background:var(--lime);color:#000; animation:btnPulse 1.5s infinite alternate;}
-.btn-stop{background:transparent;color:var(--lime); border:1px solid rgba(57,255,20,.18); animation:btnPulse 1.5s infinite alternate;}
-@keyframes btnPulse{0%{transform:scale(1) translateY(0);}50%{transform:scale(1.02) translateY(-1px);}100%{transform:scale(1) translateY(0);}}
-#toggleTheme,#muteToggle,#openProfile{font-family:'Share Tech Mono',monospace; font-size:1.1rem; background:transparent; border:none; color:var(--lime); cursor:pointer; transition:all .2s;}
+@keyframes buttonGlow{
+  0%{box-shadow:0 0 8px rgba(57,255,20,.35);}
+  50%{box-shadow:0 0 22px rgba(57,255,20,.85);}
+  100%{box-shadow:0 0 8px rgba(57,255,20,.35);}
+}
+.btn-start{background:var(--lime);color:#000;animation:btnPulse 1.5s infinite alternate;}
+.btn-stop{background:transparent;color:var(--lime);border:1px solid rgba(57,255,20,.18);animation:btnPulse 1.5s infinite alternate;}
+@keyframes btnPulse{
+  0%{transform:scale(1) translateY(0);}
+  50%{transform:scale(1.02) translateY(-1px);}
+  100%{transform:scale(1) translateY(0);}
+}
+#toggleTheme,#muteToggle,#openProfile{
+  font-family:'Share Tech Mono',monospace;
+  font-size:1.1rem;
+  background:transparent;
+  border:none;
+  color:var(--lime);
+  cursor:pointer;
+  transition:all .2s;
+}
 #toggleTheme:hover,#muteToggle:hover,#openProfile:hover{transform:scale(1.1);}
-img.chat-img{max-width:120px; max-height:120px; border-radius:8px; cursor:pointer; transition:all .2s;}
+img.chat-img{max-width:120px;max-height:120px;border-radius:8px;cursor:pointer;transition:all .2s;}
 img.chat-img:hover{transform:scale(1.15);}
-@media(max-width:760px){.profile-panel{width:92vw}.logo{font-size:1.25rem}.controls {flex-direction:column; gap:4px;} .text-input, .btn {width:100%;}}
+@media(max-width:760px){
+  .profile-panel{width:92vw}
+  .logo{font-size:1.25rem}
+  .controls {flex-direction:column; gap:4px;}
+  .text-input, .btn {width:100%;}
+}
 </style>
 </head>
 <body>
@@ -172,15 +247,23 @@ document.getElementById('hideProfile').addEventListener('click',()=>{profilePane
 
 const avatarInput=document.getElementById('avatarInput');
 const avatarPreview=document.getElementById('avatarPreview');
-avatarInput.addEventListener('change',e=>{
-  const file=e.target.files[0];
+const bgInput=document.getElementById('bgInput');
+
+avatarInput.addEventListener('change', e=>{
+  const file = e.target.files[0];
   if(file){
-    avatarPreview.src=URL.createObjectURL(file);
+    avatarPreview.src = URL.createObjectURL(file);
     sendPhoto(file);
   }
 });
-const bgInput=document.getElementById('bgInput');
-bgInput.addEventListener('change',e=>{const file=e.target.files[0];if(file){document.body.style.backgroundImage=`url(${URL.createObjectURL(file)})`;}});
+bgInput.addEventListener('change', e=>{
+  const file = e.target.files[0];
+  if(file){
+    document.body.style.backgroundImage = `url(${URL.createObjectURL(file)})`;
+    document.body.style.backgroundRepeat = "no-repeat";
+    document.body.style.backgroundSize = "cover";
+  }
+});
 
 const ageSlider=document.getElementById('profileAge');
 const ageValue=document.getElementById('ageValue');
@@ -188,6 +271,7 @@ ageSlider.addEventListener('input',()=>{ageValue.textContent=ageSlider.value;});
 const bioTextarea=document.getElementById('profileBio');
 const bioCount=document.getElementById('bioCount');
 bioTextarea.addEventListener('input',()=>{bioCount.textContent=bioTextarea.value.length;});
+
 document.getElementById('resetProfile').addEventListener('click',()=>{
   avatarPreview.src="https://i.pravatar.cc/90";
   document.body.style.backgroundImage="";
@@ -248,7 +332,7 @@ function sendMsg(){
   const text=msgInput.value.trim();
   if(!text) return;
   addMsg('self',text,avatarPreview.src);
-  socket.emit('sendMessage',{type:'text', content:text});
+  socket.emit('sendMessage',text);
   playSound(soundSend);
   msgInput.value='';
 }
@@ -262,37 +346,68 @@ socket.on('partnerFound',()=>{addSystemMsg("Partner połączony. Możesz pisać!
 socket.on('partnerStopped',()=>{chatRunning=false; msgInput.disabled=true; sendBtn.disabled=true; stopBtn.disabled=true; addSystemMsg("Partner zakończył rozmowę.")});
 
 function addMsg(cls,text,avatar){
-  const div=document.createElement('div'); div.className='msg '+cls;
-  const img=document.createElement('img'); img.className='avatar'; img.src=avatar;
-  const bubble=document.createElement('div'); bubble.className='bubble'; bubble.textContent=text;
-  div.appendChild(img); div.appendChild(bubble);
-  messages.appendChild(div); messages.scrollTop=messages.scrollHeight;
+  const div=document.createElement('div');
+  div.className='msg '+cls;
+  const img=document.createElement('img');
+  img.className='avatar';
+  img.src=avatar;
+  const bubble=document.createElement('div');
+  bubble.className='bubble';
+  bubble.textContent=text;
+  div.appendChild(img);
+  div.appendChild(bubble);
+  messages.appendChild(div);
+  messages.scrollTop=messages.scrollHeight;
 }
 
-function addPhotoMsg(cls,dataUrl,avatar){
-  const div=document.createElement('div'); div.className='msg '+cls;
-  const imgAvatar=document.createElement('img'); imgAvatar.className='avatar'; imgAvatar.src=avatar;
-  const photo=document.createElement('img'); photo.className='chat-img'; photo.src=dataUrl;
-  photo.style.maxWidth='120px'; photo.style.maxHeight='120px';
-  div.appendChild(imgAvatar); div.appendChild(photo);
-  messages.appendChild(div); messages.scrollTop=messages.scrollHeight;
+function addPhotoMsg(cls,url,avatar){
+  const div=document.createElement('div');
+  div.className='msg '+cls;
+  const imgAvatar=document.createElement('img');
+  imgAvatar.className='avatar';
+  imgAvatar.src=avatar;
+  const photo=document.createElement('img');
+  photo.className='chat-img';
+  photo.src=url;
+  photo.style.maxWidth='120px';
+  photo.style.maxHeight='120px';
+  div.appendChild(imgAvatar);
+  div.appendChild(photo);
+  messages.appendChild(div);
+  messages.scrollTop=messages.scrollHeight;
 }
 
 function sendPhoto(file){
-  const reader = new FileReader();
-  reader.onload = function(e){
-    const dataUrl = e.target.result;
-    addPhotoMsg('self',dataUrl,avatarPreview.src);
-    socket.emit('sendMessage',{type:'photo',content:dataUrl});
-    playSound(soundSend);
-  };
-  reader.readAsDataURL(file);
+  if(!chatRunning) return;
+  const formData = new FormData();
+  formData.append('photo', file);
+
+  fetch('/upload', { method: 'POST', body: formData })
+    .then(res => res.json())
+    .then(data => {
+      addPhotoMsg('self', data.url, avatarPreview.src);
+      socket.emit('sendPhoto', data.url);
+      playSound(soundSend);
+    })
+    .catch(err => console.error('Błąd wysyłania zdjęcia:', err));
 }
 
+// Drag & drop w polu wiadomości
+msgInput.addEventListener('drop', e => {
+  e.preventDefault();
+  if(e.dataTransfer.files.length > 0) sendPhoto(e.dataTransfer.files[0]);
+});
+msgInput.addEventListener('dragover', e => { e.preventDefault(); });
+
 function addSystemMsg(text){
-  const div=document.createElement('div'); div.className='msg system';
-  const bubble=document.createElement('div'); bubble.className='bubble'; bubble.textContent=text;
-  div.appendChild(bubble); messages.appendChild(div); messages.scrollTop=messages.scrollHeight;
+  const div=document.createElement('div');
+  div.className='msg system';
+  const bubble=document.createElement('div');
+  bubble.className='bubble';
+  bubble.textContent=text;
+  div.appendChild(bubble);
+  messages.appendChild(div);
+  messages.scrollTop=messages.scrollHeight;
 }
 </script>
 
