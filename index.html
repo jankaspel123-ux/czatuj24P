@@ -147,6 +147,39 @@ img.chat-img:hover{transform:scale(1.15);}
   .controls {flex-direction:column; gap:4px;}
   .text-input, .btn {width:100%;}
 }
+
+/* --- overlay / modal zgody i loading --- */
+#consentOverlay{
+  position:fixed;
+  inset:0;
+  background:linear-gradient(0deg, rgba(0,0,0,.85), rgba(0,0,0,.6));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+  padding:20px;
+  color:var(--lime);
+}
+#consentBox{
+  max-width:980px;
+  width:100%;
+  max-height:86vh;
+  overflow:auto;
+  background:rgba(10,10,10,.95);
+  border-radius:10px;
+  padding:18px;
+  border:1px solid rgba(57,255,20,.08);
+}
+#consentBox h2{margin-top:0;font-family:'Share Tech Mono',monospace;}
+#consentText{font-size:0.9rem;line-height:1.45;color:inherit;}
+#consentActions{display:flex;gap:12px;justify-content:flex-end;margin-top:12px;}
+#consentText p{margin:8px 0;}
+.consent-btn{padding:10px 16px;border-radius:8px;border:none;font-weight:700;cursor:pointer;font-family:'Press Start 2P',monospace;}
+.accept{background:var(--lime);color:#000;}
+.decline{background:transparent;color:var(--lime);border:1px solid rgba(57,255,20,.12);}
+
+/* small note area */
+#consentNotice{font-size:0.8rem;color:rgba(57,255,20,.9);margin-bottom:8px;}
 </style>
 </head>
 <body>
@@ -169,6 +202,8 @@ img.chat-img:hover{transform:scale(1.15);}
     <div class="messages" id="messages"></div>
     <div class="controls">
       <input id="msgInput" class="text-input" placeholder="Napisz wiadomość..." />
+      <!-- hidden file input powiązany z przyciskiem Wyślij -->
+      <input type="file" id="photoInput" accept="image/*" style="display:none" />
       <button id="sendBtn" class="btn btn-start" disabled>Wyślij</button>
       <button id="startBtn" class="btn btn-start">Start</button>
       <button id="stopBtn" class="btn btn-stop" disabled>Stop</button>
@@ -237,23 +272,108 @@ img.chat-img:hover{transform:scale(1.15);}
   <button id="resetProfile" class="btn btn-stop">Przywróć ustawienia</button>
 </aside>
 
+<!-- Overlay zgody / loading -->
+<div id="consentOverlay" aria-hidden="false" role="dialog">
+  <div id="consentBox" role="document">
+    <div id="consentNotice">Zanim wejdziesz — przeczytaj i zaakceptuj naszą Politykę Prywatności oraz Regulamin (RODO / 2025).</div>
+    <h2>Polityka prywatności i regulamin — Czatuj24</h2>
+    <div id="consentText">
+      <p><strong>Administrator danych:</strong> [Czatuj24].</p>
+
+      <h3>1. Zakres i cel przetwarzania danych</h3>
+      <p>Serwis Czatuj24 umożliwia anonimową komunikację pomiędzy użytkownikami w trybie czatu losowego. W ramach działania serwisu mogą być przetwarzane dane osobowe i informacje udostępniane dobrowolnie przez użytkowników (np. nickname, avatar, pliki multimedialne wysyłane do drugiego użytkownika). Administrator nie przechowuje treści konwersacji w bazie danych w standardowej konfiguracji — serwer działa jako pośrednik i pliki wysłane do drugiego użytkownika mogą być tymczasowo przechowywane w katalogu <code>/uploads</code> celem udostępnienia ich partnerowi czatu.</p>
+
+      <h3>2. Podstawy prawne przetwarzania</h3>
+      <p>Przetwarzamy dane na podstawie:</p>
+      <ul>
+        <li>art. 6 ust. 1 lit. a RODO — jeżeli użytkownik wyrazi zgodę na przetwarzanie (np. akceptując niniejszą politykę),</li>
+        <li>art. 6 ust. 1 lit. f RODO — prawnie uzasadniony interes administratora (np. utrzymanie bezpieczeństwa, zapobieganie nadużyciom, analiza statystyczna anonymizowana),</li>
+        <li>inne podstawy prawne, gdy jest to wymagane przepisami prawa.</li>
+      </ul>
+
+      <h3>3. Zakres gromadzonych danych</h3>
+      <p>Możemy przetwarzać następujące dane:</p>
+      <ul>
+        <li>nickname (wpisany przez użytkownika),</li>
+        <li>avatar przesłany przez użytkownika (plik graficzny),</li>
+        <li>pliki przesłane w trakcie rozmowy (obrazy),</li>
+        <li>dane techniczne (adres IP, user-agent, timestamp) w celach bezpieczeństwa i diagnostyki — przechowywane okresowo w logach serwera,</li>
+        <li>informacje o zgodach i preferencjach przechowywane lokalnie (np. w localStorage) lub na serwerze w przyszłej wersji.</li>
+      </ul>
+
+      <h3>4. Cele przetwarzania</h3>
+      <p>Dane przetwarzane są w celu:</p>
+      <ul>
+        <li>umożliwienia komunikacji między użytkownikami (przekazywanie wiadomości i plików),</li>
+        <li>zapewnienia bezpieczeństwa i wykrywania nadużyć,</li>
+        <li>realizacji statystyk i analiz (dane agregowane/anonymizowane) celem poprawy działania serwisu i kampanii reklamowych,</li>
+        <li>wypełnienia obowiązków prawnych, jeśli zachodzi taka konieczność.</li>
+      </ul>
+
+      <h3>5. Okres przechowywania</h3>
+      <p>Pliki przesłane przez użytkowników (np. obrazy) są przechowywane w katalogu <code>/uploads</code> przez okres zależny od konfiguracji serwera. W standardowej konfiguracji administrator zastrzega sobie prawo do okresowego usuwania plików (np. 30 dni). Logi techniczne przechowywane są przez okres niezbędny do zapewnienia bezpieczeństwa oraz realizacji obowiązków prawnych.</p>
+
+      <h3>6. Odbiorcy danych</h3>
+      <p>Dane nie są sprzedawane ani celowo udostępniane podmiotom trzecim z wyjątkiem:</p>
+      <ul>
+        <li>dostawców usług hostingowych i infrastruktury (np. Render, Cloud Provider),</li>
+        <li>organy państwowe, jeżeli wymagają tego przepisy prawa (np. na żądanie uprawnionych organów). </li>
+      </ul>
+
+      <h3>7. Prawa osób, których dane dotyczą</h3>
+      <p>Masz prawo do:</p>
+      <ul>
+        <li>dostępu do swoich danych,</li>
+        <li;sprostowania danych,</li>
+        <li;usunięcia danych („prawo do bycia zapomnianym”), w zakresie w jakim administrator faktycznie przechowuje dane osobowe,</li>
+        <li;ograniczenia przetwarzania,</li>
+        <li;przenoszenia danych,</li>
+        <li;wniesienia sprzeciwu wobec przetwarzania danych,</li>
+        <li;wniesienia skargi do organu nadzorczego (PUODO). </li>
+      </ul>
+
+      <h3>8. Cookies i lokalne przechowywanie</h3>
+      <p>Serwis może korzystać z ciasteczek (cookies) lub mechanizmów lokalnego przechowywania (localStorage) w celu zapamiętania ustawień i zgód. Cookies techniczne są konieczne dla funkcjonalności i nie wymagają oddzielnej zgody. W przypadku cookies służących analizie i marketingowi użytkownik będzie poproszony o wyrażenie zgody, jeśli takie mechanizmy zostaną wprowadzone.</p>
+
+      <h3>9. Bezpieczeństwo</h3>
+      <p>Administrator stosuje środki techniczne i organizacyjne adekwatne do ryzyka (np. ograniczenie dostępu do katalogu uploads, zabezpieczenia serwera). Nie można jednak całkowicie wykluczyć ryzyka naruszeń; użytkownik przesyłając dane zgadza się na ryzyko związane z przesyłaniem treści przez Internet.</p>
+
+      <h3>10. Reklama i analityka</h3>
+      <p>Administrator zastrzega sobie prawo do prowadzenia działań marketingowych i analitycznych (np. kampanii reklamowych). Dane wykorzystane do takich analiz będą agregowane i anonimizowane, chyba że użytkownik wyrazi zgodę na inny sposób przetwarzania danych.</p>
+
+      <h3>11. Zmiany polityki</h3>
+      <p>Administrator może aktualizować niniejszą politykę. O ważnych zmianach użytkownik zostanie poinformowany w sposób adekwatny (np. przez komunikat w serwisie).</p>
+
+      <p><strong>Kontakt:</strong> Prosimy o kontakt z administratorem pod adresem e-mail: <em>[kontaktczatuj24@gmail.com]</em> w sprawach dotyczących prywatności i realizacji praw podmiotów danych.</p>
+
+      <p><em>Poprzez kliknięcie „Akceptuję” oświadczasz, że zapoznałeś się z powyższą Polityką Prywatności i Regulaminem oraz wyrażasz zgodę (w zakresie wskazanym powyżej) na przetwarzanie danych osobowych w ramach serwisu Czatuj24.</em></p>
+    </div>
+
+    <div id="consentActions">
+      <button id="declineBtn" class="consent-btn decline">Odrzucam</button>
+      <button id="acceptBtn" class="consent-btn accept">Akceptuje i kontynuuje</button>
+    </div>
+  </div>
+</div>
+
 <script src="/socket.io/socket.io.js"></script>
 <script>
 const socket = io();
-const profilePanel=document.getElementById('profilePanel');
-document.getElementById('openProfile').addEventListener('click',()=>{profilePanel.classList.add('open');});
-document.getElementById('closeProfile').addEventListener('click',()=>{profilePanel.classList.remove('open');});
-document.getElementById('hideProfile').addEventListener('click',()=>{profilePanel.classList.toggle('open');});
+const profilePanel = document.getElementById('profilePanel');
+document.getElementById('openProfile').addEventListener('click', ()=>{profilePanel.classList.add('open');});
+document.getElementById('closeProfile').addEventListener('click', ()=>{profilePanel.classList.remove('open');});
+document.getElementById('hideProfile').addEventListener('click', ()=>{profilePanel.classList.toggle('open');});
 
-const avatarInput=document.getElementById('avatarInput');
-const avatarPreview=document.getElementById('avatarPreview');
-const bgInput=document.getElementById('bgInput');
+const avatarInput = document.getElementById('avatarInput');
+const avatarPreview = document.getElementById('avatarPreview');
+const bgInput = document.getElementById('bgInput');
 
 avatarInput.addEventListener('change', e=>{
   const file = e.target.files[0];
   if(file){
     avatarPreview.src = URL.createObjectURL(file);
-    sendPhoto(file);
+    // opcjonalnie można wysyłać avatar na serwer tu, ale aktualnie tylko lokalna podmiana
+    // sendPhoto(file); // nie wymuszamy wysyłania avatara jako wiadomości
   }
 });
 bgInput.addEventListener('change', e=>{
@@ -265,149 +385,240 @@ bgInput.addEventListener('change', e=>{
   }
 });
 
-const ageSlider=document.getElementById('profileAge');
-const ageValue=document.getElementById('ageValue');
-ageSlider.addEventListener('input',()=>{ageValue.textContent=ageSlider.value;});
-const bioTextarea=document.getElementById('profileBio');
-const bioCount=document.getElementById('bioCount');
-bioTextarea.addEventListener('input',()=>{bioCount.textContent=bioTextarea.value.length;});
+const ageSlider = document.getElementById('profileAge');
+const ageValue = document.getElementById('ageValue');
+ageSlider.addEventListener('input', ()=>{ ageValue.textContent = ageSlider.value; });
 
-document.getElementById('resetProfile').addEventListener('click',()=>{
-  avatarPreview.src="https://i.pravatar.cc/90";
-  document.body.style.backgroundImage="";
-  document.getElementById('profileNick').value='';
-  document.getElementById('profileSex').value='kobieta';
-  document.getElementById('profileTarget').value='kobieta';
-  document.getElementById('profilePurpose').value='randka';
-  document.getElementById('profileAge').value=25;
-  ageValue.textContent=25;
-  document.getElementById('profileBio').value='';
-  bioCount.textContent=0;
-  document.getElementById('profileStatus').value='dostepny';
+const bioTextarea = document.getElementById('profileBio');
+const bioCount = document.getElementById('bioCount');
+bioTextarea.addEventListener('input', ()=>{ bioCount.textContent = bioTextarea.value.length; });
+
+document.getElementById('resetProfile').addEventListener('click', ()=>{
+  avatarPreview.src = "https://i.pravatar.cc/90";
+  document.body.style.backgroundImage = "";
+  document.getElementById('profileNick').value = '';
+  document.getElementById('profileSex').value = 'kobieta';
+  document.getElementById('profileTarget').value = 'kobieta';
+  document.getElementById('profilePurpose').value = 'randka';
+  document.getElementById('profileAge').value = 25;
+  ageValue.textContent = 25;
+  document.getElementById('profileBio').value = '';
+  bioCount.textContent = 0;
+  document.getElementById('profileStatus').value = 'dostepny';
 });
 
-const msgInput=document.getElementById('msgInput');
-const sendBtn=document.getElementById('sendBtn');
-const startBtn=document.getElementById('startBtn');
-const stopBtn=document.getElementById('stopBtn');
+const msgInput = document.getElementById('msgInput');
+const photoInput = document.getElementById('photoInput');
+const sendBtn = document.getElementById('sendBtn');
+const startBtn = document.getElementById('startBtn');
+const stopBtn = document.getElementById('stopBtn');
 const muteToggle = document.getElementById('muteToggle');
-let chatRunning=false;
-let muted=false;
-const messages=document.getElementById('messages');
+const toggleTheme = document.getElementById('toggleTheme');
+
+let chatRunning = false;
+let muted = false;
+const messages = document.getElementById('messages');
 
 const soundSend = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
 const soundReceive = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
 const soundStart = new Audio('https://actions.google.com/sounds/v1/cartoon/slide_whistle_to_drum_hit.ogg');
 const soundStop = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
 
-muteToggle.addEventListener('click',()=>{muted=!muted; muteToggle.textContent=muted?"🔇":"🔊";});
-function playSound(sound){if(!muted) sound.play();}
+muteToggle.addEventListener('click', ()=>{ muted=!muted; muteToggle.textContent = muted ? "🔇" : "🔊"; });
 
-startBtn.addEventListener('click',()=>{
-  chatRunning=true;
-  msgInput.disabled=false;
-  sendBtn.disabled=false;
-  stopBtn.disabled=false;
+toggleTheme.addEventListener('click', ()=>{
+  document.body.classList.toggle('light');
+  toggleTheme.textContent = document.body.classList.contains('light') ? "🌞" : "🌙";
+});
+
+function playSound(sound){ if(!muted) sound.play(); }
+
+// --- consent overlay logic ---
+const consentOverlay = document.getElementById('consentOverlay');
+const acceptBtn = document.getElementById('acceptBtn');
+const declineBtn = document.getElementById('declineBtn');
+
+function enableControlsAfterConsent(){
+  // odblokuj podstawowe kontrolki
+  startBtn.disabled = false;
+  // sendBtn i msgInput będą aktywowane przy starcie czatu (jak wcześniej)
+  consentOverlay.style.display = 'none';
+  consentOverlay.setAttribute('aria-hidden', 'true');
+}
+
+function disableControlsBeforeConsent(){
+  startBtn.disabled = true;
+  sendBtn.disabled = true;
+  msgInput.disabled = true;
+  stopBtn.disabled = true;
+  consentOverlay.style.display = 'flex';
+  consentOverlay.setAttribute('aria-hidden', 'false');
+}
+
+// jeśli wcześniej zaakceptowano
+if(localStorage.getItem('czatuj24_consent') === 'true'){
+  enableControlsAfterConsent();
+} else {
+  disableControlsBeforeConsent();
+}
+
+acceptBtn.addEventListener('click', ()=>{
+  localStorage.setItem('czatuj24_consent','true');
+  enableControlsAfterConsent();
+});
+
+declineBtn.addEventListener('click', ()=>{
+  // jeśli odrzuca, wyloguj/przekieruj — użytkownik nie ma dostępu
+  try {
+    // próbujemy zamknąć okno lub przekierować
+    window.location.href = 'https://www.google.com';
+  } catch(e){
+    window.close();
+  }
+});
+
+// --- koniec consent ---
+
+startBtn.addEventListener('click', ()=>{
+  if(!localStorage.getItem('czatuj24_consent')){ alert('Musisz zaakceptować politykę prywatności aby korzystać z serwisu.'); return; }
+  chatRunning = true;
+  msgInput.disabled = false;
+  sendBtn.disabled = false;
+  stopBtn.disabled = false;
   addSystemMsg("Łączenie z partnerem...");
   socket.emit('startChat');
   playSound(soundStart);
 });
-stopBtn.addEventListener('click',()=>{
+stopBtn.addEventListener('click', ()=>{
   if(!chatRunning) return;
   if(confirm("Czy zakończyć czat?")){
-    chatRunning=false;
-    msgInput.disabled=true;
-    sendBtn.disabled=true;
-    stopBtn.disabled=true;
+    chatRunning = false;
+    msgInput.disabled = true;
+    sendBtn.disabled = true;
+    stopBtn.disabled = true;
     addSystemMsg("Czat zakończony.");
     socket.emit('stopChat');
     playSound(soundStop);
   }
 });
 
-sendBtn.addEventListener('click',sendMsg);
-msgInput.addEventListener('keypress',e=>{if(e.key==='Enter') sendMsg();});
+// Obsługa wysyłania: jeśli w msgInput jest tekst -> wysyła tekst; jeśli puste -> otwiera picker zdjęć
+sendBtn.addEventListener('click', ()=>{
+  if(msgInput.value.trim() !== ''){
+    sendMsg();
+  } else {
+    // jeśli użytkownik chce wrzucić plik, otwórz dialog plików
+    photoInput.click();
+  }
+});
+
+// enter -> wysyłka tekstu (jak wcześniej)
+msgInput.addEventListener('keypress', e=>{ if(e.key==='Enter') sendMsg(); });
+
 function sendMsg(){
   if(!chatRunning) return;
-  const text=msgInput.value.trim();
+  const text = msgInput.value.trim();
   if(!text) return;
-  addMsg('self',text,avatarPreview.src);
-  socket.emit('sendMessage',text);
+  addMsg('self', text, avatarPreview.src);
+  socket.emit('sendMessage', text);
   playSound(soundSend);
-  msgInput.value='';
+  msgInput.value = '';
 }
 
-socket.on('receiveMessage',msg=>{
-  if(msg.type==='text') addMsg('partner',msg.content,'https://i.pravatar.cc/90');
-  else if(msg.type==='photo') addPhotoMsg('partner',msg.content,'https://i.pravatar.cc/90');
+// photoInput change => wysyłamy plik (bez ograniczeń po stronie frontu)
+photoInput.addEventListener('change', e=>{
+  if(e.target.files.length>0){
+    const file = e.target.files[0];
+    sendPhoto(file);
+    // reset input aby można było wybrać ten sam plik ponownie
+    e.target.value = '';
+  }
+});
+
+function sendPhoto(file){
+  if(!chatRunning) { alert('Najpierw uruchom czat (Start).'); return; }
+  // prosty upload: przesyłamy wszystko co jest obrazkiem (akceptujemy image/*)
+  const formData = new FormData();
+  formData.append('photo', file);
+
+  fetch('/upload', { method: 'POST', body: formData })
+    .then(res => {
+      if(!res.ok) throw new Error('Błąd serwera');
+      return res.json();
+    })
+    .then(data => {
+      if(data && data.url){
+        addPhotoMsg('self', data.url, avatarPreview.src);
+        socket.emit('sendPhoto', data.url);
+        playSound(soundSend);
+      } else {
+        console.error('Nieprawidłowa odpowiedź serwera przy uploadzie:', data);
+      }
+    })
+    .catch(err => {
+      console.error('Błąd wysyłania zdjęcia:', err);
+      alert('Błąd wysyłania zdjęcia. Spróbuj ponownie.');
+    });
+}
+
+msgInput.addEventListener('drop', e=>{
+  e.preventDefault();
+  if(e.dataTransfer.files.length>0) sendPhoto(e.dataTransfer.files[0]);
+});
+msgInput.addEventListener('dragover', e=>{ e.preventDefault(); });
+
+socket.on('receiveMessage', msg=>{
+  if(msg.type==='text') addMsg('partner', msg.content, 'https://i.pravatar.cc/90');
+  else if(msg.type==='photo') addPhotoMsg('partner', msg.content, 'https://i.pravatar.cc/90');
   playSound(soundReceive);
 });
-socket.on('partnerFound',()=>{addSystemMsg("Partner połączony. Możesz pisać!")});
-socket.on('partnerStopped',()=>{chatRunning=false; msgInput.disabled=true; sendBtn.disabled=true; stopBtn.disabled=true; addSystemMsg("Partner zakończył rozmowę.")});
+socket.on('partnerFound', ()=>{ addSystemMsg("Partner połączony. Możesz pisać!"); });
+socket.on('partnerStopped', ()=>{ 
+  chatRunning=false; msgInput.disabled=true; sendBtn.disabled=true; stopBtn.disabled=true; 
+  addSystemMsg("Partner zakończył rozmowę."); 
+});
 
 function addMsg(cls,text,avatar){
-  const div=document.createElement('div');
-  div.className='msg '+cls;
-  const img=document.createElement('img');
-  img.className='avatar';
-  img.src=avatar;
-  const bubble=document.createElement('div');
-  bubble.className='bubble';
-  bubble.textContent=text;
+  const div = document.createElement('div');
+  div.className = 'msg ' + cls;
+  const img = document.createElement('img');
+  img.className = 'avatar';
+  img.src = avatar;
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.textContent = text;
   div.appendChild(img);
   div.appendChild(bubble);
   messages.appendChild(div);
-  messages.scrollTop=messages.scrollHeight;
+  messages.scrollTop = messages.scrollHeight;
 }
 
 function addPhotoMsg(cls,url,avatar){
-  const div=document.createElement('div');
-  div.className='msg '+cls;
-  const imgAvatar=document.createElement('img');
-  imgAvatar.className='avatar';
-  imgAvatar.src=avatar;
-  const photo=document.createElement('img');
-  photo.className='chat-img';
-  photo.src=url;
+  const div = document.createElement('div');
+  div.className = 'msg ' + cls;
+  const imgAvatar = document.createElement('img');
+  imgAvatar.className = 'avatar';
+  imgAvatar.src = avatar;
+  const photo = document.createElement('img');
+  photo.className = 'chat-img';
+  photo.src = url;
   photo.style.maxWidth='120px';
   photo.style.maxHeight='120px';
   div.appendChild(imgAvatar);
   div.appendChild(photo);
   messages.appendChild(div);
-  messages.scrollTop=messages.scrollHeight;
+  messages.scrollTop = messages.scrollHeight;
 }
-
-function sendPhoto(file){
-  if(!chatRunning) return;
-  const formData = new FormData();
-  formData.append('photo', file);
-
-  fetch('/upload', { method: 'POST', body: formData })
-    .then(res => res.json())
-    .then(data => {
-      addPhotoMsg('self', data.url, avatarPreview.src);
-      socket.emit('sendPhoto', data.url);
-      playSound(soundSend);
-    })
-    .catch(err => console.error('Błąd wysyłania zdjęcia:', err));
-}
-
-// Drag & drop w polu wiadomości
-msgInput.addEventListener('drop', e => {
-  e.preventDefault();
-  if(e.dataTransfer.files.length > 0) sendPhoto(e.dataTransfer.files[0]);
-});
-msgInput.addEventListener('dragover', e => { e.preventDefault(); });
 
 function addSystemMsg(text){
-  const div=document.createElement('div');
-  div.className='msg system';
-  const bubble=document.createElement('div');
-  bubble.className='bubble';
-  bubble.textContent=text;
+  const div = document.createElement('div');
+  div.className = 'msg system';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.textContent = text;
   div.appendChild(bubble);
   messages.appendChild(div);
-  messages.scrollTop=messages.scrollHeight;
+  messages.scrollTop = messages.scrollHeight;
 }
 </script>
 
