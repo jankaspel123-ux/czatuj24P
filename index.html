@@ -358,12 +358,11 @@ img.chat-img:hover{transform:scale(1.15);}
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-const socket = io({
+const socket = io(window.location.origin, {
   transports: ['websocket'],
-  secure: true,
-  reconnection: true,
-  rejectUnauthorized: false
+  reconnection: true
 });
+
 const profilePanel = document.getElementById('profilePanel');
 document.getElementById('openProfile').addEventListener('click', ()=>{profilePanel.classList.add('open');});
 document.getElementById('closeProfile').addEventListener('click', ()=>{profilePanel.classList.remove('open');});
