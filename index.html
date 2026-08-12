@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5073295199353493"
-     crossorigin="anonymous"></script>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#050805" />
@@ -258,7 +256,7 @@ body.light .icon-moon{display:block}
 .muted .sound-off{display:block}
 .theme-btn{color:var(--lime)}
 .sound-btn{color:var(--text)}
-.profile-btn{display:flex;align-items:center;justify-content:center;gap:7px}
+.profile-btn{display:flex;align-items:center;justify-content:center;gap:7px}.profile-human{width:18px;height:18px;fill:none;stroke:var(--lime);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
 .profile-icon{position:relative;width:18px;height:18px;display:inline-block;font-size:0;color:var(--lime)}
 .profile-icon::before{content:"";position:absolute;left:6px;top:1px;width:7px;height:7px;border-radius:50%;background:currentColor}
 .profile-icon::after{content:"";position:absolute;left:2px;bottom:1px;width:15px;height:8px;border-radius:9px 9px 4px 4px;background:currentColor}
@@ -304,6 +302,36 @@ body.light .profile-icon{color:var(--lime-3)}
   .brand-sub{display:none}
 }
 
+
+.report-btn{width:38px;height:38px;padding:0;display:inline-grid;place-items:center;border-radius:12px;border:1px solid var(--lime-line);background:rgba(255,255,255,.035);color:var(--muted);cursor:pointer;transition:.18s;box-shadow:inset 0 1px rgba(255,255,255,.04),0 7px 18px rgba(0,0,0,.12)}
+.report-btn:hover:not(:disabled){color:#ff8a8a;border-color:rgba(255,92,92,.45);background:rgba(255,70,70,.08);transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.2),0 0 18px rgba(255,70,70,.08)}
+.report-btn:disabled{opacity:.35;cursor:not-allowed}
+.report-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.report-modal{position:fixed;inset:0;display:none;place-items:center;padding:18px;background:rgba(0,0,0,.58);backdrop-filter:blur(9px);z-index:120}
+.report-modal.open{display:grid}
+.report-box{width:min(430px,94vw);border:1px solid var(--lime-line-strong);border-radius:22px;background:linear-gradient(155deg,rgba(11,18,12,.98),rgba(3,7,4,.99));box-shadow:0 30px 100px rgba(0,0,0,.62),0 0 40px rgba(57,255,20,.06);padding:18px}
+body.light .report-box{background:linear-gradient(155deg,rgba(255,255,255,.99),rgba(241,247,242,.99))}
+.report-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.report-title{display:flex;align-items:center;gap:10px}.report-mark{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(255,78,78,.1);color:#ff8585;border:1px solid rgba(255,100,100,.22)}.report-top h3{margin:0;font-size:1rem}.report-top p{margin:3px 0 0;color:var(--muted);font-size:.68rem}.report-close{width:34px;height:34px;border-radius:10px;border:1px solid var(--lime-line);background:transparent;color:var(--muted);cursor:pointer;font-size:1rem}.report-options{display:grid;gap:7px;margin:12px 0}.report-option{display:flex;align-items:center;gap:9px;padding:10px 11px;border-radius:12px;border:1px solid var(--lime-line);background:rgba(255,255,255,.025);cursor:pointer;color:var(--text);font-size:.78rem}.report-option:hover{border-color:var(--lime-line-strong);background:var(--lime-soft)}.report-option input{accent-color:var(--lime)}.report-details{width:100%;min-height:78px;resize:vertical;padding:10px 11px;border-radius:12px;border:1px solid var(--lime-line);background:rgba(0,0,0,.2);color:var(--text);outline:0;font:inherit;font-size:.76rem}.report-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px}.report-submit{border:0!important;background:linear-gradient(145deg,#ff6565,#ff8c8c)!important;color:#210303!important}.report-note{margin:9px 1px 0;color:var(--muted);font-size:.62rem;line-height:1.45}
+@media(max-width:760px){.report-btn{width:36px;height:36px}.report-box{padding:15px;border-radius:18px}}
+
+
+/* =========================
+   SAFETY + PHOTO UX
+   ========================= */
+.photo-control-wrap{display:flex;align-items:center;gap:6px;min-width:0}
+.photo-count{font-size:.58rem;color:var(--muted);white-space:nowrap;font-weight:700;letter-spacing:.02em}
+.btn-photo{display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.btn-photo svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.safety-note{margin:7px 0 0;color:var(--muted);font-size:.62rem;line-height:1.45;text-align:center}
+.age-check{display:flex;align-items:flex-start;gap:10px;margin-top:15px;padding:11px 12px;border:1px solid var(--lime-line);border-radius:14px;background:var(--lime-soft-2);font-size:.72rem;line-height:1.45;cursor:pointer}
+.age-check input{margin-top:3px;accent-color:var(--lime);flex:0 0 auto}
+.age-check strong{color:var(--text)}
+.accept:disabled{opacity:.42;cursor:not-allowed;filter:saturate(.5)}
+.rule-alert{padding:11px 12px;border-radius:14px;border:1px solid rgba(255,102,115,.22);background:rgba(255,102,115,.055);color:var(--text);font-size:.72rem;line-height:1.48}
+.photo-warning{margin-top:8px;padding:9px 11px;border-radius:12px;border:1px solid rgba(255,194,76,.20);background:rgba(255,194,76,.045);color:var(--muted);font-size:.62rem;line-height:1.45}
+@media(max-width:820px){.photo-control-wrap{min-width:0}.photo-count{font-size:.55rem}.btn-photo span{display:inline}}
+@media(max-width:430px){.photo-control-wrap{gap:4px}.photo-count{display:none}.btn-photo{padding:0 10px}.btn-photo span{font-size:.62rem}}
+
 </style>
 </head>
 <body>
@@ -334,7 +362,7 @@ body.light .profile-icon{color:var(--lime-3)}
       <svg class="sound-icon sound-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="M17 9.2a4 4 0 0 1 0 5.6M19.5 6.8a7.5 7.5 0 0 1 0 10.4"/></svg>
       <svg class="sound-icon sound-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="m17 9 5 6M22 9l-5 6"/></svg>
     </button>
-    <button class="profile-btn" id="openProfile"><span class="profile-icon" aria-hidden="true">●</span><span>Profil</span></button>
+    <button class="profile-btn" id="openProfile" aria-label="Otwórz profil" title="Profil"><svg class="profile-human" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7.5" r="3.2"></circle><path d="M5.5 20a6.5 6.5 0 0 1 13 0"></path></svg><span>Profil</span></button>
   </div>
 </header>
 
@@ -352,7 +380,12 @@ body.light .profile-icon{color:var(--lime-3)}
         <div class="chat-avatar"><img src="/czatuj24-logo.png" width="38" height="38" alt="" /></div>
         <div><strong id="chatTitle">Czat 1 na 1</strong><span id="chatSubtitle">Kliknij START, aby znaleźć partnera</span></div>
       </div>
-      <div class="connection-pill" id="connectionPill">OFFLINE</div>
+      <div class="chat-head-actions">
+        <button class="report-btn" id="reportBtn" disabled aria-label="Zgłoś partnera" title="Zgłoś partnera">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4v16"/><path d="M5 5c4-3 7 3 13 0v9c-6 3-9-3-13 0"/></svg>
+        </button>
+        <div class="connection-pill" id="connectionPill">OFFLINE</div>
+      </div>
     </div>
 
     <div class="messages" id="messages">
@@ -368,12 +401,19 @@ body.light .profile-icon{color:var(--lime-3)}
       <div class="text-wrap">
         <input id="msgInput" class="text-input" placeholder="Napisz wiadomość..." autocomplete="off" disabled />
       </div>
-      <input type="file" id="photoInput" accept="image/*" hidden />
-      <button id="photoBtn" class="btn btn-photo" disabled aria-label="Wyślij zdjęcie" title="Wyślij zdjęcie">▧</button>
+      <input type="file" id="photoInput" accept="image/jpeg,image/png,image/gif,image/webp,image/avif" hidden />
+      <div class="photo-control-wrap" title="Maksymalnie 3 zdjęcia na jedną rozmowę">
+        <button id="photoBtn" class="btn btn-photo" disabled aria-label="Wyślij zdjęcie" title="Wyślij zdjęcie">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5z"/><path d="m7 16 3.2-3.2 2.4 2.4 1.8-1.8L18 17"/><circle cx="15.5" cy="8.5" r="1.2"/></svg>
+          <span>Zdjęcie</span>
+        </button>
+        <span class="photo-count" id="photoCount">0/3</span>
+      </div>
       <button id="sendBtn" class="btn btn-send" disabled>Wyślij</button>
       <button id="startBtn" class="btn btn-start">Start</button>
       <button id="stopBtn" class="btn btn-stop" disabled>Stop</button>
     </div>
+    <div class="safety-note">Maks. 3 zdjęcia na sesję • nie wysyłaj nagości ani materiałów intymnych • zgłoś nadużycie ⚑</div>
   <div class="seo-support" aria-hidden="true">
       Czatuj24 to anonimowy czat 1 na 1 online. Rozpocznij rozmowę z losowym partnerem i korzystaj z komunikatora bez tworzenia historii rozmowy po zakończeniu sesji.
     </div>
@@ -384,6 +424,29 @@ body.light .profile-icon{color:var(--lime-3)}
     <div class="ad-slot" id="adRight2"><div class="ad-inner">Miejsce na reklamę<br>AD SLOT 04</div></div>
   </aside>
 </main>
+</div>
+
+<div class="report-modal" id="reportModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+  <div class="report-box">
+    <div class="report-top">
+      <div class="report-title">
+        <div class="report-mark" aria-hidden="true">⚑</div>
+        <div><h3 id="reportTitle">Zgłoś partnera</h3><p>Możesz zgłosić w trakcie rozmowy lub zaraz po jej zakończeniu.</p></div>
+      </div>
+      <button class="report-close" id="closeReport" aria-label="Zamknij">✕</button>
+    </div>
+    <div class="report-options">
+      <label class="report-option"><input type="radio" name="reportReason" value="spam" checked> Spam / reklamy</label>
+      <label class="report-option"><input type="radio" name="reportReason" value="wulgarny"> Wulgarny język / obrażanie</label>
+      <label class="report-option"><input type="radio" name="reportReason" value="erotyczne"> Treści erotyczne / nieodpowiednie seksualnie</label>
+      <label class="report-option"><input type="radio" name="reportReason" value="nękanie"> Nękanie / uporczywe zachowanie</label>
+      <label class="report-option"><input type="radio" name="reportReason" value="grozby"> Groźby / zastraszanie</label>
+      <label class="report-option"><input type="radio" name="reportReason" value="inne"> Inny problem</label>
+    </div>
+    <textarea id="reportDetails" class="report-details" maxlength="500" placeholder="Opcjonalnie opisz problem..."></textarea>
+    <div class="report-actions"><button class="btn" id="cancelReport">Anuluj</button><button class="btn report-submit" id="submitReport">Wyślij zgłoszenie</button></div>
+    <div class="report-note">Możesz zgłosić partnera w trakcie rozmowy albo po jej zakończeniu — do czasu rozpoczęcia nowej sesji. Nie zapisujemy treści całego czatu w zgłoszeniu.</div>
+  </div>
 </div>
 
 <div class="drawer-overlay" id="drawerOverlay"></div>
@@ -411,7 +474,7 @@ body.light .profile-icon{color:var(--lime-3)}
   <select id="profilePurpose"><option value="randka">Randka</option><option value="spotkanie">Spotkanie</option><option value="seks">Seks</option><option value="rozmowa">Rozmowa</option></select>
 
   <div class="range-row"><label for="profileAge">Wiek</label><strong><span id="ageValue">25</span> lat</strong></div>
-  <input type="range" id="profileAge" min="18" max="100" value="25" />
+  <input type="range" id="profileAge" min="15" max="100" value="25" />
 
   <label for="profileBio">Biogram (max 200 znaków)</label>
   <textarea id="profileBio" maxlength="200" placeholder="Krótki opis..."></textarea>
@@ -432,25 +495,37 @@ body.light .profile-icon{color:var(--lime-3)}
     <div class="consent-brand"><span class="consent-mini-logo">24</span><span>Czatuj24 • Zgoda</span></div>
     <h2>Polityka prywatności i regulamin</h2>
     <div class="consent-text">
-      <p><strong>Administrator danych:</strong> [Czatuj24].</p>
-      <h3>1. Zakres i cel przetwarzania danych</h3>
-      <p>Serwis Czatuj24 umożliwia anonimową komunikację pomiędzy użytkownikami w trybie czatu losowego. W ramach działania serwisu mogą być przetwarzane dane i informacje dobrowolnie udostępniane przez użytkowników (np. nickname, avatar, pliki multimedialne wysyłane do drugiego użytkownika). Administrator nie przechowuje treści konwersacji w bazie danych w standardowej konfiguracji — serwer działa jako pośrednik, a pliki wysłane do drugiego użytkownika mogą być tymczasowo przechowywane w katalogu <code>/uploads</code>.</p>
-      <h3>2. Podstawy prawne przetwarzania</h3>
-      <p>Przetwarzamy dane na podstawie art. 6 ust. 1 lit. a RODO — jeżeli użytkownik wyrazi zgodę; art. 6 ust. 1 lit. f RODO — prawnie uzasadniony interes administratora; oraz innych podstaw prawnych, gdy jest to wymagane.</p>
-      <h3>3. Zakres gromadzonych danych</h3>
-      <p>Możemy przetwarzać nickname, avatar, pliki przesłane w trakcie rozmowy oraz dane techniczne (adres IP, user-agent, timestamp) w celach bezpieczeństwa i diagnostyki.</p>
-      <h3>4. Cele przetwarzania</h3><p>Dane przetwarzane są w celu umożliwienia komunikacji, zapewnienia bezpieczeństwa, wykrywania nadużyć, realizacji zagregowanych/anonymizowanych statystyk oraz wypełnienia obowiązków prawnych.</p>
-      <h3>5. Okres przechowywania</h3><p>Pliki przesłane przez użytkowników są przechowywane w katalogu <code>/uploads</code> przez okres zależny od konfiguracji serwera. Logi techniczne przechowywane są przez okres niezbędny do bezpieczeństwa i obowiązków prawnych.</p>
-      <h3>6. Odbiorcy danych</h3><p>Dane nie są sprzedawane ani celowo udostępniane podmiotom trzecim z wyjątkiem dostawców infrastruktury oraz uprawnionych organów, jeżeli wymagają tego przepisy prawa.</p>
-      <h3>7. Prawa osób</h3><p>Masz prawo do dostępu, sprostowania, usunięcia danych w zakresie, w jakim administrator faktycznie je przechowuje, ograniczenia przetwarzania, przenoszenia danych, sprzeciwu oraz wniesienia skargi do PUODO.</p>
-      <h3>8. Cookies i lokalne przechowywanie</h3><p>Serwis może korzystać z cookies lub localStorage w celu ustawień i zgód. Mechanizmy analityczne/marketingowe wymagające zgody powinny być uruchamiane zgodnie z obowiązującymi zasadami.</p>
-      <h3>9. Bezpieczeństwo</h3><p>Administrator stosuje środki techniczne i organizacyjne adekwatne do ryzyka. Nie można całkowicie wykluczyć ryzyka związanego z przesyłaniem treści przez Internet.</p>
-      <h3>10. Reklama i analityka</h3><p>Administrator może prowadzić działania marketingowe i analityczne. Dane używane do takich analiz powinny być agregowane i anonimizowane, chyba że użytkownik wyrazi zgodę na inny sposób przetwarzania.</p>
-      <h3>11. Zmiany polityki</h3><p>Administrator może aktualizować niniejszą politykę. O ważnych zmianach użytkownik zostanie poinformowany w sposób adekwatny.</p>
-      <p><strong>Kontakt:</strong> [kontaktczatuj24@gmail.com]</p>
-      <p><em>Poprzez kliknięcie „Akceptuję” oświadczasz, że zapoznałeś się z powyższą Polityką Prywatności i Regulaminem oraz wyrażasz zgodę w zakresie wskazanym powyżej.</em></p>
+      <p><strong>Administrator danych:</strong> [Czatuj24]. Dane administratora i dane kontaktowe powinny zostać uzupełnione przed publicznym wdrożeniem.</p>
+      <div class="rule-alert"><strong>Wiek i bezpieczeństwo:</strong> z serwisu mogą korzystać wyłącznie osoby, które ukończyły 14 lat, czyli mają <strong>co najmniej 15 lat</strong>. Osoby poniżej 18 lat podlegają dodatkowej ochronie. Zabronione jest proponowanie, nakłanianie, proszenie lub wywieranie presji na osobę poniżej 18 lat w sprawie wysyłania, odbierania albo udostępniania nagich lub intymnych zdjęć.</div>
+      <h3>1. Charakter serwisu</h3>
+      <p>Czatuj24 umożliwia losowe rozmowy 1 na 1. Rozmowa nie jest publicznym profilem społecznościowym. Użytkownik odpowiada za treści, które wysyła drugiej osobie, i zobowiązuje się przestrzegać prawa oraz regulaminu.</p>
+      <h3>2. Minimalny wiek</h3>
+      <p>Serwis jest przeznaczony dla osób w wieku <strong>15+</strong>. Nie wolno obchodzić ograniczenia wieku ani podawać fałszywego wieku w celu uzyskania dostępu do funkcji serwisu.</p>
+      <h3>3. Zabronione zachowania</h3>
+      <p>Zabronione są w szczególności: groźby, nękanie, uporczywe naruszanie granic, spam, oszustwa, podszywanie się, publikowanie treści seksualnych z udziałem osób niepełnoletnich, nakłanianie osób poniżej 18 lat do wysyłania lub wymiany nagich/intymnych zdjęć, a także inne treści lub działania niezgodne z prawem.</p>
+      <p>Wiadomości zawierające określone zakazane określenia związane z seksualizacją osób nieletnich mogą zostać automatycznie zablokowane. Zgłoszenia nadużyć mogą być analizowane w celach bezpieczeństwa.</p>
+      <h3>4. Prywatność i minimalizacja danych</h3>
+      <p>Profil zapisuje się lokalnie w przeglądarce. W standardowym trybie serwer przekazuje wiadomości do aktualnego partnera i nie tworzy historii rozmowy w interfejsie po zakończeniu sesji. Pliki zdjęciowe mogą być technicznie przechowywane w katalogu <code>/uploads</code> zgodnie z konfiguracją serwera.</p>
+      <h3>5. Zgłoszenia i bezpieczeństwo</h3>
+      <p>Użytkownik może zgłosić partnera w trakcie rozmowy lub bezpośrednio po jej zakończeniu. Zgłoszenie może zawierać kategorię i krótki opis problemu. Dane zgłoszeń są wykorzystywane do obsługi bezpieczeństwa i mogą być przechowywane w systemie administracyjnym.</p>
+      <h3>6. Zdjęcia</h3>
+      <p>W jednej sesji można wysłać maksymalnie <strong>3 zdjęcia</strong>. Nie wysyłaj nagości ani intymnych materiałów. Serwis nie gwarantuje automatycznego wykrycia każdego nieodpowiedniego obrazu; mechanizmy moderacji mogą być rozwijane niezależnie od limitu wysyłania.</p>
+      <h3>7. Dane techniczne</h3>
+      <p>W zależności od konfiguracji infrastruktury mogą być przetwarzane dane techniczne, takie jak adres IP, identyfikator połączenia, user-agent i znaczniki czasu, w szczególności dla bezpieczeństwa, diagnostyki i przeciwdziałania nadużyciom.</p>
+      <h3>8. Okres przechowywania</h3>
+      <p>Okres przechowywania zależy od rodzaju danych i konfiguracji serwera. Pliki w <code>/uploads</code>, logi techniczne i zgłoszenia powinny być usuwane zgodnie z przyjętą polityką retencji.</p>
+      <h3>9. Odbiorcy danych</h3>
+      <p>Dane nie powinny być sprzedawane. Mogą być przetwarzane przez dostawców infrastruktury i usług technicznych niezbędnych do działania serwisu oraz udostępniane uprawnionym podmiotom, gdy wymagają tego przepisy prawa.</p>
+      <h3>10. Prawa użytkownika</h3>
+      <p>W zakresie przewidzianym przez przepisy możesz żądać dostępu do danych, ich sprostowania, usunięcia, ograniczenia przetwarzania, przeniesienia danych lub wnieść sprzeciw. Możesz także skontaktować się z właściwym organem ochrony danych.</p>
+      <h3>11. Cookies i localStorage</h3>
+      <p>Serwis może używać localStorage do zapamiętywania ustawień, zgody, motywu, dźwięku i profilu. Jeżeli w przyszłości zostaną dodane narzędzia analityczne lub reklamowe wymagające zgody, powinny zostać uruchomione zgodnie z obowiązującymi zasadami.</p>
+      <h3>12. Kontakt i zmiany</h3>
+      <p><strong>Kontakt:</strong> [kontaktczatuj24@gmail.com]. Polityka i regulamin mogą być aktualizowane; przed publikacją należy uzupełnić prawdziwe dane administratora i dostosować dokument do faktycznej konfiguracji hostingu, logów, reklam i retencji danych.</p>
+      <p><em>Ten tekst jest warstwą informacyjną w aplikacji i nie zastępuje indywidualnej konsultacji prawnej.</em></p>
     </div>
-    <div class="consent-actions"><button id="declineBtn" class="consent-btn decline">Odrzucam</button><button id="acceptBtn" class="consent-btn accept">Akceptuję i kontynuuję</button></div>
+    <label class="age-check"><input type="checkbox" id="ageConfirm" /> <span><strong>Mam ukończone 14 lat (mam co najmniej 15 lat)</strong> i zobowiązuję się przestrzegać zasad bezpieczeństwa, w szczególności zakazu nakłaniania osób poniżej 18 lat do wysyłania zdjęć intymnych.</span></label>
+    <div class="consent-actions"><button id="declineBtn" class="consent-btn decline">Odrzucam</button><button id="acceptBtn" class="consent-btn accept" disabled>Akceptuję i kontynuuję</button></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -466,6 +541,7 @@ const emptyState = $('emptyState');
 const msgInput = $('msgInput');
 const photoInput = $('photoInput');
 const photoBtn = $('photoBtn');
+const photoCountEl = $('photoCount');
 const sendBtn = $('sendBtn');
 const startBtn = $('startBtn');
 const stopBtn = $('stopBtn');
@@ -474,6 +550,10 @@ const toggleTheme = $('toggleTheme');
 const statusInfo = $('statusInfo');
 const onlineCount = $('onlineCount');
 const connectionPill = $('connectionPill');
+const reportBtn = $('reportBtn');
+const reportModal = $('reportModal');
+const reportDetails = $('reportDetails');
+const submitReportBtn = $('submitReport');
 const chatSubtitle = $('chatSubtitle');
 const profilePanel = $('profilePanel');
 const drawerOverlay = $('drawerOverlay');
@@ -485,6 +565,9 @@ let chatState = 'idle';
 let muted = false;
 let busyUploading = false;
 let toastTimer = null;
+let reportSent = false;
+let canReportLastSession = false;
+let photoCount = 0;
 
 const defaultAvatar = '/czatuj24-logo.png';
 
@@ -528,6 +611,24 @@ function showToast(text){
   $('toast').textContent = text;
   $('toast').classList.add('show');
   toastTimer = setTimeout(() => $('toast').classList.remove('show'), 2400);
+}
+
+function normalizeForModeration(text){
+  return String(text || '')
+    .normalize('NFKC')
+    .toLowerCase()
+    .replace(/[\u200B-\u200D\uFEFF]/g,'');
+}
+
+function containsBlockedTerm(text){
+  const normalized = normalizeForModeration(text);
+  // Blokada dokładnego zakazanego określenia oraz prostych prób rozdzielenia znaków.
+  return /(^|[^a-z0-9])k\s*1\s*4([^a-z0-9]|$)/iu.test(normalized);
+}
+
+function updatePhotoCounter(){
+  photoCountEl.textContent = `${photoCount}/3`;
+  photoCountEl.title = photoCount >= 3 ? 'Limit zdjęć w tej sesji został wykorzystany' : 'Maksymalnie 3 zdjęcia na jedną rozmowę';
 }
 
 function clearChat(){
@@ -590,9 +691,12 @@ function setChatState(nextState){
 
   msgInput.disabled = !isConnected;
   sendBtn.disabled = !isConnected || busyUploading;
-  photoBtn.disabled = !isConnected || busyUploading;
+  photoBtn.disabled = !isConnected || busyUploading || photoCount >= 3;
   stopBtn.disabled = !active;
   startBtn.disabled = active;
+  reportBtn.disabled = (!(isConnected || canReportLastSession)) || reportSent;
+  reportBtn.title = isConnected ? 'Zgłoś partnera' : (canReportLastSession ? 'Zgłoś ostatniego partnera' : 'Zgłoszenie dostępne podczas rozmowy');
+  reportBtn.setAttribute('aria-label', reportBtn.title);
   startBtn.classList.toggle('searching', isSearching);
 
   connectionPill.className = 'connection-pill';
@@ -667,6 +771,16 @@ const ageSlider=$('profileAge'), ageValue=$('ageValue');
 ageSlider.addEventListener('input',()=>ageValue.textContent=ageSlider.value);
 const bioTextarea=$('profileBio'), bioCount=$('bioCount');
 bioTextarea.addEventListener('input',()=>bioCount.textContent=bioTextarea.value.length);
+const profilePurpose = $('profilePurpose');
+function updatePurposeSafety(){
+  const under18 = Number(ageSlider.value) < 18;
+  const sexOption = profilePurpose.querySelector('option[value="seks"]');
+  if(sexOption){
+    sexOption.disabled = under18;
+    if(under18 && profilePurpose.value === 'seks') profilePurpose.value = 'rozmowa';
+  }
+}
+ageSlider.addEventListener('input',updatePurposeSafety);
 $('profileNick').addEventListener('input',()=>{ profilePreviewName.textContent = $('profileNick').value.trim() || 'Twój profil'; });
 
 function saveProfile(){
@@ -697,6 +811,7 @@ function loadProfile(){
     ageValue.textContent=ageSlider.value;
     bioCount.textContent=bioTextarea.value.length;
     profilePreviewName.textContent=data.nick || 'Twój profil';
+    updatePurposeSafety();
   }catch(e){ console.warn('Nie udało się wczytać profilu.',e); }
 }
 
@@ -714,12 +829,15 @@ $('resetProfile').addEventListener('click',()=>{
   ageSlider.value=25; ageValue.textContent='25';
   bioTextarea.value=''; bioCount.textContent='0';
   $('profileStatus').value='dostepny';
+  updatePurposeSafety();
   localStorage.removeItem('czatuj24_profile');
   profilePreviewName.textContent='Twój profil';
   showToast('Profil przywrócony');
 });
 
+updatePhotoCounter();
 loadProfile();
+updatePurposeSafety();
 
 function enableControlsAfterConsent(){
   startBtn.disabled=false;
@@ -736,24 +854,83 @@ function disableControlsBeforeConsent(){
   consentOverlay.setAttribute('aria-hidden','false');
 }
 
-if(localStorage.getItem('czatuj24_consent') === 'true') enableControlsAfterConsent();
+const ageConfirm = $('ageConfirm');
+const acceptBtn = $('acceptBtn');
+ageConfirm.addEventListener('change',()=>{ acceptBtn.disabled = !ageConfirm.checked; });
+
+if(localStorage.getItem('czatuj24_consent_v3') === 'true') enableControlsAfterConsent();
 else disableControlsBeforeConsent();
 
 $('acceptBtn').addEventListener('click',()=>{
-  localStorage.setItem('czatuj24_consent','true');
+  if(!ageConfirm.checked){ showToast('Potwierdź, że masz co najmniej 15 lat.'); return; }
+  localStorage.setItem('czatuj24_consent_v3','true');
   enableControlsAfterConsent();
 });
 
 $('declineBtn').addEventListener('click',()=>{ window.location.href='about:blank'; });
 
+function openReport(){
+  if((chatState !== 'connected' && !canReportLastSession) || reportSent) return;
+  reportModal.classList.add('open');
+  reportModal.setAttribute('aria-hidden','false');
+  reportDetails.value='';
+}
+
+function closeReport(){
+  reportModal.classList.remove('open');
+  reportModal.setAttribute('aria-hidden','true');
+}
+
+reportBtn.addEventListener('click',openReport);
+$('closeReport').addEventListener('click',closeReport);
+$('cancelReport').addEventListener('click',closeReport);
+reportModal.addEventListener('click',e=>{ if(e.target===reportModal) closeReport(); });
+
+submitReportBtn.addEventListener('click',()=>{
+  if((chatState !== 'connected' && !canReportLastSession) || reportSent) return;
+  const reason = document.querySelector('input[name="reportReason"]:checked')?.value || 'inne';
+  const details = reportDetails.value.trim().slice(0,500);
+  submitReportBtn.disabled=true;
+  socket.emit('reportUser',{reason,details});
+});
+
+socket.on('reportAccepted',()=>{
+  reportSent=true;
+  canReportLastSession=false;
+  submitReportBtn.disabled=false;
+  closeReport();
+  setChatState(chatState);
+  showToast('Zgłoszenie zostało wysłane.');
+});
+
+socket.on('reportError',message=>{
+  submitReportBtn.disabled=false;
+  showToast(message || 'Nie udało się wysłać zgłoszenia.');
+});
+
+socket.on('messageBlocked',message=>{
+  showToast(message || 'Wiadomość została zablokowana.');
+});
+
+socket.on('photoLimitReached',message=>{
+  photoCount = 3;
+  updatePhotoCounter();
+  setChatState(chatState);
+  showToast(message || 'Limit 3 zdjęć na sesję został wykorzystany.');
+});
+
 function startChat(){
-  if(localStorage.getItem('czatuj24_consent') !== 'true'){
+  if(localStorage.getItem('czatuj24_consent_v3') !== 'true'){
     showToast('Najpierw zaakceptuj politykę prywatności.');
     return;
   }
   if(chatState !== 'idle') return;
   if(!socket.connected){ showToast('Brak połączenia z serwerem.'); return; }
   clearChat();
+  photoCount = 0;
+  updatePhotoCounter();
+  reportSent = false;
+  canReportLastSession = false;
   setChatState('searching');
   addSystemMsg('Szukam partnera...');
   socket.emit('startChat');
@@ -762,7 +939,11 @@ function startChat(){
 
 function stopChat(){
   if(chatState === 'idle') return;
+  closeReport();
+  canReportLastSession = true;
   socket.emit('stopChat');
+  photoCount = 0;
+  updatePhotoCounter();
   setChatState('idle');
   clearChat();
   playSound('stop');
@@ -778,6 +959,10 @@ function sendMsg(){
   if(chatState !== 'connected') return;
   const text=msgInput.value.trim();
   if(!text) return;
+  if(containsBlockedTerm(text)){
+    showToast('Ta wiadomość zawiera zakazane określenie i nie została wysłana.');
+    return;
+  }
   addMsg('self',text,avatarPreview.src);
   socket.emit('sendMessage',text);
   playSound('send');
@@ -787,7 +972,7 @@ function sendMsg(){
 
 sendBtn.addEventListener('click',()=>{
   if(msgInput.value.trim()) sendMsg();
-  else photoInput.click();
+  else showToast('Wpisz wiadomość albo użyj przycisku „Zdjęcie”.');
 });
 photoBtn.addEventListener('click',()=>photoInput.click());
 
@@ -799,6 +984,7 @@ async function sendPhoto(file){
   if(chatState !== 'connected') return;
   if(!file || !file.type.startsWith('image/')){ showToast('Wybierz plik graficzny.'); return; }
   if(file.size > 8*1024*1024){ showToast('Zdjęcie może mieć maksymalnie 8 MB.'); return; }
+  if(photoCount >= 3){ showToast('W tej rozmowie można wysłać maksymalnie 3 zdjęcia.'); return; }
   busyUploading=true;
   sendBtn.disabled=true; photoBtn.disabled=true;
   try{
@@ -811,9 +997,12 @@ async function sendPhoto(file){
     if(chatState !== 'connected') return;
     addPhotoMsg('self',data.url,avatarPreview.src);
     socket.emit('sendPhoto',data.url);
+    photoCount += 1;
+    updatePhotoCounter();
+    setChatState(chatState);
     playSound('send');
   }catch(err){ console.error(err); showToast('Nie udało się wysłać zdjęcia.'); }
-  finally{ busyUploading=false; sendBtn.disabled=chatState !== 'connected'; photoBtn.disabled=chatState !== 'connected'; }
+  finally{ busyUploading=false; sendBtn.disabled=chatState !== 'connected'; photoBtn.disabled=chatState !== 'connected' || photoCount >= 3; }
 }
 
 photoInput.addEventListener('change',e=>{ const file=e.target.files[0]; e.target.value=''; if(file) sendPhoto(file); });
@@ -830,6 +1019,10 @@ socket.on('connect',()=>{
 });
 
 socket.on('disconnect',()=>{
+  canReportLastSession=false;
+  photoCount=0;
+  updatePhotoCounter();
+  closeReport();
   setChatState('idle');
   clearChat();
   showToast('Połączenie z serwerem zostało utracone.');
@@ -837,6 +1030,10 @@ socket.on('disconnect',()=>{
 
 socket.on('partnerFound',()=>{
   if(chatState !== 'searching') return;
+  photoCount=0;
+  updatePhotoCounter();
+  reportSent=false;
+  canReportLastSession=false;
   setChatState('connected');
   clearChat();
   addSystemMsg('Połączono. Możesz pisać.');
@@ -844,6 +1041,10 @@ socket.on('partnerFound',()=>{
 });
 
 socket.on('partnerStopped',()=>{
+  canReportLastSession=true;
+  photoCount=0;
+  updatePhotoCounter();
+  closeReport();
   setChatState('idle');
   clearChat();
   showToast('Partner zakończył rozmowę.');
