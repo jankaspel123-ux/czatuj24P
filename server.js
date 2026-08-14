@@ -9,11 +9,17 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-// Frontend
+// ============================================================
+// FRONTEND
+// ============================================================
+
 const publicPath = __dirname;
 app.use(express.static(publicPath));
 
-// Uploady zdjęć
+// ============================================================
+// UPLOAD ZDJĘĆ
+// ============================================================
+
 const uploadFolder = path.join(__dirname, 'uploads');
 
 if (!fs.existsSync(uploadFolder)) {
@@ -28,27 +34,33 @@ const allowedMimeTypes = new Set([
   'image/avif'
 ]);
 
+const allowedExtensions = new Set([
+  '.jpg',
+  '.jpeg',
+  '.png',
+  '.gif',
+  '.webp',
+  '.avif'
+]);
+
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: (_req, _file, cb) => {
     cb(null, uploadFolder);
   },
 
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname || '').toLowerCase();
+  filename: (_req, file, cb) => {
+    const ext = path
+      .extname(file.originalname || '')
+      .toLowerCase();
 
-    const safeExt = [
-      '.jpg',
-      '.jpeg',
-      '.png',
-      '.gif',
-      '.webp',
-      '.avif'
-    ].includes(ext)
+    const safeExt = allowedExtensions.has(ext)
       ? ext
       : '.bin';
 
     const uniqueName =
-      `${Date.now()}-${Math.random().toString(36).slice(2, 10)}${safeExt}`;
+      `${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2, 10)}${safeExt}`;
 
     cb(null, uniqueName);
   }
@@ -61,10 +73,12 @@ const upload = multer({
     fileSize: 8 * 1024 * 1024
   },
 
-  fileFilter: (req, file, cb) => {
+  fileFilter: (_req, file, cb) => {
     if (!allowedMimeTypes.has(file.mimetype)) {
       return cb(
-        new Error('Dozwolone są wyłącznie pliki graficzne.')
+        new Error(
+          'Dozwolone są wyłącznie pliki graficzne.'
+        )
       );
     }
 
@@ -73,7 +87,7 @@ const upload = multer({
 });
 
 // ============================================================
-// SPRAWDZENIE, CZY PLIK JEST PRAWDOPODOBNIE OBRAZEM
+// PODSTAWOWA WERYFIKACJA PLIKU OBRAZOWEGO
 // ============================================================
 
 function isLikelyImageFile(filePath, mime) {
@@ -109,15 +123,18 @@ function isLikelyImageFile(filePath, mime) {
     if (mime === 'image/webp') {
       return (
         b.length >= 12 &&
-        b.slice(0, 4).toString('ascii') === 'RIFF' &&
-        b.slice(8, 12).toString('ascii') === 'WEBP'
+        b.slice(0, 4).toString('ascii') ===
+          'RIFF' &&
+        b.slice(8, 12).toString('ascii') ===
+          'WEBP'
       );
     }
 
     if (mime === 'image/avif') {
       return (
         b.length >= 16 &&
-        b.slice(4, 12).toString('ascii') === 'ftyp' &&
+        b.slice(4, 12).toString('ascii') ===
+          'ftyp' &&
         /avif|avis/i.test(
           b.slice(8, 32).toString('ascii')
         )
@@ -135,48 +152,55 @@ function isLikelyImageFile(filePath, mime) {
 // ============================================================
 
 app.post('/upload', (req, res) => {
-  upload.single('photo')(req, res, err => {
-    if (err) {
-      return res.status(400).json({
-        error:
-          err.message ||
-          'Nieprawidłowy plik.'
-      });
-    }
+  upload.single('photo')(
+    req,
+    res,
+    err => {
+      if (err) {
+        return res.status(400).json({
+          error:
+            err.message ||
+            'Nieprawidłowy plik.'
+        });
+      }
 
-    if (!req.file) {
-      return res.status(400).json({
-        error: 'Brak pliku.'
-      });
-    }
+      if (!req.file) {
+        return res.status(400).json({
+          error: 'Brak pliku.'
+        });
+      }
 
-    if (
-      !isLikelyImageFile(
-        req.file.path,
-        req.file.mimetype
-      )
-    ) {
-      try {
-        fs.unlinkSync(req.file.path);
-      } catch {}
-
-      return res.status(400).json({
-        error:
-          'Plik nie wygląda na prawidłowy obraz.'
-      });
-    }
-
-    res.json({
-      url:
-        '/uploads/' +
-        encodeURIComponent(
-          req.file.filename
+      if (
+        !isLikelyImageFile(
+          req.file.path,
+          req.file.mimetype
         )
-    });
-  });
+      ) {
+        try {
+          fs.unlinkSync(req.file.path);
+        } catch {}
+
+        return res.status(400).json({
+          error:
+            'Plik nie wygląda na prawidłowy obraz.'
+        });
+      }
+
+      res.json({
+        url:
+          '/uploads/' +
+          encodeURIComponent(
+            req.file.filename
+          )
+      });
+    }
+  );
 });
 
-// Udostępnianie zdjęć
+// ============================================================
+// UDOSTĘPNIANIE UPLOADÓW
+// ============================================================
+
 app.use(
   '/uploads',
   express.static(uploadFolder, {
@@ -195,17 +219,13 @@ const pairs = Object.create(null);
 
 // Liczba zdjęć wysłanych przez użytkownika
 // w aktualnej rozmowie.
+//
+// WAŻNE:
+// Maksymalnie 1 zdjęcie na użytkownika na rozmowę.
 const photoCounts = new Map();
 
 // ============================================================
 // BLOKADA ZAKAZANEGO OKREŚLENIA
-// ============================================================
-//
-// Wykrywa również podstawowe warianty z odstępami,
-// np. "k 1 4".
-//
-// Blokada działa po stronie serwera, więc nie można
-// jej ominąć przez ręczne wysłanie eventu Socket.IO.
 // ============================================================
 
 const blockedTermRegex =
@@ -213,7 +233,8 @@ const blockedTermRegex =
 
 function containsBlockedTerm(text) {
   return blockedTermRegex.test(
-    String(text || '').normalize('NFKC')
+    String(text || '')
+      .normalize('NFKC')
   );
 }
 
@@ -222,35 +243,183 @@ function containsBlockedTerm(text) {
 // ============================================================
 
 const reportsFile =
-  path.join(__dirname, 'reports.json');
+  path.join(
+    __dirname,
+    'reports.json'
+  );
 
-// Użytkownicy, którzy już zgłosili partnera
-// w bieżącej sesji.
-const reportedThisSession = new Set();
+const reportedThisSession =
+  new Set();
 
-// Ostatni partner zostaje dostępny do zgłoszenia
-// do czasu rozpoczęcia nowej sesji.
-const lastPartnerForReport = new Map();
+const lastPartnerForReport =
+  new Map();
 
+const ALLOWED_REPORT_REASONS =
+  new Set([
+    'spam',
+    'wulgarny',
+    'erotyczne',
+    'nękanie',
+    'grozby',
+    'inne'
+  ]);
 
-// ------------------------------------------------------------
-// Zapis zgłoszenia
-// ------------------------------------------------------------
+// ============================================================
+// GRY
+// ============================================================
+
+const GAME_NAMES =
+  new Set([
+    'ab',
+    'guess',
+    'truth',
+    'speed',
+    'emoji',
+    'compat',
+    'ttt',
+    'draw',
+    'word'
+  ]);
+
+const MAX_GAME_INPUT = 500;
+
+const GAME_INVITE_TTL =
+  45 * 1000;
+
+// Maksymalna liczba fragmentów
+// rysowania na minutę od jednego socketu.
+const MAX_DRAW_STROKES_PER_MINUTE =
+  900;
+
+// Jeden aktywny system gry na parę.
+const gameBySocket =
+  new Map();
+
+// Oczekujące zaproszenia:
+//
+// recipientSocketId -> {
+//   from,
+//   game,
+//   expiresAt
+// }
+const pendingInvites =
+  new Map();
+
+// Ochrona rysowania przed spamem.
+const drawRate =
+  new Map();
+
+// ============================================================
+// BAZA EMOJI
+// ============================================================
+
+const EMOJI_PUZZLES = [
+  ['🦁 👑', 'król lew'],
+  ['🧙 💍 🌋', 'władca pierścieni'],
+  ['🚢 ❄️ ❤️', 'titanic'],
+  ['🕷️ 🦸', 'spiderman'],
+  ['🧊 👑', 'kraina lodu'],
+  ['🦖 🏝️', 'jurassic park'],
+  ['🧜‍♀️ 🌊', 'mała syrenka'],
+  ['🦇 🌃', 'batman'],
+  ['🐼 🥋', 'kung fu panda'],
+  ['🐠 🔎', 'gdzie jest nemo'],
+  ['🧞‍♂️ 🪔', 'aladyn'],
+  ['🧙 🏰', 'harry potter'],
+  ['🦈 🌊', 'szczęki'],
+  ['🤖 🚗', 'transformers'],
+  ['🚀 🌌', 'kosmos'],
+  ['👽 🚲', 'e.t.'],
+  ['🎸 🌟', 'gwiazda rocka'],
+  ['🕵️ 🔍', 'detektyw'],
+  ['🧛 🏰', 'drakula'],
+  ['🐀 👨‍🍳', 'ratatouille'],
+  ['🦍 🏙️', 'king kong'],
+  ['👻 🏨', 'hotel duchów'],
+  ['🐉 🏰', 'smok'],
+  ['🚗 💨', 'szybcy i wściekli']
+];
+
+const WORD_START = 'DOM';
+
+// ============================================================
+// POMOCNICZE
+// ============================================================
+
+function safeString(
+  value,
+  max = MAX_GAME_INPUT
+) {
+  return String(
+    value == null ? '' : value
+  )
+    .normalize('NFKC')
+    .trim()
+    .slice(0, max);
+}
+
+function isConnected(socketId) {
+  return io.sockets.sockets.has(
+    socketId
+  );
+}
+
+function getPartner(socketId) {
+  const partnerId =
+    pairs[socketId];
+
+  if (
+    !partnerId ||
+    !isConnected(partnerId)
+  ) {
+    return null;
+  }
+
+  return partnerId;
+}
+
+function emitOnlineCount() {
+  io.emit(
+    'onlineCount',
+    io.engine.clientsCount
+  );
+}
+
+function removeFromWaiting(
+  socketId
+) {
+  waitingUsers =
+    waitingUsers.filter(
+      id => id !== socketId
+    );
+}
+
+// ============================================================
+// ZAPIS ZGŁOSZEŃ
+// ============================================================
 
 function saveReport(report) {
   let reports = [];
 
   try {
-    if (fs.existsSync(reportsFile)) {
-      const raw = fs.readFileSync(
-        reportsFile,
-        'utf8'
-      );
+    if (
+      fs.existsSync(
+        reportsFile
+      )
+    ) {
+      const raw =
+        fs.readFileSync(
+          reportsFile,
+          'utf8'
+        );
 
-      reports = JSON.parse(raw);
+      const parsed =
+        JSON.parse(raw);
 
-      if (!Array.isArray(reports)) {
-        reports = [];
+      if (
+        Array.isArray(parsed)
+      ) {
+        reports = parsed;
       }
     }
   } catch (err) {
@@ -258,8 +427,6 @@ function saveReport(report) {
       'Nie udało się odczytać reports.json:',
       err.message
     );
-
-    reports = [];
   }
 
   reports.push(report);
@@ -283,46 +450,1397 @@ function saveReport(report) {
 }
 
 // ============================================================
-// FUNKCJE POMOCNICZE
+// POMOCNICZE GRY
 // ============================================================
 
-function removeFromWaiting(socketId) {
-  waitingUsers =
-    waitingUsers.filter(
-      id => id !== socketId
-    );
-}
-
-
-function isConnected(socketId) {
-  return io.sockets.sockets.has(
-    socketId
+function gameFor(socketId) {
+  return (
+    gameBySocket.get(
+      socketId
+    ) || null
   );
 }
 
+function gamePartner(socketId) {
+  const game =
+    gameFor(socketId);
 
-function emitOnlineCount() {
-  io.emit(
-    'onlineCount',
-    io.engine.clientsCount
-  );
-}
-
-
-function getPartner(socketId) {
-  const partnerId =
-    pairs[socketId];
-
-  if (
-    !partnerId ||
-    !isConnected(partnerId)
-  ) {
+  if (!game) {
     return null;
   }
 
-  return partnerId;
+  return game.a === socketId
+    ? game.b
+    : game.a;
 }
 
+function emitGame(
+  game,
+  payload
+) {
+  if (!game) {
+    return;
+  }
+
+  for (
+    const id of [game.a, game.b]
+  ) {
+    if (
+      isConnected(id)
+    ) {
+      io.to(id).emit(
+        'game:state',
+        payload
+      );
+    }
+  }
+}
+
+function sendGameError(
+  socket,
+  message
+) {
+  socket.emit(
+    'game:error',
+    safeString(
+      message,
+      220
+    )
+  );
+}
+
+function clearGame(
+  game,
+  notify = true
+) {
+  if (!game) {
+    return;
+  }
+
+  gameBySocket.delete(
+    game.a
+  );
+
+  gameBySocket.delete(
+    game.b
+  );
+
+  if (notify) {
+    for (
+      const id of [game.a, game.b]
+    ) {
+      if (
+        isConnected(id)
+      ) {
+        io.to(id).emit(
+          'game:ended',
+          {
+            game: game.game,
+            reason:
+              'Gra zakończona.'
+          }
+        );
+      }
+    }
+  }
+}
+
+// ============================================================
+// TWORZENIE STANU GRY
+// ============================================================
+
+function createGameState(
+  gameName,
+  a,
+  b
+) {
+  const game = {
+    game: gameName,
+    a,
+    b,
+    createdAt: Date.now(),
+    round: 0
+  };
+
+  // ----------------------------------------------------------
+  // KÓŁKO I KRZYŻYK
+  // ----------------------------------------------------------
+
+  if (
+    gameName === 'ttt'
+  ) {
+    game.board =
+      Array(9).fill('');
+
+    game.turn = a;
+
+    game.symbol = {
+      [a]: 'X',
+      [b]: 'O'
+    };
+
+    game.active = true;
+  }
+
+  // ----------------------------------------------------------
+  // RYSOWANIE
+  // ----------------------------------------------------------
+
+  if (
+    gameName === 'draw'
+  ) {
+    game.active = true;
+    game.strokeCount = 0;
+    game.lastStrokeAt =
+      Date.now();
+  }
+
+  // ----------------------------------------------------------
+  // ŁAŃCUCH SŁÓW
+  // ----------------------------------------------------------
+
+  if (
+    gameName === 'word'
+  ) {
+    game.chain =
+      [WORD_START];
+
+    game.used =
+      new Set([
+        WORD_START
+          .toLocaleLowerCase(
+            'pl-PL'
+          )
+      ]);
+
+    game.turn = a;
+    game.active = true;
+  }
+
+  // ----------------------------------------------------------
+  // POZOSTAŁE GRY
+  // ----------------------------------------------------------
+
+  if (
+    [
+      'ab',
+      'guess',
+      'truth',
+      'speed',
+      'emoji',
+      'compat'
+    ].includes(gameName)
+  ) {
+    game.active = true;
+
+    game.answers =
+      new Map();
+
+    game.submissions =
+      new Map();
+
+    game.challenge =
+      null;
+  }
+
+  return game;
+}
+
+// ============================================================
+// KÓŁKO I KRZYŻYK
+// ============================================================
+
+function tttWinner(board) {
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+  ];
+
+  for (
+    const [
+      x,
+      y,
+      z
+    ] of lines
+  ) {
+    if (
+      board[x] &&
+      board[x] === board[y] &&
+      board[x] === board[z]
+    ) {
+      return board[x];
+    }
+  }
+
+  if (
+    board.every(Boolean)
+  ) {
+    return 'draw';
+  }
+
+  return null;
+}
+
+function handleTtt(
+  game,
+  socket,
+  data
+) {
+  const index =
+    Number(data?.index);
+
+  if (
+    !Number.isInteger(index) ||
+    index < 0 ||
+    index > 8
+  ) {
+    return sendGameError(
+      socket,
+      'Nieprawidłowe pole.'
+    );
+  }
+
+  if (
+    !game.active ||
+    game.turn !== socket.id ||
+    game.board[index]
+  ) {
+    return sendGameError(
+      socket,
+      'To nie jest teraz Twój ruch.'
+    );
+  }
+
+  game.board[index] =
+    game.symbol[socket.id];
+
+  const result =
+    tttWinner(
+      game.board
+    );
+
+  if (result) {
+    game.active = false;
+
+    const text =
+      result === 'draw'
+        ? 'Remis.'
+        : `Wygrywa ${result}.`;
+
+    emitGame(
+      game,
+      {
+        game: 'ttt',
+        board: game.board,
+        turn:
+          result === 'draw'
+            ? ''
+            : result,
+        active: false,
+        status:
+          'Koniec gry',
+        result: text
+      }
+    );
+
+    return;
+  }
+
+  game.turn =
+    game.turn === game.a
+      ? game.b
+      : game.a;
+
+  emitGame(
+    game,
+    {
+      game: 'ttt',
+      board: game.board,
+      turn:
+        game.symbol[
+          game.turn
+        ],
+      active: true,
+      status:
+        game.turn === socket.id
+          ? 'Twój ruch'
+          : 'Ruch partnera',
+      result: ''
+    }
+  );
+}
+
+// ============================================================
+// RYSOWANIE
+// ============================================================
+
+function handleDraw(
+  game,
+  socket,
+  data
+) {
+  if (!game.active) {
+    return;
+  }
+
+  const now =
+    Date.now();
+
+  let rate =
+    drawRate.get(
+      socket.id
+    );
+
+  if (
+    !rate ||
+    now - rate.start >=
+      60 * 1000
+  ) {
+    rate = {
+      start: now,
+      count: 0
+    };
+
+    drawRate.set(
+      socket.id,
+      rate
+    );
+  }
+
+  rate.count += 1;
+
+  if (
+    rate.count >
+    MAX_DRAW_STROKES_PER_MINUTE
+  ) {
+    return sendGameError(
+      socket,
+      'Rysujesz zbyt szybko.'
+    );
+  }
+
+  const action =
+    safeString(
+      data?.action,
+      20
+    );
+
+  if (
+    action === 'clear'
+  ) {
+    emitGame(
+      game,
+      {
+        game: 'draw',
+        action: 'clear'
+      }
+    );
+
+    return;
+  }
+
+  if (
+    action !== 'stroke'
+  ) {
+    return;
+  }
+
+  const from =
+    data?.from;
+
+  const to =
+    data?.to;
+
+  if (
+    ![
+      from?.x,
+      from?.y,
+      to?.x,
+      to?.y
+    ].every(
+      Number.isFinite
+    )
+  ) {
+    return;
+  }
+
+  const color =
+    /^#[0-9a-f]{3,8}$/i.test(
+      String(
+        data?.color || ''
+      )
+    )
+      ? String(
+          data.color
+        )
+      : '#111611';
+
+  const width =
+    Math.min(
+      20,
+      Math.max(
+        1,
+        Number(
+          data?.width
+        ) || 5
+      )
+    );
+
+  emitGame(
+    game,
+    {
+      game: 'draw',
+      action: 'stroke',
+
+      from: {
+        x: Math.min(
+          1,
+          Math.max(
+            0,
+            from.x
+          )
+        ),
+        y: Math.min(
+          1,
+          Math.max(
+            0,
+            from.y
+          )
+        )
+      },
+
+      to: {
+        x: Math.min(
+          1,
+          Math.max(
+            0,
+            to.x
+          )
+        ),
+        y: Math.min(
+          1,
+          Math.max(
+            0,
+            to.y
+          )
+        )
+      },
+
+      color,
+      width
+    }
+  );
+}
+
+// ============================================================
+// ŁAŃCUCH SŁÓW
+// ============================================================
+
+function normalizeWord(
+  word
+) {
+  return safeString(
+    word,
+    40
+  )
+    .toLocaleLowerCase(
+      'pl-PL'
+    )
+    .replace(
+      /[^a-ząćęłńóśźż]/g,
+      ''
+    );
+}
+
+function handleWord(
+  game,
+  socket,
+  data
+) {
+  if (
+    !game.active ||
+    game.turn !== socket.id
+  ) {
+    return sendGameError(
+      socket,
+      'Teraz ruch ma partner.'
+    );
+  }
+
+  const word =
+    normalizeWord(
+      data?.word
+    );
+
+  if (
+    word.length < 2 ||
+    word.length > 40
+  ) {
+    return sendGameError(
+      socket,
+      'Nieprawidłowe słowo.'
+    );
+  }
+
+  const last =
+    game.chain[
+      game.chain.length - 1
+    ];
+
+  const needed =
+    last
+      .slice(-1)
+      .toLocaleLowerCase(
+        'pl-PL'
+      );
+
+  if (
+    word[0] !== needed
+  ) {
+    return sendGameError(
+      socket,
+      `Słowo musi zaczynać się na ${needed.toUpperCase()}.`
+    );
+  }
+
+  if (
+    game.used.has(word)
+  ) {
+    return sendGameError(
+      socket,
+      'To słowo już było.'
+    );
+  }
+
+  game.used.add(
+    word
+  );
+
+  game.chain.push(
+    word
+  );
+
+  game.turn =
+    game.turn === game.a
+      ? game.b
+      : game.a;
+
+  if (
+    game.chain.length > 100
+  ) {
+    game.chain =
+      game.chain.slice(
+        -80
+      );
+  }
+
+  emitGame(
+    game,
+    {
+      game: 'word',
+      chain: game.chain,
+      turn: game.turn,
+      active: true,
+      status:
+        game.turn === socket.id
+          ? 'Twój ruch'
+          : 'Ruch partnera'
+    }
+  );
+}
+
+// ============================================================
+// GRY RUNDOWE
+// ============================================================
+
+function handleRoundChoice(
+  game,
+  socket,
+  data
+) {
+  const action =
+    safeString(
+      data?.action,
+      30
+    );
+
+  const round =
+    Number.isInteger(
+      Number(data?.round)
+    )
+      ? Number(
+          data.round
+        )
+      : game.round;
+
+  // ----------------------------------------------------------
+  // A/B
+  // ZGADNIJ MNIE
+  // ZGODNOŚĆ
+  // ----------------------------------------------------------
+
+  if (
+    game.game === 'ab' ||
+    game.game === 'compat' ||
+    game.game === 'guess'
+  ) {
+    const choice =
+      Number(
+        data?.choice
+      );
+
+    if (
+      !Number.isInteger(
+        choice
+      ) ||
+      choice < 0 ||
+      choice > 1
+    ) {
+      return sendGameError(
+        socket,
+        'Nieprawidłowy wybór.'
+      );
+    }
+
+    const key =
+      `${socket.id}:${round}`;
+
+    game.answers.set(
+      key,
+      choice
+    );
+
+    const other =
+      gamePartner(
+        socket.id
+      );
+
+    const otherKey =
+      `${other}:${round}`;
+
+    const ready =
+      game.answers.has(
+        otherKey
+      );
+
+    emitGame(
+      game,
+      {
+        game:
+          game.game,
+        action:
+          'choice',
+        round,
+        player:
+          socket.id,
+        choice,
+        ready
+      }
+    );
+
+    if (ready) {
+      const mine =
+        game.answers.get(
+          key
+        );
+
+      const theirs =
+        game.answers.get(
+          otherKey
+        );
+
+      let result = '';
+
+      if (
+        game.game === 'ab' ||
+        game.game === 'compat'
+      ) {
+        result =
+          mine === theirs
+            ? 'Macie taki sam wybór.'
+            : 'Macie różne wybory.';
+      }
+
+      if (
+        game.game === 'guess'
+      ) {
+        result =
+          mine === theirs
+            ? 'Trafione — partner wybrał tak samo.'
+            : 'Nie tym razem — partner wybrał inaczej.';
+      }
+
+      game.round =
+        round + 1;
+
+      emitGame(
+        game,
+        {
+          game:
+            game.game,
+          action:
+            'roundResult',
+          round,
+          mine,
+          theirs,
+          result,
+          nextRound:
+            game.round,
+          active: true
+        }
+      );
+    }
+
+    return;
+  }
+
+  // ----------------------------------------------------------
+  // EMOJI
+  // ----------------------------------------------------------
+
+  if (
+    game.game === 'emoji'
+  ) {
+    const index =
+      Math.max(
+        0,
+        Math.min(
+          EMOJI_PUZZLES.length - 1,
+          Number(
+            data?.index
+          ) || 0
+        )
+      );
+
+    const answer =
+      safeString(
+        data?.answer,
+        100
+      )
+        .toLocaleLowerCase(
+          'pl-PL'
+        );
+
+    const correct =
+      answer ===
+      EMOJI_PUZZLES[
+        index
+      ][1]
+        .toLocaleLowerCase(
+          'pl-PL'
+        );
+
+    emitGame(
+      game,
+      {
+        game: 'emoji',
+        action: 'result',
+        index,
+        correct,
+        answer: correct
+          ? EMOJI_PUZZLES[
+              index
+            ][1]
+          : null,
+        player:
+          socket.id
+      }
+    );
+
+    return;
+  }
+
+  // ----------------------------------------------------------
+  // 60 SEKUND
+  // ----------------------------------------------------------
+
+  if (
+    game.game === 'speed'
+  ) {
+    if (
+      action !== 'propose'
+    ) {
+      return sendGameError(
+        socket,
+        'Nieprawidłowa akcja.'
+      );
+    }
+
+    const challenge =
+      safeString(
+        data?.challenge,
+        180
+      );
+
+    if (!challenge) {
+      return sendGameError(
+        socket,
+        'Brak wyzwania.'
+      );
+    }
+
+    game.challenge = {
+      text: challenge,
+      from:
+        socket.id,
+      at:
+        Date.now()
+    };
+
+    emitGame(
+      game,
+      {
+        game: 'speed',
+        action:
+          'challenge',
+        challenge,
+        from:
+          socket.id,
+        seconds: 60,
+        active: true
+      }
+    );
+
+    return;
+  }
+
+  // ----------------------------------------------------------
+  // 2 PRAWDY / 1 KŁAMSTWO
+  // ----------------------------------------------------------
+
+  if (
+    game.game === 'truth'
+  ) {
+    if (
+      action !== 'send'
+    ) {
+      return sendGameError(
+        socket,
+        'Nieprawidłowa akcja.'
+      );
+    }
+
+    const items =
+      Array.isArray(
+        data?.items
+      )
+        ? data.items
+            .slice(0, 3)
+            .map(
+              item =>
+                safeString(
+                  item,
+                  180
+                )
+            )
+        : [];
+
+    const lie =
+      Number(
+        data?.lie
+      );
+
+    if (
+      items.length !== 3 ||
+      items.some(
+        x => !x
+      ) ||
+      !Number.isInteger(
+        lie
+      ) ||
+      lie < 0 ||
+      lie > 2
+    ) {
+      return sendGameError(
+        socket,
+        'Potrzebne są trzy zdania i wskazanie kłamstwa.'
+      );
+    }
+
+    game.submissions.set(
+      socket.id,
+      {
+        items,
+        lie,
+        round
+      }
+    );
+
+    const other =
+      gamePartner(
+        socket.id
+      );
+
+    if (
+      !game.submissions.has(
+        other
+      )
+    ) {
+      emitGame(
+        game,
+        {
+          game: 'truth',
+          action:
+            'submitted',
+          round,
+          player:
+            socket.id,
+          waiting: true
+        }
+      );
+
+      return;
+    }
+
+    const otherData =
+      game.submissions.get(
+        other
+      );
+
+    emitGame(
+      game,
+      {
+        game: 'truth',
+        action:
+          'reveal',
+        round,
+        submissions: [
+          game.submissions.get(
+            socket.id
+          ),
+          otherData
+        ],
+        active: true
+      }
+    );
+
+    game.submissions.clear();
+
+    game.round =
+      round + 1;
+  }
+}
+
+// ============================================================
+// OBSŁUGA game:action
+// ============================================================
+
+function handleGameAction(
+  socket,
+  data
+) {
+  const game =
+    gameFor(
+      socket.id
+    );
+
+  if (!game) {
+    return sendGameError(
+      socket,
+      'Nie masz aktywnej gry.'
+    );
+  }
+
+  const partnerId =
+    gamePartner(
+      socket.id
+    );
+
+  if (
+    !partnerId ||
+    getPartner(
+      socket.id
+    ) !== partnerId
+  ) {
+    clearGame(
+      game,
+      false
+    );
+
+    return sendGameError(
+      socket,
+      'Połączenie z partnerem zostało zakończone.'
+    );
+  }
+
+  const requestedGame =
+    safeString(
+      data?.game,
+      30
+    );
+
+  if (
+    requestedGame !==
+    game.game
+  ) {
+    return sendGameError(
+      socket,
+      'Ta akcja dotyczy innej gry.'
+    );
+  }
+
+  if (
+    game.game === 'ttt'
+  ) {
+    return handleTtt(
+      game,
+      socket,
+      data
+    );
+  }
+
+  if (
+    game.game === 'draw'
+  ) {
+    return handleDraw(
+      game,
+      socket,
+      data
+    );
+  }
+
+  if (
+    game.game === 'word'
+  ) {
+    return handleWord(
+      game,
+      socket,
+      data
+    );
+  }
+
+  return handleRoundChoice(
+    game,
+    socket,
+    data
+  );
+}
+
+// ============================================================
+// ZAPROSZENIA DO GIER
+// ============================================================
+
+function handleGameInvite(
+  socket,
+  data
+) {
+  const partnerId =
+    getPartner(
+      socket.id
+    );
+
+  const game =
+    safeString(
+      data?.game,
+      30
+    );
+
+  if (!partnerId) {
+    return sendGameError(
+      socket,
+      'Najpierw połącz się z partnerem.'
+    );
+  }
+
+  if (
+    !GAME_NAMES.has(
+      game
+    )
+  ) {
+    return sendGameError(
+      socket,
+      'Nieznana gra.'
+    );
+  }
+
+  if (
+    gameFor(
+      socket.id
+    ) ||
+    gameFor(
+      partnerId
+    )
+  ) {
+    return sendGameError(
+      socket,
+      'W tej rozmowie jest już aktywna gra.'
+    );
+  }
+
+  const existing =
+    pendingInvites.get(
+      partnerId
+    );
+
+  if (
+    existing &&
+    existing.expiresAt >
+      Date.now()
+  ) {
+    return sendGameError(
+      socket,
+      'Partner ma już oczekujące zaproszenie.'
+    );
+  }
+
+  const expiresAt =
+    Date.now() +
+    GAME_INVITE_TTL;
+
+  pendingInvites.set(
+    partnerId,
+    {
+      from:
+        socket.id,
+      game,
+      expiresAt
+    }
+  );
+
+  io.to(
+    partnerId
+  ).emit(
+    'game:invite',
+    {
+      game,
+      from:
+        socket.id,
+      expiresAt
+    }
+  );
+}
+
+// ============================================================
+// ODPOWIEDŹ NA ZAPROSZENIE
+// ============================================================
+
+function handleGameInviteResponse(
+  socket,
+  data
+) {
+  const invite =
+    pendingInvites.get(
+      socket.id
+    );
+
+  const game =
+    safeString(
+      data?.game,
+      30
+    );
+
+  const accepted =
+    data?.accepted === true;
+
+  if (
+    !invite ||
+    invite.expiresAt <
+      Date.now() ||
+    invite.game !== game ||
+    !isConnected(
+      invite.from
+    )
+  ) {
+    pendingInvites.delete(
+      socket.id
+    );
+
+    return sendGameError(
+      socket,
+      'Zaproszenie wygasło lub jest nieaktualne.'
+    );
+  }
+
+  pendingInvites.delete(
+    socket.id
+  );
+
+  const inviter =
+    invite.from;
+
+  // ----------------------------------------------------------
+  // ODRZUCENIE
+  // ----------------------------------------------------------
+
+  if (!accepted) {
+    io.to(
+      inviter
+    ).emit(
+      'game:inviteResponse',
+      {
+        game,
+        accepted: false
+      }
+    );
+
+    return;
+  }
+
+  // ----------------------------------------------------------
+  // WALIDACJA POŁĄCZENIA
+  // ----------------------------------------------------------
+
+  if (
+    getPartner(
+      socket.id
+    ) !== inviter ||
+    gameFor(
+      socket.id
+    ) ||
+    gameFor(
+      inviter
+    )
+  ) {
+    io.to(
+      inviter
+    ).emit(
+      'game:inviteResponse',
+      {
+        game,
+        accepted: false,
+        reason:
+          'Gra nie może zostać rozpoczęta.'
+      }
+    );
+
+    return sendGameError(
+      socket,
+      'Gra nie może zostać rozpoczęta.'
+    );
+  }
+
+  // ----------------------------------------------------------
+  // UTWORZENIE GRY
+  // ----------------------------------------------------------
+
+  const gameState =
+    createGameState(
+      game,
+      inviter,
+      socket.id
+    );
+
+  gameBySocket.set(
+    inviter,
+    gameState
+  );
+
+  gameBySocket.set(
+    socket.id,
+    gameState
+  );
+
+  io.to(
+    inviter
+  ).emit(
+    'game:inviteResponse',
+    {
+      game,
+      accepted: true
+    }
+  );
+
+  io.to(
+    socket.id
+  ).emit(
+    'game:inviteResponse',
+    {
+      game,
+      accepted: true
+    }
+  );
+
+  emitInitialGameState(
+    gameState
+  );
+}
+
+// ============================================================
+// POCZĄTKOWY STAN GRY
+// ============================================================
+
+function emitInitialGameState(
+  game
+) {
+  if (
+    game.game === 'ttt'
+  ) {
+    emitGame(
+      game,
+      {
+        game: 'ttt',
+        board:
+          game.board,
+        turn:
+          game.turn ===
+          game.a
+            ? 'X'
+            : 'O',
+        active: true,
+        status:
+          'Gra rozpoczęta',
+        result: ''
+      }
+    );
+
+    return;
+  }
+
+  if (
+    game.game === 'word'
+  ) {
+    emitGame(
+      game,
+      {
+        game: 'word',
+        chain:
+          game.chain,
+        turn:
+          game.turn,
+        active: true,
+        status:
+          'Gra rozpoczęta'
+      }
+    );
+
+    return;
+  }
+
+  if (
+    game.game === 'draw'
+  ) {
+    emitGame(
+      game,
+      {
+        game: 'draw',
+        action: 'clear',
+        active: true
+      }
+    );
+
+    return;
+  }
+
+  emitGame(
+    game,
+    {
+      game:
+        game.game,
+      action:
+        'start',
+      round: 0,
+      active: true,
+      status:
+        'Gra rozpoczęta'
+    }
+  );
+}
 
 // ============================================================
 // ROZBIJANIE PARY
@@ -335,16 +1853,16 @@ function breakPair(
   const partnerId =
     pairs[socketId];
 
-  removeFromWaiting(socketId);
+  removeFromWaiting(
+    socketId
+  );
 
   if (!partnerId) {
     return;
   }
 
-  // Zachowujemy ostatniego partnera,
-  // żeby można było zgłosić go chwilę
-  // po zakończeniu rozmowy.
-
+  // Partner dostępny do zgłoszenia
+  // jeszcze po zakończeniu rozmowy.
   lastPartnerForReport.set(
     socketId,
     partnerId
@@ -355,20 +1873,56 @@ function breakPair(
     socketId
   );
 
-  delete pairs[socketId];
-  delete pairs[partnerId];
+  // Zakończ grę.
+  const game =
+    gameFor(
+      socketId
+    );
 
-  // Reset limitu zdjęć dla obu stron.
-  photoCounts.delete(socketId);
-  photoCounts.delete(partnerId);
+  if (game) {
+    clearGame(
+      game,
+      false
+    );
+  }
 
-  removeFromWaiting(partnerId);
+  pendingInvites.delete(
+    socketId
+  );
+
+  pendingInvites.delete(
+    partnerId
+  );
+
+  delete pairs[
+    socketId
+  ];
+
+  delete pairs[
+    partnerId
+  ];
+
+  photoCounts.delete(
+    socketId
+  );
+
+  photoCounts.delete(
+    partnerId
+  );
+
+  removeFromWaiting(
+    partnerId
+  );
 
   if (
     notifyPartner &&
-    isConnected(partnerId)
+    isConnected(
+      partnerId
+    )
   ) {
-    io.to(partnerId).emit(
+    io.to(
+      partnerId
+    ).emit(
       'partnerStopped'
     );
   }
@@ -381,7 +1935,6 @@ function breakPair(
 io.on(
   'connection',
   socket => {
-
     console.log(
       'Nowe połączenie użytkownika:',
       socket.id
@@ -396,10 +1949,7 @@ io.on(
     socket.on(
       'startChat',
       () => {
-
-        // Nowa sesja zamyka możliwość
-        // zgłoszenia poprzedniego partnera.
-
+        // Nowy START oznacza nową sesję.
         lastPartnerForReport.delete(
           socket.id
         );
@@ -408,17 +1958,13 @@ io.on(
           socket.id
         );
 
-        photoCounts.set(
-          socket.id,
-          0
-        );
-
         // ----------------------------------------------------
-        // Jeden socket = jedna aktywna sesja
+        // OCHRONA PRZED PODWÓJNYM STARTEM
         // ----------------------------------------------------
 
-        if (pairs[socket.id]) {
-
+        if (
+          pairs[socket.id]
+        ) {
           console.log(
             `START zignorowany — ${socket.id} jest już połączony.`
           );
@@ -427,7 +1973,7 @@ io.on(
         }
 
         // ----------------------------------------------------
-        // Nie można wejść do kolejki drugi raz
+        // OCHRONA PRZED DRUGIM OCZEKIWANIEM
         // ----------------------------------------------------
 
         if (
@@ -435,7 +1981,6 @@ io.on(
             socket.id
           )
         ) {
-
           console.log(
             `START zignorowany — ${socket.id} już czeka.`
           );
@@ -443,37 +1988,46 @@ io.on(
           return;
         }
 
+        photoCounts.set(
+          socket.id,
+          0
+        );
+
         // ----------------------------------------------------
-        // Czyścimy martwe sockety z kolejki
+        // CZYSZCZENIE KOLEJKI
         // ----------------------------------------------------
 
         waitingUsers =
           waitingUsers.filter(
             id =>
               isConnected(id) &&
-              id !== socket.id
+              id !== socket.id &&
+              !pairs[id]
           );
 
         // ----------------------------------------------------
-        // Szukanie partnera
+        // SZUKANIE PARTNERA
         // ----------------------------------------------------
 
-        let partnerId = null;
+        let partnerId =
+          null;
 
         while (
           waitingUsers.length
         ) {
-
           const candidate =
             waitingUsers.shift();
 
           if (
             candidate !==
               socket.id &&
-            isConnected(candidate) &&
-            !pairs[candidate]
+            isConnected(
+              candidate
+            ) &&
+            !pairs[
+              candidate
+            ]
           ) {
-
             partnerId =
               candidate;
 
@@ -482,11 +2036,10 @@ io.on(
         }
 
         // ----------------------------------------------------
-        // Nie ma partnera
+        // BRAK PARTNERA
         // ----------------------------------------------------
 
         if (!partnerId) {
-
           waitingUsers.push(
             socket.id
           );
@@ -499,14 +2052,13 @@ io.on(
         }
 
         // ----------------------------------------------------
-        // Ochrona przed samoparowaniem
+        // OCHRONA PRZED SAMOPOŁĄCZENIEM
         // ----------------------------------------------------
 
         if (
           partnerId ===
           socket.id
         ) {
-
           waitingUsers.unshift(
             socket.id
           );
@@ -515,14 +2067,17 @@ io.on(
         }
 
         // ----------------------------------------------------
-        // Ochrona przed wyścigiem
+        // OCHRONA PRZED WYŚCIGIEM
         // ----------------------------------------------------
 
         if (
-          pairs[partnerId] ||
-          pairs[socket.id]
+          pairs[
+            partnerId
+          ] ||
+          pairs[
+            socket.id
+          ]
         ) {
-
           waitingUsers.push(
             socket.id
           );
@@ -531,17 +2086,18 @@ io.on(
         }
 
         // ----------------------------------------------------
-        // TWORZENIE PARY
+        // UTWORZENIE PARY
         // ----------------------------------------------------
 
-        pairs[socket.id] =
+        pairs[
+          socket.id
+        ] =
           partnerId;
 
-        pairs[partnerId] =
+        pairs[
+          partnerId
+        ] =
           socket.id;
-
-        // Reset zdjęć na początku
-        // nowej rozmowy.
 
         photoCounts.set(
           socket.id,
@@ -553,10 +2109,6 @@ io.on(
           0
         );
 
-        // ----------------------------------------------------
-        // Informujemy obie strony
-        // ----------------------------------------------------
-
         io.to(
           socket.id
         ).emit(
@@ -569,12 +2121,13 @@ io.on(
           'partnerFound'
         );
 
+        emitOnlineCount();
+
         console.log(
           `Para utworzona: ${socket.id} <-> ${partnerId}`
         );
       }
     );
-
 
     // ========================================================
     // WIADOMOŚCI
@@ -583,7 +2136,6 @@ io.on(
     socket.on(
       'sendMessage',
       msg => {
-
         const partnerId =
           getPartner(
             socket.id
@@ -594,15 +2146,17 @@ io.on(
         }
 
         const rawText =
-          typeof msg === 'string'
+          typeof msg ===
+          'string'
             ? msg
             : (
                 msg &&
-                msg.type === 'text'
+                msg.type ===
+                  'text'
               )
               ? String(
                   msg.content ||
-                  ''
+                    ''
                 )
               : '';
 
@@ -613,7 +2167,7 @@ io.on(
         }
 
         // ----------------------------------------------------
-        // BLOKADA ZAKAZANEGO OKREŚLENIA
+        // BLOKADA K14
         // ----------------------------------------------------
 
         if (
@@ -621,7 +2175,6 @@ io.on(
             rawText
           )
         ) {
-
           socket.emit(
             'messageBlocked',
             'Wiadomość zawiera zakazane określenie i nie została wysłana.'
@@ -630,48 +2183,16 @@ io.on(
           return;
         }
 
-        let payload;
+        const payload = {
+          type: 'text',
+          content:
+            rawText.slice(
+              0,
+              5000
+            )
+        };
 
-        if (
-          typeof msg ===
-          'string'
-        ) {
-
-          payload = {
-            type: 'text',
-            content:
-              msg.slice(
-                0,
-                5000
-              )
-          };
-
-        } else if (
-          msg &&
-          msg.type === 'text'
-        ) {
-
-          payload = {
-            type: 'text',
-            content:
-              String(
-                msg.content ||
-                ''
-              ).slice(
-                0,
-                5000
-              )
-          };
-
-        } else {
-
-          return;
-        }
-
-        // ----------------------------------------------------
-        // Wysyłamy wyłącznie do partnera
-        // ----------------------------------------------------
-
+        // Tylko partner.
         io.to(
           partnerId
         ).emit(
@@ -681,7 +2202,6 @@ io.on(
       }
     );
 
-
     // ========================================================
     // ZDJĘCIE
     // ========================================================
@@ -689,7 +2209,6 @@ io.on(
     socket.on(
       'sendPhoto',
       url => {
-
         const partnerId =
           getPartner(
             socket.id
@@ -699,10 +2218,7 @@ io.on(
           return;
         }
 
-        // ----------------------------------------------------
-        // Akceptujemy wyłącznie nasze uploady
-        // ----------------------------------------------------
-
+        // Tylko nasze uploady.
         if (
           typeof url !==
             'string' ||
@@ -710,13 +2226,11 @@ io.on(
             '/uploads/'
           )
         ) {
-
           return;
         }
 
         // ----------------------------------------------------
-        // Maksymalnie 3 zdjęcia
-        // na jedną rozmowę
+        // MAKSYMALNIE 1 ZDJĘCIE
         // ----------------------------------------------------
 
         const count =
@@ -724,11 +2238,12 @@ io.on(
             socket.id
           ) || 0;
 
-        if (count >= 3) {
-
+        if (
+          count >= 1
+        ) {
           socket.emit(
             'photoLimitReached',
-            'W tej rozmowie można wysłać maksymalnie 3 zdjęcia.'
+            'W tej rozmowie można wysłać maksymalnie 1 zdjęcie.'
           );
 
           return;
@@ -736,7 +2251,7 @@ io.on(
 
         photoCounts.set(
           socket.id,
-          count + 1
+          1
         );
 
         io.to(
@@ -751,22 +2266,13 @@ io.on(
       }
     );
 
-
     // ========================================================
-    // ZGŁOSZENIE PARTNERA
+    // ZGŁOSZENIE UŻYTKOWNIKA
     // ========================================================
 
     socket.on(
       'reportUser',
       data => {
-
-        // Można zgłosić:
-        //
-        // 1. aktywnego partnera
-        // 2. ostatniego partnera chwilę po STOP
-        //
-        // do czasu rozpoczęcia nowej sesji.
-
         const partnerId =
           getPartner(
             socket.id
@@ -776,7 +2282,6 @@ io.on(
           );
 
         if (!partnerId) {
-
           socket.emit(
             'reportError',
             'Nie ma partnera, którego można teraz zgłosić.'
@@ -785,16 +2290,13 @@ io.on(
           return;
         }
 
-        // ----------------------------------------------------
-        // Jedno zgłoszenie na sesję
-        // ----------------------------------------------------
-
+        // Jedno zgłoszenie
+        // na sesję.
         if (
           reportedThisSession.has(
             socket.id
           )
         ) {
-
           socket.emit(
             'reportError',
             'To zgłoszenie zostało już wysłane.'
@@ -803,34 +2305,16 @@ io.on(
           return;
         }
 
-        // ----------------------------------------------------
-        // Dozwolone powody
-        // ----------------------------------------------------
-
-        const allowedReasons =
-          new Set([
-            'spam',
-            'wulgarny',
-            'erotyczne',
-            'nękanie',
-            'grozby',
-            'inne'
-          ]);
-
         const reason =
-          allowedReasons.has(
+          ALLOWED_REPORT_REASONS.has(
             data?.reason
           )
             ? data.reason
             : 'inne';
 
-        // ----------------------------------------------------
-        // Opis użytkownika
-        // ----------------------------------------------------
-
         const details =
           typeof data?.details ===
-            'string'
+          'string'
             ? data.details
                 .trim()
                 .slice(
@@ -839,16 +2323,15 @@ io.on(
                 )
             : '';
 
-        // ----------------------------------------------------
-        // Tworzymy zgłoszenie
-        // ----------------------------------------------------
-
         const report = {
           id:
-            `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            `${Date.now()}-${Math.random()
+              .toString(36)
+              .slice(2, 8)}`,
 
           createdAt:
-            new Date().toISOString(),
+            new Date()
+              .toISOString(),
 
           reason,
 
@@ -860,10 +2343,6 @@ io.on(
           reportedSocketId:
             partnerId
         };
-
-        // ----------------------------------------------------
-        // Zapis
-        // ----------------------------------------------------
 
         saveReport(
           report
@@ -883,6 +2362,68 @@ io.on(
       }
     );
 
+    // ========================================================
+    // GRY — ZAPROSZENIE
+    // ========================================================
+
+    socket.on(
+      'game:invite',
+      data => {
+        handleGameInvite(
+          socket,
+          data
+        );
+      }
+    );
+
+    // ========================================================
+    // GRY — AKCEPTACJA / ODRZUCENIE
+    // ========================================================
+
+    socket.on(
+      'game:inviteResponse',
+      data => {
+        handleGameInviteResponse(
+          socket,
+          data
+        );
+      }
+    );
+
+    // ========================================================
+    // GRY — RUCH
+    // ========================================================
+
+    socket.on(
+      'game:action',
+      data => {
+        handleGameAction(
+          socket,
+          data
+        );
+      }
+    );
+
+    // ========================================================
+    // GRY — DOBROWOLNE ZAKOŃCZENIE
+    // ========================================================
+
+    socket.on(
+      'game:leave',
+      () => {
+        const game =
+          gameFor(
+            socket.id
+          );
+
+        if (game) {
+          clearGame(
+            game,
+            true
+          );
+        }
+      }
+    );
 
     // ========================================================
     // STOP CZATU
@@ -891,55 +2432,16 @@ io.on(
     socket.on(
       'stopChat',
       () => {
-
         if (
           !pairs[socket.id] &&
           !waitingUsers.includes(
             socket.id
           )
         ) {
-
           return;
         }
 
         photoCounts.delete(
-          socket.id
-        );
-
-        console.log(
-          `${socket.id} kończy czat.`
-        );
-
-        breakPair(
-          socket.id,
-          true
-        );
-      }
-    );
-
-
-    // ========================================================
-    // ROZŁĄCZENIE
-    // ========================================================
-
-    socket.on(
-      'disconnect',
-      () => {
-
-        reportedThisSession.delete(
-          socket.id
-        );
-
-        photoCounts.delete(
-          socket.id
-        );
-
-        lastPartnerForReport.delete(
-          socket.id
-        );
-
-        console.log(
-          'Użytkownik opuścił czat:',
           socket.id
         );
 
@@ -952,9 +2454,108 @@ io.on(
       }
     );
 
+    // ========================================================
+    // ROZŁĄCZENIE
+    // ========================================================
+
+    socket.on(
+      'disconnect',
+      () => {
+        reportedThisSession.delete(
+          socket.id
+        );
+
+        photoCounts.delete(
+          socket.id
+        );
+
+        lastPartnerForReport.delete(
+          socket.id
+        );
+
+        drawRate.delete(
+          socket.id
+        );
+
+        pendingInvites.delete(
+          socket.id
+        );
+
+        const game =
+          gameFor(
+            socket.id
+          );
+
+        if (game) {
+          clearGame(
+            game,
+            true
+          );
+        }
+
+        breakPair(
+          socket.id,
+          true
+        );
+
+        emitOnlineCount();
+
+        console.log(
+          'Użytkownik opuścił czat:',
+          socket.id
+        );
+      }
+    );
   }
 );
 
+// ============================================================
+// CZYSZCZENIE WYGASŁYCH ZAPROSZEŃ
+// ============================================================
+
+setInterval(
+  () => {
+    const now =
+      Date.now();
+
+    for (
+      const [
+        recipient,
+        invite
+      ] of pendingInvites
+    ) {
+      if (
+        invite.expiresAt <=
+        now
+      ) {
+        pendingInvites.delete(
+          recipient
+        );
+
+        if (
+          isConnected(
+            invite.from
+          )
+        ) {
+          io.to(
+            invite.from
+          ).emit(
+            'game:inviteResponse',
+            {
+              game:
+                invite.game,
+              accepted:
+                false,
+              reason:
+                'Zaproszenie wygasło.'
+            }
+          );
+        }
+      }
+    }
+  },
+  10 * 1000
+).unref();
 
 // ============================================================
 // START SERWERA
@@ -966,10 +2567,8 @@ const PORT =
 server.listen(
   PORT,
   () => {
-
     console.log(
       `Serwer działa na porcie ${PORT}`
     );
-
   }
 );
