@@ -14,12 +14,24 @@ const io = new Server(server, {
     origin: true,
     credentials: false
   },
-  maxHttpBufferSize: 1e6,
-  pingTimeout: 20000,
-  pingInterval: 25000
+  maxHttpBufferSize: 256 * 1024,
+  pingTimeout: 60000,
+  pingInterval: 25000,
+  connectTimeout: 20000
 });
 
 const publicPath = path.join(__dirname, './');
+
+server.keepAliveTimeout = 65000;
+server.headersTimeout = 70000;
+
+app.get('/healthz', (req, res) => {
+  res.status(200).json({
+    ok: true,
+    uptime: Math.round(process.uptime()),
+    online: io.engine.clientsCount
+  });
+});
 
 app.use(express.static(publicPath));
 app.use(express.json({ limit: '100kb' }));
@@ -341,12 +353,17 @@ function saveReport(report) {
 const gameSessions = new Map();
 const pendingInvites = new Map();
 const gameRate = new Map();
+const messageRate = new Map();
+const reportRate = new Map();
 
 const GAME_INVITE_TIMEOUT = 30 * 1000;
-const GAME_MAX_DURATION = 5 * 60 * 1000;
-const GAME_ACTION_COOLDOWN = 120;
-const DRAW_ACTION_COOLDOWN = 35;
+const GAME_MAX_DURATION = 10 * 60 * 1000;
+const GAME_ACTION_COOLDOWN = 140;
+const DRAW_ACTION_COOLDOWN = 45;
+const DRAW_MAX_STROKES_PER_SECOND = 24;
 const GAME_MAX_ROUNDS = 8;
+const DRAW_MAX_ROUNDS = 5;
+const RISK_MAX_PICKS_PER_TURN = 2;
 
 const GAME_NAMES = {
   drawguess: 'Rysuj i zgaduj',
@@ -537,10 +554,17 @@ function checkTTT(board) {
 
 function drawStateFor(session, socketId, extra = {}) {
   const role = socketId === session.data.drawer ? 'drawer' : 'guesser';
+  const scores = { ...session.scores };
   return {
-    game: 'drawguess', sessionId: session.id, active: session.active,
-    round: session.round, role, status: role === 'drawer' ? 'Rysuj hasło.' : 'Zgadnij, co partner rysuje.',
+    game: 'drawguess',
+    sessionId: session.id,
+    active: session.active,
+    round: session.round,
+    maxRounds: DRAW_MAX_ROUNDS,
+    role,
+    status: role === 'drawer' ? 'Rysuj hasło.' : 'Zgadnij, co partner rysuje.',
     word: role === 'drawer' ? session.data.word : undefined,
+    scores,
     resetCanvas: !!extra.resetCanvas,
     ...extra
   };
@@ -556,15 +580,13 @@ function initializeGame(session) {
     return;
   }
   if (game === 'drawguess') {
-    const drawer = Math.random() < .5 ? a : b;
-    const guesser = drawer === a ? b : a;
-    session.data.drawer = drawer;
-    session.data.guesser = guesser;
-    session.data.word = DRAW_WORDS[Math.floor(Math.random() * DRAW_WORDS.length)];
-    session.data.finished = false;
     session.round = 1;
-    emitGame(drawer, drawStateFor(session, drawer, { resetCanvas:true }));
-    emitGame(guesser, drawStateFor(session, guesser, { resetCanvas:true }));
+    session.data.drawer = Math.random() < .5 ? a : b;
+    session.data.guesser = session.data.drawer === a ? b : a;
+    session.data.word = DRAW_WORDS[Math.floor(Math.random() * DRAW_WORDS.length)];
+    session.data.guessLocked = false;
+    emitGame(a, drawStateFor(session, a, { resetCanvas:true }));
+    emitGame(b, drawStateFor(session, b, { resetCanvas:true }));
     return;
   }
   if (game === 'word') {
@@ -587,9 +609,18 @@ function initializeGame(session) {
     session.round = 1;
     session.data.values = [1,3,5,-2,-5];
     session.data.selected = Object.create(null);
+    session.data.picks = { [a]:0, [b]:0 };
     session.data.bank = { [a]:0, [b]:0 };
     session.data.turn = Math.random() < .5 ? a : b;
-    emitPair(session, id => ({ game:'risk', sessionId:session.id, active:true, round:1, score:session.data.bank[id], myTurn:id===session.data.turn, status:id===session.data.turn?'Twój ruch — wybierz zakryte pole.':'Czekasz na wybór partnera.' }));
+    emitPair(session, id => ({
+      game:'risk', sessionId:session.id, active:true, round:1,
+      score:session.data.bank[id],
+      opponentScore:session.data.bank[id === a ? b : a],
+      scores:{...session.data.bank},
+      myTurn:id===session.data.turn,
+      picksLeft:RISK_MAX_PICKS_PER_TURN,
+      status:id===session.data.turn?'Twój ruch — wybierz zakryte pole.':'Czekasz na wybór partnera.'
+    }));
     return;
   }
   if (game === 'rps') {
@@ -617,34 +648,81 @@ function handleTTT(socket, session, data) {
   emitPair(session, id => ({ game:'ttt', sessionId:session.id, active:true, board:session.data.board.slice(), turn:session.data.turn, symbol:session.data.symbols[id], status:id===session.data.turn?'Twój ruch':'Czekasz na ruch partnera.' }));
 }
 
+function rotateDrawRound(session, winnerId) {
+  if (!session.active) return;
+  if (winnerId) {
+    session.scores[winnerId] += 2; // zgadujący
+    const drawer = session.data.drawer;
+    session.scores[drawer] += 1;   // rysujący
+  }
+  if (session.round >= DRAW_MAX_ROUNDS) {
+    const winner = session.scores[session.a] === session.scores[session.b]
+      ? null
+      : (session.scores[session.a] > session.scores[session.b] ? session.a : session.b);
+    const result = winner ? 'Rysuj i zgaduj zakończone — mamy zwycięzcę.' : 'Rysuj i zgaduj zakończone — remis.';
+    finishGame(session, result, {
+      scores:{...session.scores},
+      winner,
+      round:session.round,
+      word: winnerId ? session.data.word : undefined
+    });
+    return;
+  }
+
+  const previousDrawer = session.data.drawer;
+  session.data.drawer = previousDrawer === session.a ? session.b : session.a;
+  session.data.guesser = session.data.drawer === session.a ? session.b : session.a;
+  session.data.word = DRAW_WORDS[Math.floor(Math.random() * DRAW_WORDS.length)];
+  session.round += 1;
+  session.data.guessLocked = false;
+
+  emitGame(session.a, drawStateFor(session, session.a, { resetCanvas:true, result: winnerId ? 'Punkt za trafienie. Nowa runda.' : 'Nowa runda.' }));
+  emitGame(session.b, drawStateFor(session, session.b, { resetCanvas:true, result: winnerId ? 'Punkt za trafienie. Nowa runda.' : 'Nowa runda.' }));
+}
+
 function handleDraw(socket, session, data) {
   if (data.action === 'stroke') {
     if (socket.id !== session.data.drawer) return;
     const from = data.from, to = data.to;
     if (!from || !to) return;
-    const clean = (p) => ({ x:Math.max(0,Math.min(1,Number(p.x)||0)), y:Math.max(0,Math.min(1,Number(p.y)||0)) });
+    const clean = p => ({
+      x: Math.max(0, Math.min(1, Number(p.x) || 0)),
+      y: Math.max(0, Math.min(1, Number(p.y) || 0))
+    });
     const width = Math.max(1, Math.min(24, Number(data.width)||5));
     const allowedColors = new Set(['#111611','#39ff14','#2878ff','#ff5362','#ffc24c','#fff']);
     const color = allowedColors.has(data.color) ? data.color : '#111611';
-    emitGame(session.data.guesser, { game:'drawguess', sessionId:session.id, active:true, action:'stroke', from:clean(from), to:clean(to), width, color });
+    emitGame(session.data.guesser, {
+      game:'drawguess', sessionId:session.id, active:true, action:'stroke',
+      from:clean(from), to:clean(to), width, color
+    });
     return;
   }
+
   if (data.action === 'clear') {
     if (socket.id !== session.data.drawer) return;
     emitGame(session.data.guesser, { game:'drawguess', sessionId:session.id, active:true, action:'clear' });
     return;
   }
+
   if (data.action === 'guess') {
-    if (socket.id !== session.data.guesser) return;
+    if (socket.id !== session.data.guesser || session.data.guessLocked) return;
     const answer = normalizeAnswer(data.answer);
-    if (!answer) return;
+    if (!answer || answer.length > 60) return;
     const target = normalizeAnswer(session.data.word);
     const correct = answer === target || answer.includes(target) || target.includes(answer);
+
     if (correct) {
-      session.scores[socket.id]++;
-      finishGame(session, `Dobra odpowiedź! Hasło: ${session.data.word}.`, { word:session.data.word, scores:session.scores });
+      session.data.guessLocked = true;
+      rotateDrawRound(session, socket.id);
     } else {
-      emitGame(socket.id, { game:'drawguess', sessionId:session.id, active:true, status:'Nie tym razem — próbuj dalej.', result:'Nie tym razem.' });
+      emitGame(socket.id, {
+        game:'drawguess',
+        sessionId:session.id,
+        active:true,
+        status:'Nie tym razem — próbuj dalej.',
+        result:'Nie tym razem.'
+      });
     }
   }
 }
@@ -674,65 +752,187 @@ function handleReflex(socket, session, data) {
   if (data.action === 'ready') {
     if (session.data.phase !== 'ready') return;
     session.data.ready.add(socket.id);
+
     if (session.data.ready.size < 2) {
-      emitGame(socket.id, { game:'reflex', sessionId:session.id, active:true, phase:'ready', ready:true, status:'Gotowość zapisana. Czekamy na partnera.' });
+      emitGame(socket.id, {
+        game:'reflex', sessionId:session.id, active:true, phase:'ready',
+        ready:true, status:'Gotowość zapisana. Czekamy na partnera.'
+      });
       return;
     }
+
     session.data.phase = 'countdown';
-    emitPair(session, { game:'reflex', sessionId:session.id, active:true, phase:'countdown', status:'Start za chwilę…' });
-    for (const n of [3,2,1]) session.timers.add(setTimeout(() => emitPair(session, {game:'reflex',sessionId:session.id,active:true,phase:'countdown',count:n,status:String(n)}), (4-n)*500));
-    const delay = 1500 + Math.floor(Math.random()*2500);
+    emitPair(session, { game:'reflex', sessionId:session.id, active:true, phase:'countdown', count:3, status:'3' });
+
+    [2,1].forEach((n, i) => {
+      session.timers.add(setTimeout(() => {
+        if (!session.active || session.data.phase !== 'countdown') return;
+        emitPair(session, {game:'reflex',sessionId:session.id,active:true,phase:'countdown',count:n,status:String(n)});
+      }, (i + 1) * 650));
+    });
+
+    const delay = 1950 + Math.floor(Math.random()*2600);
     session.timers.add(setTimeout(() => {
-      if (!session.active) return;
+      if (!session.active || session.data.phase !== 'countdown') return;
       session.data.phase = 'signal';
       session.data.signalAt = Date.now();
       session.data.clicked = Object.create(null);
-      emitPair(session, { game:'reflex', sessionId:session.id, active:true, phase:'signal', status:'KLIKNIJ!', signalAt:session.data.signalAt });
+      emitPair(session, {
+        game:'reflex',
+        sessionId:session.id,
+        active:true,
+        phase:'signal',
+        status:'KLIKNIJ!',
+        signalAt:session.data.signalAt
+      });
+
+      session.timers.add(setTimeout(() => {
+        if (!session.active || session.data.phase !== 'signal') return;
+        const [a,b] = [session.a,session.b];
+        const ra = session.data.clicked[a];
+        const rb = session.data.clicked[b];
+        if (ra === undefined || rb === undefined) {
+          const winner = ra === undefined && rb === undefined ? null : (ra === undefined ? b : a);
+          if (winner) session.scores[winner] += 1;
+          finishGame(session, 'Refleks zakończony — nie każdy zdążył kliknąć.', {
+            reactions:{[a]:ra ?? null,[b]:rb ?? null},
+            winner
+          });
+        }
+      }, 6000));
     }, delay));
     return;
   }
+
   if (data.action === 'click') {
-    if (session.data.phase !== 'signal' || session.data.clicked[socket.id]) return;
-    session.data.clicked[socket.id] = Math.max(0, Date.now() - session.data.signalAt);
-    if (Object.keys(session.data.clicked).length < 2) {
-      emitGame(socket.id, { game:'reflex', sessionId:session.id, active:true, phase:'waiting', reaction:session.data.clicked[socket.id], status:'Twój czas zapisany. Czekamy na partnera.' });
-      return;
-    }
+    if (session.data.phase !== 'signal' || session.data.clicked[socket.id] !== undefined) return;
+    const reaction = Math.max(0, Date.now() - session.data.signalAt);
+    session.data.clicked[socket.id] = reaction;
+
+    emitGame(socket.id, {
+      game:'reflex',
+      sessionId:session.id,
+      active:true,
+      phase:'waiting',
+      reaction,
+      status:`Twój czas: ${reaction} ms. Czekamy na partnera.`
+    });
+
+    if (Object.keys(session.data.clicked).length < 2) return;
+
     const [a,b] = [session.a,session.b];
     const ra = session.data.clicked[a], rb = session.data.clicked[b];
     const winner = ra === rb ? null : (ra < rb ? a : b);
     if (winner) session.scores[winner]++;
-    finishGame(session, winner ? 'Wynik gotowy — sprawdź swoje czasy reakcji.' : 'Remis refleksu.', { reactions:{ [a]:ra, [b]:rb }, winner });
+    finishGame(session, winner ? 'Refleks zakończony — mamy zwycięzcę.' : 'Refleks zakończony — remis.', {
+      reactions:{ [a]:ra, [b]:rb },
+      winner,
+      scores:{...session.scores}
+    });
   }
+}
+
+function emitRiskState(session, result = '') {
+  emitPair(session, id => {
+    const other = id === session.a ? session.b : session.a;
+    const picks = session.data.picks[id] || 0;
+    return {
+      game:'risk',
+      sessionId:session.id,
+      active:session.active,
+      round:session.round,
+      score:session.data.bank[id],
+      opponentScore:session.data.bank[other],
+      scores:{...session.data.bank},
+      myTurn:id===session.data.turn,
+      picksUsed:picks,
+      picksLeft:Math.max(0, RISK_MAX_PICKS_PER_TURN - picks),
+      status:id===session.data.turn
+        ? (picks >= RISK_MAX_PICKS_PER_TURN ? 'Limit ryzyka wykorzystany — przekazanie tury.' : 'Twój ruch — wybierz zakryte pole.')
+        : 'Czekasz na ruch partnera.',
+      result
+    };
+  });
 }
 
 function handleRisk(socket, session, data) {
   if (data.action === 'pick') {
     if (session.data.turn !== socket.id) return gameError(socket,'Teraz kolej partnera.');
-    if (session.data.selected[socket.id] !== undefined) return;
+    const used = session.data.picks[socket.id] || 0;
+    if (used >= RISK_MAX_PICKS_PER_TURN) return gameError(socket,'Wykorzystałeś już 2 ryzyka w tej turze.');
+
     const index = Number(data.index);
     if (!Number.isInteger(index) || index < 0 || index >= session.data.values.length) return;
     const value = session.data.values[index];
     if (value === null || value === undefined) return;
-    session.data.selected[socket.id] = index;
+
+    session.data.picks[socket.id] = used + 1;
     session.data.bank[socket.id] += value;
     session.data.values[index] = null;
-    emitGame(socket.id, {game:'risk',sessionId:session.id,active:true,round:session.round,score:session.data.bank[socket.id],revealed:{index,value},status:value>=0?`+${value} punktów.`:`${value} punktów.`});
-    emitGame(session.data.turn === session.a ? session.b : session.a, {game:'risk',sessionId:session.id,active:true,round:session.round,score:session.data.bank[session.data.turn === session.a ? session.b : session.a],status:'Partner wybrał pole.'});
+
+    emitGame(socket.id, {
+      game:'risk', sessionId:session.id, active:true, round:session.round,
+      score:session.data.bank[socket.id],
+      opponentScore:session.data.bank[socket.id === session.a ? session.b : session.a],
+      scores:{...session.data.bank},
+      revealed:{index,value},
+      picksUsed:session.data.picks[socket.id],
+      picksLeft:Math.max(0,RISK_MAX_PICKS_PER_TURN-session.data.picks[socket.id]),
+      status:value>=0?`+${value} punktów.`:`${value} punktów.`
+    });
+
+    const other = socket.id === session.a ? session.b : session.a;
+    emitGame(other, {
+      game:'risk', sessionId:session.id, active:true, round:session.round,
+      score:session.data.bank[other],
+      opponentScore:session.data.bank[socket.id],
+      scores:{...session.data.bank},
+      status:'Partner wybrał pole.'
+    });
+
+    if (session.data.picks[socket.id] >= RISK_MAX_PICKS_PER_TURN) {
+      session.data.turn = other;
+      session.data.selected = Object.create(null);
+      session.data.picks[socket.id] = 0;
+      session.round++;
+      if (session.round > GAME_MAX_ROUNDS) {
+        const winner = session.data.bank[session.a] === session.data.bank[session.b] ? null :
+          (session.data.bank[session.a] > session.data.bank[session.b] ? session.a : session.b);
+        return finishGame(session, winner ? 'Ryzykant zakończony — mamy zwycięzcę.' : 'Ryzykant zakończony — remis.', {
+          scores:{...session.data.bank}, winner
+        });
+      }
+      session.data.values = [1,3,5,-2,-5].sort(()=>Math.random()-.5);
+      session.data.picks[other] = 0;
+      emitRiskState(session, 'Limit 2 ryzyk wykorzystany. Tura partnera.');
+    }
     return;
   }
+
   if (data.action === 'continue' || data.action === 'stop') {
-    if (session.data.selected[socket.id] === undefined) return;
-    const other = socket.id === session.a ? session.b : session.a;
-    session.round++;
-    if (session.round > GAME_MAX_ROUNDS) {
-      return finishGame(session, 'Ryzykant zakończony — limit rund.', { scores: session.data.bank });
+    if (session.data.turn !== socket.id) return gameError(socket,'To nie Twoja tura.');
+    const used = session.data.picks[socket.id] || 0;
+    if (used < 1) return gameError(socket,'Najpierw odkryj pole.');
+
+    if (data.action === 'stop' || used >= RISK_MAX_PICKS_PER_TURN) {
+      const other = socket.id === session.a ? session.b : session.a;
+      session.data.turn = other;
+      session.data.selected = Object.create(null);
+      session.data.picks[socket.id] = 0;
+      session.data.picks[other] = 0;
+      session.round++;
     }
-    session.data.selected = Object.create(null);
+
+    if (session.round > GAME_MAX_ROUNDS) {
+      const winner = session.data.bank[session.a] === session.data.bank[session.b] ? null :
+        (session.data.bank[session.a] > session.data.bank[session.b] ? session.a : session.b);
+      return finishGame(session, winner ? 'Ryzykant zakończony — mamy zwycięzcę.' : 'Ryzykant zakończony — remis.', {
+        scores:{...session.data.bank}, winner
+      });
+    }
+
     session.data.values = [1,3,5,-2,-5].sort(()=>Math.random()-.5);
-    if (data.action === 'stop') session.data.turn = other;
-    else session.data.turn = socket.id;
-    emitPair(session,id=>({game:'risk',sessionId:session.id,active:true,round:session.round,score:session.data.bank[id],myTurn:id===session.data.turn,status:id===session.data.turn?'Twój ruch — wybierz zakryte pole.':'Czekasz na ruch partnera.'}));
+    emitRiskState(session, data.action === 'stop' ? 'Zachowujesz punkty. Tura partnera.' : 'Ryzykujesz dalej.');
   }
 }
 
@@ -803,8 +1003,32 @@ function handleGameRematch(socket, data) {
 
 
 /* ============================================================
+   OCHRONA EVENTÓW SOCKET.IO
+============================================================ */
+
+function allowBurst(map, socketId, limit, windowMs) {
+  const now = Date.now();
+  const old = map.get(socketId) || [];
+  const fresh = old.filter(t => now - t < windowMs);
+  if (fresh.length >= limit) {
+    map.set(socketId, fresh);
+    return false;
+  }
+  fresh.push(now);
+  map.set(socketId, fresh);
+  return true;
+}
+
+function cleanupRateState(socketId) {
+  messageRate.delete(socketId);
+  reportRate.delete(socketId);
+  gameRate.delete(socketId);
+}
+
+/* ============================================================
    SOCKET.IO
 ============================================================ */
+
 
 io.on(
   'connection',
@@ -972,6 +1196,11 @@ io.on(
     socket.on(
       'sendMessage',
       msg => {
+        if (!allowBurst(messageRate, socket.id, 20, 10_000)) {
+          socket.emit('messageBlocked', 'Wysyłasz wiadomości zbyt szybko. Odczekaj chwilę.');
+          return;
+        }
+
         const partnerId =
           getPartner(
             socket.id
@@ -1157,6 +1386,10 @@ io.on(
     socket.on(
       'reportUser',
       data => {
+        if (!allowBurst(reportRate, socket.id, 3, 60_000)) {
+          socket.emit('reportError', 'Zgłoszenia można wysyłać rzadziej. Spróbuj ponownie za chwilę.');
+          return;
+        }
         const partnerId =
           getPartner(
             socket.id
@@ -1368,7 +1601,7 @@ io.on(
           socket.id
         );
 
-        gameRate.delete(
+        cleanupRateState(
           socket.id
         );
 
@@ -1404,6 +1637,21 @@ setInterval(
   },
   30 * 1000
 );
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, timestamp] of gameRate) {
+    if (now - timestamp > 60_000) gameRate.delete(key);
+  }
+  for (const [id, times] of messageRate) {
+    const fresh = times.filter(t => now - t < 10_000);
+    if (fresh.length) messageRate.set(id, fresh); else messageRate.delete(id);
+  }
+  for (const [id, times] of reportRate) {
+    const fresh = times.filter(t => now - t < 60_000);
+    if (fresh.length) reportRate.set(id, fresh); else reportRate.delete(id);
+  }
+}, 60_000);
 
 /* ============================================================
    AUTOMATYCZNE CZYSZCZENIE STARYCH INVITE
@@ -1452,3 +1700,10 @@ server.listen(
     );
   }
 );
+process.on('uncaughtException', err => {
+  console.error('Nieobsłużony wyjątek serwera:', err);
+});
+
+process.on('unhandledRejection', reason => {
+  console.error('Nieobsłużone odrzucenie Promise:', reason);
+});
