@@ -283,12 +283,104 @@ function getPartner(socketId) {
 function emitOnlineCount() {
   io.emit(
     'onlineCount',
-    io.engine.clientsCount
+    io.sockets.sockets.size
   );
 }
 
 function randomId() {
   return crypto.randomBytes(10).toString('hex');
+}
+
+/* ============================================================
+   STABILNE MATCHMAKING / ROZŁĄCZENIA
+   Jeden socket = jedna pozycja w kolejce. Jedna para = dwa sockety.
+============================================================ */
+
+function removePairReferences(socketId) {
+  const partnerId = pairs[socketId] || null;
+  delete pairs[socketId];
+  if (partnerId) delete pairs[partnerId];
+  return partnerId;
+}
+
+function breakPair(socketId, notifyPartner = true) {
+  removeFromWaiting(socketId);
+
+  const partnerId = pairs[socketId] || null;
+
+  // Zapamiętaj ostatniego partnera, aby zgłoszenie po zakończeniu
+  // rozmowy nadal mogło trafić do właściwego socketu, jeśli istnieje.
+  if (partnerId && isConnected(partnerId)) {
+    lastPartnerForReport.set(partnerId, socketId);
+  }
+
+  // Gry/invity zawsze kończymy razem z parą.
+  clearGameForPair(socketId);
+  clearInviteForPair(socketId);
+
+  if (partnerId && notifyPartner && isConnected(partnerId)) {
+    io.to(partnerId).emit('partnerStopped');
+  }
+
+  removePairReferences(socketId);
+  return partnerId;
+}
+
+function cleanWaitingQueue() {
+  const seen = new Set();
+  waitingUsers = waitingUsers.filter(id => {
+    if (seen.has(id)) return false;
+    seen.add(id);
+    return isConnected(id) && !pairs[id];
+  });
+}
+
+function enqueueUser(socketId) {
+  cleanWaitingQueue();
+  if (!isConnected(socketId) || pairs[socketId]) return false;
+  if (waitingUsers.includes(socketId)) return false;
+  waitingUsers.push(socketId);
+  return true;
+}
+
+function matchWaitingUser(socketId) {
+  cleanWaitingQueue();
+  if (!isConnected(socketId) || pairs[socketId]) return null;
+
+  const ownIndex = waitingUsers.indexOf(socketId);
+  if (ownIndex >= 0) waitingUsers.splice(ownIndex, 1);
+
+  let partnerId = null;
+  while (waitingUsers.length) {
+    const candidate = waitingUsers.shift();
+    if (
+      candidate &&
+      candidate !== socketId &&
+      isConnected(candidate) &&
+      !pairs[candidate]
+    ) {
+      partnerId = candidate;
+      break;
+    }
+  }
+
+  if (!partnerId) {
+    enqueueUser(socketId);
+    return null;
+  }
+
+  pairs[socketId] = partnerId;
+  pairs[partnerId] = socketId;
+
+  photoCounts.set(socketId, 0);
+  photoCounts.set(partnerId, 0);
+
+  io.to(socketId).emit('partnerFound');
+  io.to(partnerId).emit('partnerFound');
+
+  console.log(`Para utworzona: ${socketId} <-> ${partnerId}`);
+  emitOnlineCount();
+  return partnerId;
 }
 
 /* ============================================================
@@ -1047,145 +1139,18 @@ io.on(
     socket.on(
       'startChat',
       () => {
-        lastPartnerForReport.delete(
-          socket.id
-        );
+        if (!isConnected(socket.id)) return;
 
-        reportedThisSession.delete(
-          socket.id
-        );
+        // START jest idempotentny: kliknięcie ponownie nie tworzy
+        // drugiego połączenia ani nie pozwala połączyć użytkownika z samym sobą.
+        if (pairs[socket.id]) return;
+        if (waitingUsers.includes(socket.id)) return;
 
-        photoCounts.set(
-          socket.id,
-          0
-        );
+        lastPartnerForReport.delete(socket.id);
+        reportedThisSession.delete(socket.id);
+        photoCounts.set(socket.id, 0);
 
-        /*
-          Najważniejsze zabezpieczenie:
-          jeden socket nie może uruchomić
-          drugiego własnego połączenia.
-        */
-
-        if (
-          pairs[socket.id]
-        ) {
-          console.log(
-            `START zignorowany — ${socket.id} jest już połączony.`
-          );
-
-          return;
-        }
-
-        if (
-          waitingUsers.includes(
-            socket.id
-          )
-        ) {
-          console.log(
-            `START zignorowany — ${socket.id} już czeka.`
-          );
-
-          return;
-        }
-
-        waitingUsers =
-          waitingUsers.filter(
-            id =>
-              isConnected(id) &&
-              id !== socket.id &&
-              !pairs[id]
-          );
-
-        let partnerId = null;
-
-        while (
-          waitingUsers.length
-        ) {
-          const candidate =
-            waitingUsers.shift();
-
-          if (
-            candidate !==
-              socket.id &&
-            isConnected(
-              candidate
-            ) &&
-            !pairs[candidate]
-          ) {
-            partnerId =
-              candidate;
-
-            break;
-          }
-        }
-
-        if (!partnerId) {
-          waitingUsers.push(
-            socket.id
-          );
-
-          console.log(
-            `${socket.id} czeka na partnera...`
-          );
-
-          return;
-        }
-
-        if (
-          partnerId ===
-          socket.id
-        ) {
-          waitingUsers.unshift(
-            socket.id
-          );
-
-          return;
-        }
-
-        if (
-          pairs[partnerId] ||
-          pairs[socket.id]
-        ) {
-          waitingUsers.push(
-            socket.id
-          );
-
-          return;
-        }
-
-        pairs[socket.id] =
-          partnerId;
-
-        pairs[partnerId] =
-          socket.id;
-
-        photoCounts.set(
-          socket.id,
-          0
-        );
-
-        photoCounts.set(
-          partnerId,
-          0
-        );
-
-        io.to(
-          socket.id
-        ).emit(
-          'partnerFound'
-        );
-
-        io.to(
-          partnerId
-        ).emit(
-          'partnerFound'
-        );
-
-        console.log(
-          `Para utworzona: ${socket.id} <-> ${partnerId}`
-        );
-
-        emitOnlineCount();
+        matchWaitingUser(socket.id);
       }
     );
 
@@ -1635,7 +1600,7 @@ setInterval(
           !pairs[socketId]
       );
   },
-  30 * 1000
+  5 * 1000
 );
 
 setInterval(() => {
@@ -1702,6 +1667,10 @@ server.listen(
 );
 process.on('uncaughtException', err => {
   console.error('Nieobsłużony wyjątek serwera:', err);
+});
+
+process.on('unhandledRejection', err => {
+  console.error('Nieobsłużone odrzucenie Promise:', err);
 });
 
 process.on('unhandledRejection', reason => {

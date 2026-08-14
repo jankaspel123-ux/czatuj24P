@@ -566,7 +566,7 @@ body.light .c24-games-drawer{background:linear-gradient(155deg,rgba(255,255,255,
 <script>
 'use strict';
 
-const socket = io({reconnection:true,reconnectionAttempts:20,reconnectionDelay:800,reconnectionDelayMax:5000,timeout:20000});
+const socket = io({reconnection:true,reconnectionAttempts:Infinity,reconnectionDelay:300,reconnectionDelayMax:3000,randomizationFactor:0.25,timeout:10000,transports:['websocket','polling']});
 window.Czatuj24Socket = socket;
 window.Czatuj24GetState = () => chatState;
 window.Czatuj24Toast = (msg) => { if(typeof showToast === 'function') showToast(msg); };
@@ -1046,21 +1046,61 @@ msgInput.addEventListener('dragover',e=>e.preventDefault());
 
 socket.on('onlineCount',count=>{
   const n=Number.isFinite(Number(count)) ? Number(count) : 0;
-  onlineCount.textContent=`Online: ${n}`;
+  onlineCount.textContent=`Online: ${Math.max(0, Math.floor(n))}`;
 });
 
+let wasSearchingBeforeReconnect = false;
+let reconnectGraceTimer = null;
+
 socket.on('connect',()=>{
-  if(chatState === 'idle') statusInfo.textContent='Twój status: online • Partner: brak';
+  clearTimeout(reconnectGraceTimer);
+  if(chatState === 'searching' || wasSearchingBeforeReconnect){
+    wasSearchingBeforeReconnect = false;
+    setChatState('searching');
+    statusInfo.textContent='Twój status: online • Szukam partnera…';
+    // Nowy socket po reconnect musi ponownie wejść do kolejki.
+    setTimeout(()=>{
+      if(socket.connected && chatState === 'searching') socket.emit('startChat');
+    },60);
+  }else if(chatState === 'idle'){
+    statusInfo.textContent='Twój status: online • Partner: brak';
+  }else if(chatState === 'connected'){
+    // Serwer po utracie socketu może zakończyć starą parę; nie kasujemy
+    // interfejsu natychmiast, aby krótki reconnect nie wyglądał jak awaria.
+    statusInfo.textContent='Twój status: online • Przywracam połączenie…';
+  }
 });
 
 socket.on('disconnect',()=>{
-  canReportLastSession=false;
-  photoCount=0;
-  updatePhotoCounter();
+  wasSearchingBeforeReconnect = chatState === 'searching';
+  clearTimeout(reconnectGraceTimer);
   closeReport();
-  setChatState('idle');
-  clearChat();
-  showToast('Połączenie z serwerem zostało utracone.');
+  if(chatState === 'searching'){
+    setChatState('searching');
+    connectionPill.className='connection-pill searching';
+    connectionPill.textContent='ŁĄCZENIE';
+    chatSubtitle.textContent='Przywracam połączenie i szukam partnera…';
+    statusInfo.textContent='Połączenie chwilowo przerwane • ponawiam automatycznie';
+  }else if(chatState === 'connected'){
+    connectionPill.className='connection-pill searching';
+    connectionPill.textContent='ŁĄCZENIE';
+    chatSubtitle.textContent='Przywracam połączenie…';
+    statusInfo.textContent='Połączenie chwilowo przerwane • ponawiam automatycznie';
+    // Nie czyścimy wiadomości i nie pokazujemy irytującego komunikatu 503.
+    reconnectGraceTimer=setTimeout(()=>{
+      if(!socket.connected && chatState==='connected'){
+        setChatState('idle');
+        clearChat();
+        statusInfo.textContent='Twój status: online • Partner: brak';
+      }
+    },20000);
+  }else{
+    statusInfo.textContent='Ponowne łączenie…';
+  }
+});
+
+socket.on('connect_error',()=>{
+  // Celowo bez toastu: Socket.IO sam wykonuje kolejne próby.
 });
 
 socket.on('partnerFound',()=>{
