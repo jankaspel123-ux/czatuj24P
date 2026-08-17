@@ -525,17 +525,29 @@ function finishGame(session, result = 'Gra zakończona.', extra = {}) {
   if (!session || !gameSessions.has(session.a)) return;
   session.active = false;
   clearGameTimeout(session);
-  const state = {
-    game: session.game,
-    sessionId: session.id,
-    active: false,
-    finished: true,
-    status: result,
-    result,
-    scores: session.scores,
-    ...extra
-  };
-  emitPair(session, state);
+
+  const winnerId = extra && Object.prototype.hasOwnProperty.call(extra, 'winner')
+    ? extra.winner
+    : null;
+  const { winner, ...safeExtra } = extra || {};
+
+  emitPair(session, id => {
+    const state = {
+      game: session.game,
+      sessionId: session.id,
+      active: false,
+      finished: true,
+      status: result,
+      result,
+      scores: safeExtra.scores || session.scores,
+      ...safeExtra,
+      winnerView: winnerId
+        ? (winnerId === id ? 'self' : 'partner')
+        : (winnerId === null && Object.prototype.hasOwnProperty.call(extra || {}, 'winner') ? 'draw' : null)
+    };
+    return state;
+  });
+
   clearGameForPair(session.a);
 }
 
@@ -629,6 +641,8 @@ function handleInviteResponse(socket, data) {
   io.to(inviter).emit('game:inviteResponse', { game: invite.game, accepted: true, sessionId: session.id });
   io.to(partner).emit('game:inviteResponse', { game: invite.game, accepted: true, sessionId: session.id });
   initializeGame(session);
+  io.to(inviter).emit('game:started', { game: invite.game, sessionId: session.id });
+  io.to(partner).emit('game:started', { game: invite.game, sessionId: session.id });
 }
 
 function normalizeAnswer(value) {
@@ -1044,7 +1058,7 @@ function handleRps(socket, session, data) {
   const result=win(ca,cb);
   if(result==='a')session.data.score[session.a]++;
   if(result==='b')session.data.score[session.b]++;
-  if(session.round >= 5) return finishGame(session,result==='draw'?'Ostatnia runda: remis.':`Koniec 5 rund. Wygrywa ${result==='a'?'gracz A':'gracz B'}.`,{choices:{[session.a]:ca,[session.b]:cb},score:session.data.score,round:session.round});
+  if(session.round >= 5) return finishGame(session,result==='draw'?'Ostatnia runda: remis.':'Koniec 5 rund.',{choices:{[session.a]:ca,[session.b]:cb},score:session.data.score,round:session.round,winner:result==='draw'?null:(result==='a'?session.a:session.b)});
   emitPair(session,id=>({game:'rps',sessionId:session.id,active:true,round:session.round,choice:id===session.a?ca:cb,reveal:{[session.a]:ca,[session.b]:cb},roundResult:result,score:session.data.score,status:result==='draw'?'Remis rundy.':'Runda zakończona.'}));
   session.round++;
   session.data.choices=Object.create(null);
