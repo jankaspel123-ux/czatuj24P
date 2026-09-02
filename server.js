@@ -22,6 +22,39 @@ const io = new Server(server, {
 
 const publicPath = path.join(__dirname, './');
 
+/* ============================================================
+   KANONICZNA DOMENA + PODSTAWOWE NAGŁÓWKI
+   Produkcja: https://www.czatuj24.pl/
+   Localhost pozostaje bez przekierowań.
+============================================================ */
+app.set('trust proxy', 1);
+
+const CANONICAL_ORIGIN = 'https://www.czatuj24.pl';
+const CANONICAL_HOST = 'www.czatuj24.pl';
+const LEGACY_RENDER_HOST = /(?:^|\.)onrender\.com$/i;
+
+app.use((req, res, next) => {
+  const host = String(req.hostname || '').toLowerCase();
+  const isLocal = host === 'localhost' || host === '127.0.0.1' || host === '::1';
+  if (isLocal || req.path === '/healthz') return next();
+
+  const isProductionHost = host === 'czatuj24.pl' || host === CANONICAL_HOST || LEGACY_RENDER_HOST.test(host);
+  if (isProductionHost && (host !== CANONICAL_HOST || req.protocol !== 'https')) {
+    return res.redirect(301, CANONICAL_ORIGIN + req.originalUrl);
+  }
+  next();
+});
+
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  if (req.protocol === 'https') {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  }
+  next();
+});
+
 server.keepAliveTimeout = 65000;
 server.headersTimeout = 70000;
 
@@ -33,8 +66,137 @@ app.get('/healthz', (req, res) => {
   });
 });
 
-app.use(express.static(publicPath));
+app.use(express.static(publicPath, {
+  index: 'index.html',
+  extensions: ['html'],
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('index.html')) res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  }
+}));
 app.use(express.json({ limit: '100kb' }));
+
+/* ============================================================
+   GOOGLE / SEO — ROBOTS, SITEMAP I PUBLICZNE STRONY
+   Te adresy są lekkie, statyczne logicznie i nie korzystają z Socket.IO.
+============================================================ */
+const SEO_PAGES = {
+  '/jak-dziala': {
+    title: 'Jak działa Czatuj24? – Darmowy czat online',
+    description: 'Dowiedz się, jak działa Czatuj24: darmowy i anonimowy czat online 1 na 1 bez rejestracji.',
+    h1: 'Jak działa Czatuj24?',
+    sections: [
+      ['Darmowy czat online bez rejestracji', 'Kliknij START, aby dołączyć do kolejki. Czatuj24 szuka dostępnej osoby i łączy dwie osoby w prywatnej sesji 1 na 1.'],
+      ['Losowa rozmowa 1 na 1', 'Rozmowa jest przeznaczona do bieżącej sesji. Po jej zakończeniu interfejs czatu jest czyszczony, a nowa sesja zaczyna się od zera.'],
+      ['Więcej niż wiadomości', 'Podczas rozmowy możesz korzystać z reakcji na wiadomości, sygnału „Partner pisze…”, krótkiego profilu partnera, jednego zdjęcia na sesję oraz lekkich gier 1 na 1.'],
+      ['Bezpieczeństwo', 'Serwis jest przeznaczony dla osób 15+. Przed rozpoczęciem rozmowy zapoznaj się z zasadami bezpieczeństwa i regulaminem.']
+    ]
+  },
+  '/bezpieczenstwo': {
+    title: 'Bezpieczeństwo – Czatuj24',
+    description: 'Zasady bezpiecznego korzystania z anonimowego czatu Czatuj24.',
+    h1: 'Bezpieczeństwo na Czatuj24',
+    sections: [
+      ['Wiek 15+', 'Z serwisu mogą korzystać wyłącznie osoby, które ukończyły 15 lat. Osoby poniżej 18 lat podlegają dodatkowej ochronie.'],
+      ['Granice i treści', 'Zabronione są groźby, nękanie, spam, oszustwa, podszywanie się oraz działania niezgodne z prawem. Nie wywieraj presji na inne osoby i respektuj ich granice.'],
+      ['Osoby poniżej 18 lat', 'Zabronione jest proponowanie, nakłanianie, proszenie lub wywieranie presji na osobę poniżej 18 lat w sprawie wysyłania, odbierania albo udostępniania nagich lub intymnych zdjęć.'],
+      ['Zgłaszanie nadużyć', 'Partnera możesz zgłosić podczas rozmowy lub bezpośrednio po jej zakończeniu. Wybierz kategorię zgłoszenia i, jeśli potrzebujesz, dodaj krótki opis.'],
+      ['Zdjęcia', 'W jednej sesji można wysłać maksymalnie jedno zdjęcie. Nie wysyłaj nagości ani materiałów intymnych.']
+    ]
+  },
+  '/zasady': {
+    title: 'Zasady Czatuj24 – Zasady korzystania z czatu',
+    description: 'Najważniejsze zasady korzystania z Czatuj24: wiek 15+, szacunek, bezpieczeństwo i zgłaszanie nadużyć.',
+    h1: 'Zasady korzystania z Czatuj24',
+    sections: [
+      ['1. Korzystaj od 15 roku życia', 'Serwis jest przeznaczony dla osób, które ukończyły 15 lat. Nie podawaj fałszywego wieku i nie obchodź ograniczeń.'],
+      ['2. Szanuj rozmówcę', 'Nie nękaj, nie groź, nie obrażaj i nie wysyłaj spamu. Szanuj odmowę oraz granice drugiej osoby.'],
+      ['3. Zero seksualizacji osób niepełnoletnich', 'Nie proś, nie namawiaj i nie wywieraj presji na osoby poniżej 18 lat w sprawie nagich lub intymnych zdjęć.'],
+      ['4. Zgłaszaj problemy', 'Jeśli rozmówca narusza zasady, użyj przycisku zgłoszenia i wybierz odpowiednią kategorię.'],
+      ['5. Pamiętaj o prywatności', 'Nie udostępniaj pochopnie danych osobowych, haseł, adresów ani innych informacji, których nie chcesz ujawniać.']
+    ]
+  },
+  '/regulamin': {
+    title: 'Regulamin Czatuj24 – Darmowy czat online',
+    description: 'Regulamin korzystania z Czatuj24, darmowego anonimowego czatu online 1 na 1.',
+    h1: 'Regulamin Czatuj24',
+    sections: [
+      ['1. Charakter serwisu', 'Czatuj24 umożliwia losowe rozmowy 1 na 1. Użytkownik odpowiada za treści, które wysyła, i zobowiązuje się przestrzegać prawa oraz zasad serwisu.'],
+      ['2. Wiek użytkownika', 'Korzystanie z serwisu jest dozwolone od ukończenia 15 lat. Nie wolno obchodzić tego ograniczenia ani podawać fałszywego wieku.'],
+      ['3. Niedozwolone zachowania', 'Zakazane są między innymi groźby, nękanie, spam, oszustwa, podszywanie się oraz treści lub działania niezgodne z prawem.'],
+      ['4. Zdjęcia i bezpieczeństwo', 'Jedna sesja pozwala wysłać maksymalnie jedno zdjęcie. Nie wysyłaj nagości ani materiałów intymnych. Szczególnej ochronie podlegają osoby poniżej 18 lat.'],
+      ['5. Zgłoszenia', 'Czatuj24 udostępnia mechanizm zgłaszania partnera. Zgłoszenia mogą być analizowane w celach bezpieczeństwa i przeciwdziałania nadużyciom.']
+    ]
+  },
+  '/polityka-prywatnosci': {
+    title: 'Polityka prywatności Czatuj24',
+    description: 'Informacje o prywatności, danych technicznych, localStorage i zgłoszeniach w Czatuj24.',
+    h1: 'Polityka prywatności Czatuj24',
+    sections: [
+      ['Minimalizacja danych', 'Profil użytkownika i statystyki aktywności są przechowywane lokalnie w przeglądarce. Standardowa sesja czatu służy bieżącej rozmowie 1 na 1.'],
+      ['Dane techniczne', 'W zależności od konfiguracji infrastruktury mogą być przetwarzane dane techniczne, takie jak adres IP, identyfikator połączenia, user-agent i znaczniki czasu, między innymi dla bezpieczeństwa i diagnostyki.'],
+      ['Zgłoszenia', 'Zgłoszenie może zawierać kategorię, opis oraz techniczne identyfikatory potrzebne do obsługi bezpieczeństwa. Dane zgłoszeń powinny być przechowywane zgodnie z przyjętą polityką retencji.'],
+      ['localStorage i ustawienia', 'Serwis może używać localStorage do zapamiętywania ustawień, zgody, motywu, dźwięku, profilu i lokalnych statystyk aktywności.'],
+      ['Zdjęcia', 'Pliki zdjęciowe przesłane podczas rozmowy mogą być technicznie przechowywane w katalogu uploads zgodnie z konfiguracją serwera.'],
+      ['Prawa użytkownika', 'W zakresie przewidzianym przez przepisy możesz żądać dostępu do danych, ich sprostowania, usunięcia, ograniczenia przetwarzania, przeniesienia danych lub wnieść sprzeciw.'],
+      ['Administrator i kontakt', 'Przed pełnym wdrożeniem dokumentu należy uzupełnić prawdziwe dane administratora oraz aktualny adres kontaktowy. Treść ma charakter informacyjny i nie zastępuje indywidualnej konsultacji prawnej.']
+    ]
+  },
+  '/kontakt': {
+    title: 'Kontakt – Czatuj24',
+    description: 'Strona kontaktowa Czatuj24 i informacje dotyczące kontaktu z administratorem serwisu.',
+    h1: 'Kontakt z Czatuj24',
+    sections: [
+      ['Kontakt w sprawach serwisu', 'Na tej stronie powinien znajdować się aktualny, rzeczywiście obsługiwany adres kontaktowy administratora Czatuj24. Nie publikujemy fikcyjnego adresu e-mail.'],
+      ['Zgłoszenia bezpieczeństwa', 'Nadużycia w rozmowie możesz zgłaszać bezpośrednio za pomocą przycisku zgłoszenia dostępnego podczas sesji lub tuż po jej zakończeniu.'],
+      ['Ważne przed publikacją', 'Uzupełnij dane administratora i właściwy kanał kontaktu przed uruchomieniem reklam oraz przed ostatecznym wdrożeniem dokumentów prawnych.']
+    ]
+  }
+};
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function renderSeoPage(req, res, page) {
+  const pathName = req.path;
+  const canonical = CANONICAL_ORIGIN + pathName;
+  const sections = page.sections.map(([heading, text]) => `<section><h2>${escapeHtml(heading)}</h2><p>${escapeHtml(text)}</p></section>`).join('');
+  const nav = Object.entries({
+    '/': 'Czatuj24', '/jak-dziala': 'Jak działa', '/bezpieczenstwo': 'Bezpieczeństwo', '/zasady': 'Zasady', '/regulamin': 'Regulamin', '/polityka-prywatnosci': 'Prywatność', '/kontakt': 'Kontakt'
+  }).map(([href,label]) => `<a href=\"${href}\">${escapeHtml(label)}</a>`).join('');
+  res.status(200).type('html').send(`<!doctype html><html lang=\"pl\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><meta name=\"robots\" content=\"index,follow,max-image-preview:large\"><meta name=\"description\" content=\"${escapeHtml(page.description)}\"><link rel=\"canonical\" href=\"${canonical}\"><meta property=\"og:type\" content=\"article\"><meta property=\"og:site_name\" content=\"Czatuj24\"><meta property=\"og:locale\" content=\"pl_PL\"><meta property=\"og:title\" content=\"${escapeHtml(page.title)}\"><meta property=\"og:description\" content=\"${escapeHtml(page.description)}\"><meta property=\"og:url\" content=\"${canonical}\"><title>${escapeHtml(page.title)}</title><style>:root{color-scheme:dark;--g:#39ff14;--bg:#030703;--panel:#0a110b;--text:#effff0;--muted:#91a793;--line:rgba(57,255,20,.2)}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,rgba(57,255,20,.08),transparent 32%),linear-gradient(135deg,#010201,#071007 60%,#020402);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;line-height:1.65}main{width:min(900px,calc(100% - 28px));margin:0 auto;padding:30px 0 45px}.brand{display:inline-flex;align-items:center;gap:10px;color:var(--text);text-decoration:none;font-weight:900;font-size:1.2rem}.brand b{color:var(--g)}.hero,section{border:1px solid var(--line);background:rgba(10,17,11,.82);border-radius:20px;box-shadow:0 18px 60px rgba(0,0,0,.25)}.hero{padding:24px;margin:20px 0 12px}.hero h1{margin:0 0 8px;font-size:clamp(1.65rem,4vw,2.35rem);letter-spacing:-.04em}.hero p{margin:0;color:var(--muted)}section{padding:19px 21px;margin:10px 0}h2{margin:0 0 6px;font-size:1rem;color:var(--g)}section p{margin:0;color:#d8e6d9;font-size:.9rem}nav{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:16px;padding:12px 0;border-top:1px solid var(--line)}nav a{color:var(--g);text-decoration:none;font-size:.82rem}nav a:hover{text-decoration:underline}.note{margin-top:15px;color:var(--muted);font-size:.72rem}@media(max-width:600px){main{padding-top:18px}.hero{padding:18px}.hero h1{font-size:1.55rem}section{padding:15px}section p{font-size:.82rem}}</style></head><body><main><a class=\"brand\" href=\"/\">Czatuj<b>24</b></a><div class=\"hero\"><h1>${escapeHtml(page.h1)}</h1><p>${escapeHtml(page.description)}</p></div>${sections}<nav aria-label=\"Informacje o Czatuj24\">${nav}</nav><p class=\"note\">Czatuj24 – darmowy czat online 1 na 1 bez rejestracji.</p></main></body></html>`);
+}
+
+app.get('/robots.txt', (req, res) => {
+  res.status(200).type('text/plain').send([
+    'User-agent: *',
+    'Allow: /',
+    'Disallow: /uploads/',
+    'Disallow: /healthz',
+    '',
+    'Sitemap: https://www.czatuj24.pl/sitemap.xml',
+    ''
+  ].join('\n'));
+});
+
+app.get('/sitemap.xml', (req, res) => {
+  const urls = ['/', ...Object.keys(SEO_PAGES)];
+  const body = urls.map(url => `<url><loc>${CANONICAL_ORIGIN}${url}</loc></url>`).join('');
+  res.status(200).type('application/xml').send(`<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">${body}</urlset>`);
+});
+
+for (const [route, page] of Object.entries(SEO_PAGES)) {
+  app.get(route, (req, res) => renderSeoPage(req, res, page));
+}
+
+app.get(['/jak-dziala/', '/bezpieczenstwo/', '/zasady/', '/regulamin/', '/polityka-prywatnosci/', '/kontakt/'], (req, res) => {
+  return res.redirect(301, req.path.slice(0, -1));
+});
 
 /* ============================================================
    KONFIGURACJA
@@ -225,6 +387,13 @@ app.use(
     maxAge: '1h'
   })
 );
+
+/* ============================================================
+   404 — brak soft-404 do strony głównej
+============================================================ */
+app.use((req, res) => {
+  res.status(404).type('html').send(`<!doctype html><html lang=\"pl\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><meta name=\"robots\" content=\"noindex,follow\"><title>404 – Nie znaleziono strony | Czatuj24</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#030703;color:#effff0;font-family:system-ui,sans-serif;padding:20px;text-align:center}main{max-width:620px;border:1px solid rgba(57,255,20,.2);border-radius:22px;padding:30px;background:#0a110b}h1{margin:0 0 8px;font-size:2rem}p{color:#91a793;line-height:1.6}a{color:#39ff14;font-weight:800}</style></head><body><main><h1>404</h1><p>Ta strona nie istnieje albo została przeniesiona.</p><a href=\"/\">Wróć do Czatuj24</a></main></body></html>`);
+});
 
 /* ============================================================
    MATCHMAKING
@@ -1746,10 +1915,6 @@ server.listen(
 );
 process.on('uncaughtException', err => {
   console.error('Nieobsłużony wyjątek serwera:', err);
-});
-
-process.on('unhandledRejection', err => {
-  console.error('Nieobsłużone odrzucenie Promise:', err);
 });
 
 process.on('unhandledRejection', reason => {
