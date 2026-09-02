@@ -233,6 +233,9 @@ app.use(
 let waitingUsers = [];
 
 const pairs = Object.create(null);
+const publicProfiles = new Map();
+const chatMessageRegistry = new Map();
+const messageReactions = new Map();
 
 const photoCounts = new Map();
 
@@ -296,6 +299,35 @@ function randomId() {
    Jeden socket = jedna pozycja w kolejce. Jedna para = dwa sockety.
 ============================================================ */
 
+function sanitizePublicProfile(profile){
+  const p = profile && typeof profile === 'object' ? profile : {};
+  const allowedPurposes = new Set(['randka','spotkanie','seks','rozmowa']);
+  const allowedStatuses = new Set(['dostepny','zaraz']);
+  const age = Math.max(15, Math.min(100, Number(p.age) || 25));
+  const purpose = allowedPurposes.has(p.purpose) ? p.purpose : 'rozmowa';
+  return {
+    nick: String(p.nick || 'Partner').trim().slice(0,20) || 'Partner',
+    age,
+    purpose: age < 18 && purpose === 'seks' ? 'rozmowa' : purpose,
+    status: allowedStatuses.has(p.status) ? p.status : 'dostepny',
+    bio: String(p.bio || '').trim().slice(0,200)
+  };
+}
+
+function emitPartnerProfiles(a,b){
+  if(isConnected(a)) io.to(a).emit('partnerProfile', publicProfiles.get(b) || sanitizePublicProfile(null));
+  if(isConnected(b)) io.to(b).emit('partnerProfile', publicProfiles.get(a) || sanitizePublicProfile(null));
+}
+
+function clearChatMessageStateForPair(a,b){
+  for(const [id,entry] of chatMessageRegistry){
+    if((entry.a===a && entry.b===b)||(entry.a===b && entry.b===a)){
+      chatMessageRegistry.delete(id);
+      messageReactions.delete(id);
+    }
+  }
+}
+
 function removePairReferences(socketId) {
   const partnerId = pairs[socketId] || null;
   delete pairs[socketId];
@@ -314,9 +346,11 @@ function breakPair(socketId, notifyPartner = true) {
     lastPartnerForReport.set(partnerId, socketId);
   }
 
-  // Gry/invity zawsze kończymy razem z parą.
+  // Gry/invity i efemeryczne reakcje zawsze kończymy razem z parą.
   clearGameForPair(socketId);
   clearInviteForPair(socketId);
+  if(partnerId) clearChatMessageStateForPair(socketId, partnerId);
+  publicProfiles.delete(socketId);
 
   if (partnerId && notifyPartner && isConnected(partnerId)) {
     io.to(partnerId).emit('partnerStopped');
@@ -377,6 +411,7 @@ function matchWaitingUser(socketId) {
 
   io.to(socketId).emit('partnerFound');
   io.to(partnerId).emit('partnerFound');
+  emitPartnerProfiles(socketId, partnerId);
 
   console.log(`Para utworzona: ${socketId} <-> ${partnerId}`);
   emitOnlineCount();
@@ -447,6 +482,7 @@ const pendingInvites = new Map();
 const gameRate = new Map();
 const messageRate = new Map();
 const reportRate = new Map();
+const reactionRate = new Map();
 
 const GAME_INVITE_TIMEOUT = 30 * 1000;
 const GAME_MAX_DURATION = 10 * 60 * 1000;
@@ -546,6 +582,15 @@ function finishGame(session, result = 'Gra zakończona.', extra = {}) {
         : (winnerId === null && Object.prototype.hasOwnProperty.call(extra || {}, 'winner') ? 'draw' : null)
     };
     return state;
+  });
+
+  emitPair(session, id => {
+    if (isConnected(id)) io.to(id).emit('game:finished', {
+      game: session.game,
+      sessionId: session.id,
+      result,
+      winnerView: winnerId ? (winnerId === id ? 'self' : 'partner') : (winnerId === null && Object.prototype.hasOwnProperty.call(extra || {}, 'winner') ? 'draw' : null)
+    });
   });
 
   clearGameForPair(session.a);
@@ -713,8 +758,9 @@ function initializeGame(session) {
   }
   if (game === 'risk') {
     session.round = 1;
-    session.data.values = [1,3,5,-2,-5];
+    session.data.values = [1,3,5,-2,-5].sort(()=>Math.random()-.5);
     session.data.selected = Object.create(null);
+    session.data.revealed = Object.create(null);
     session.data.picks = { [a]:0, [b]:0 };
     session.data.bank = { [a]:0, [b]:0 };
     session.data.turn = Math.random() < .5 ? a : b;
@@ -956,89 +1002,62 @@ function emitRiskState(session, result = '') {
       status:id===session.data.turn
         ? (picks >= RISK_MAX_PICKS_PER_TURN ? 'Limit ryzyka wykorzystany — przekazanie tury.' : 'Twój ruch — wybierz zakryte pole.')
         : 'Czekasz na ruch partnera.',
+      newRound:true,
       result
     };
   });
 }
 
+function resetRiskBoard(session){
+  session.data.values = [1,3,5,-2,-5].sort(()=>Math.random()-.5);
+  session.data.revealed = Object.create(null);
+}
+
+function finishRiskIfNeeded(session){
+  if(session.round <= GAME_MAX_ROUNDS) return false;
+  const a=session.data.bank[session.a], b=session.data.bank[session.b];
+  const winner=a===b?null:(a>b?session.a:session.b);
+  finishGame(session, winner ? 'Ryzykant zakończony — mamy zwycięzcę.' : 'Ryzykant zakończony — remis.', {scores:{...session.data.bank},winner});
+  return true;
+}
+
 function handleRisk(socket, session, data) {
-  if (data.action === 'pick') {
-    if (session.data.turn !== socket.id) return gameError(socket,'Teraz kolej partnera.');
-    const used = session.data.picks[socket.id] || 0;
-    if (used >= RISK_MAX_PICKS_PER_TURN) return gameError(socket,'Wykorzystałeś już 2 ryzyka w tej turze.');
-
-    const index = Number(data.index);
-    if (!Number.isInteger(index) || index < 0 || index >= session.data.values.length) return;
-    const value = session.data.values[index];
-    if (value === null || value === undefined) return;
-
-    session.data.picks[socket.id] = used + 1;
-    session.data.bank[socket.id] += value;
-    session.data.values[index] = null;
-
-    emitGame(socket.id, {
-      game:'risk', sessionId:session.id, active:true, round:session.round,
-      score:session.data.bank[socket.id],
-      opponentScore:session.data.bank[socket.id === session.a ? session.b : session.a],
-      scores:{...session.data.bank},
-      revealed:{index,value},
-      picksUsed:session.data.picks[socket.id],
-      picksLeft:Math.max(0,RISK_MAX_PICKS_PER_TURN-session.data.picks[socket.id]),
-      status:value>=0?`+${value} punktów.`:`${value} punktów.`
-    });
-
-    const other = socket.id === session.a ? session.b : session.a;
-    emitGame(other, {
-      game:'risk', sessionId:session.id, active:true, round:session.round,
-      score:session.data.bank[other],
-      opponentScore:session.data.bank[socket.id],
-      scores:{...session.data.bank},
-      status:'Partner wybrał pole.'
-    });
-
-    if (session.data.picks[socket.id] >= RISK_MAX_PICKS_PER_TURN) {
-      session.data.turn = other;
-      session.data.selected = Object.create(null);
-      session.data.picks[socket.id] = 0;
-      session.round++;
-      if (session.round > GAME_MAX_ROUNDS) {
-        const winner = session.data.bank[session.a] === session.data.bank[session.b] ? null :
-          (session.data.bank[session.a] > session.data.bank[session.b] ? session.a : session.b);
-        return finishGame(session, winner ? 'Ryzykant zakończony — mamy zwycięzcę.' : 'Ryzykant zakończony — remis.', {
-          scores:{...session.data.bank}, winner
-        });
-      }
-      session.data.values = [1,3,5,-2,-5].sort(()=>Math.random()-.5);
-      session.data.picks[other] = 0;
-      emitRiskState(session, 'Limit 2 ryzyk wykorzystany. Tura partnera.');
+  const other = socket.id === session.a ? session.b : session.a;
+  if(data.action === 'pick'){
+    if(session.data.turn !== socket.id) return gameError(socket,'To nie Twoja tura.');
+    const used=session.data.picks[socket.id]||0;
+    if(used>=RISK_MAX_PICKS_PER_TURN) return gameError(socket,'Wykorzystałeś już 2 ryzyka w tej turze.');
+    const index=Number(data.index);
+    if(!Number.isInteger(index)||index<0||index>=session.data.values.length) return;
+    const value=session.data.values[index];
+    if(value===null||value===undefined) return gameError(socket,'To pole jest już odkryte.');
+    session.data.picks[socket.id]=used+1;
+    session.data.bank[socket.id]+=value;
+    session.data.values[index]=null;
+    session.data.revealed[socket.id]={index,value};
+    const picksLeft=Math.max(0,RISK_MAX_PICKS_PER_TURN-session.data.picks[socket.id]);
+    emitGame(socket.id,{game:'risk',sessionId:session.id,active:true,round:session.round,score:session.data.bank[socket.id],opponentScore:session.data.bank[other],scores:{...session.data.bank},myTurn:true,picksUsed:session.data.picks[socket.id],picksLeft,revealed:{index,value},status:value>=0?`+${value} punktów.`:`${value} punktów.`});
+    emitGame(other,{game:'risk',sessionId:session.id,active:true,round:session.round,score:session.data.bank[other],opponentScore:session.data.bank[socket.id],scores:{...session.data.bank},myTurn:false,picksUsed:session.data.picks[other]||0,picksLeft:Math.max(0,RISK_MAX_PICKS_PER_TURN-(session.data.picks[other]||0)),status:'Partner odkrył pole.'});
+    if(session.data.picks[socket.id]>=RISK_MAX_PICKS_PER_TURN){
+      session.data.turn=other; session.data.picks[socket.id]=0; session.data.picks[other]=0; session.round++;
+      if(finishRiskIfNeeded(session)) return;
+      resetRiskBoard(session);
+      emitRiskState(session,'Limit 2 ryzyk wykorzystany. Tura partnera.');
     }
     return;
   }
-
-  if (data.action === 'continue' || data.action === 'stop') {
-    if (session.data.turn !== socket.id) return gameError(socket,'To nie Twoja tura.');
-    const used = session.data.picks[socket.id] || 0;
-    if (used < 1) return gameError(socket,'Najpierw odkryj pole.');
-
-    if (data.action === 'stop' || used >= RISK_MAX_PICKS_PER_TURN) {
-      const other = socket.id === session.a ? session.b : session.a;
-      session.data.turn = other;
-      session.data.selected = Object.create(null);
-      session.data.picks[socket.id] = 0;
-      session.data.picks[other] = 0;
-      session.round++;
+  if(data.action==='continue'||data.action==='stop'){
+    if(session.data.turn!==socket.id) return gameError(socket,'To nie Twoja tura.');
+    const used=session.data.picks[socket.id]||0;
+    if(used<1) return gameError(socket,'Najpierw odkryj pole.');
+    if(data.action==='stop'){
+      session.data.turn=other; session.data.picks[socket.id]=0; session.data.picks[other]=0; session.round++;
+      if(finishRiskIfNeeded(session)) return;
+      resetRiskBoard(session); emitRiskState(session,'Zachowujesz punkty. Tura partnera.'); return;
     }
-
-    if (session.round > GAME_MAX_ROUNDS) {
-      const winner = session.data.bank[session.a] === session.data.bank[session.b] ? null :
-        (session.data.bank[session.a] > session.data.bank[session.b] ? session.a : session.b);
-      return finishGame(session, winner ? 'Ryzykant zakończony — mamy zwycięzcę.' : 'Ryzykant zakończony — remis.', {
-        scores:{...session.data.bank}, winner
-      });
-    }
-
-    session.data.values = [1,3,5,-2,-5].sort(()=>Math.random()-.5);
-    emitRiskState(session, data.action === 'stop' ? 'Zachowujesz punkty. Tura partnera.' : 'Ryzykujesz dalej.');
+    if(used>=RISK_MAX_PICKS_PER_TURN) return gameError(socket,'Limit ryzyka został wykorzystany.');
+    resetRiskBoard(session);
+    emitRiskState(session,'Nowe zakryte pola — możesz ryzykować dalej.');
   }
 }
 
@@ -1129,6 +1148,7 @@ function cleanupRateState(socketId) {
   messageRate.delete(socketId);
   reportRate.delete(socketId);
   gameRate.delete(socketId);
+  reactionRate.delete(socketId);
 }
 
 /* ============================================================
@@ -1152,8 +1172,9 @@ io.on(
 
     socket.on(
       'startChat',
-      () => {
+      data => {
         if (!isConnected(socket.id)) return;
+        publicProfiles.set(socket.id, sanitizePublicProfile(data?.profile));
 
         // START jest idempotentny: kliknięcie ponownie nie tworzy
         // drugiego połączenia ani nie pozwala połączyć użytkownika z samym sobą.
@@ -1221,23 +1242,58 @@ io.on(
           return;
         }
 
+        const messageId = randomId();
         const payload = {
           type: 'text',
-          content:
-            rawText.slice(
-              0,
-              MAX_MESSAGE_LENGTH
-            )
+          messageId,
+          content: rawText.slice(0, MAX_MESSAGE_LENGTH)
         };
-
-        io.to(
-          partnerId
-        ).emit(
-          'receiveMessage',
-          payload
-        );
+        chatMessageRegistry.set(messageId, {
+          a: socket.id,
+          b: partnerId,
+          createdAt: Date.now()
+        });
+        io.to(socket.id).emit('receiveMessage', { ...payload, fromSelf:true });
+        io.to(partnerId).emit('receiveMessage', { ...payload, fromSelf:false });
       }
     );
+
+    /* ========================================================
+       PISANIE NA ŻYWO + REAKCJE
+    ======================================================== */
+
+    socket.on('profile:update', data => {
+      if(!data?.profile) return;
+      publicProfiles.set(socket.id, sanitizePublicProfile(data.profile));
+      const partnerId=getPartner(socket.id);
+      if(partnerId) io.to(partnerId).emit('partnerProfile', publicProfiles.get(socket.id));
+    });
+
+    socket.on('typing', active => {
+      const partnerId = getPartner(socket.id);
+      if(!partnerId) return;
+      io.to(partnerId).emit('typing', active === true);
+    });
+
+    socket.on('reactMessage', data => {
+      if(!allowBurst(reactionRate, socket.id, 30, 10_000)) return;
+      const partnerId = getPartner(socket.id);
+      if(!partnerId || !data || typeof data.messageId !== 'string') return;
+      const entry = chatMessageRegistry.get(data.messageId);
+      if(!entry || !((entry.a===socket.id && entry.b===partnerId)||(entry.b===socket.id && entry.a===partnerId))) return;
+      const allowed = new Set(['❤️','😂','😮','👍','🔥']);
+      let reaction = allowed.has(data.reaction) ? data.reaction : '';
+      let users = messageReactions.get(data.messageId);
+      if(!users){ users=new Map(); messageReactions.set(data.messageId, users); }
+      if(reaction && users.get(socket.id) === reaction) reaction='';
+      if(reaction) users.set(socket.id, reaction); else users.delete(socket.id);
+      const counts = new Map();
+      for(const r of users.values()) counts.set(r,(counts.get(r)||0)+1);
+      const current = users.get(socket.id) || '';
+      const payload={messageId:data.messageId,reaction:current,count:current?(counts.get(current)||1):0,counts:Object.fromEntries(counts),fromSelf:false};
+      io.to(socket.id).emit('messageReaction',{...payload,fromSelf:true});
+      io.to(partnerId).emit('messageReaction',payload);
+    });
 
     /* ========================================================
        ZDJĘCIE
@@ -1630,6 +1686,10 @@ setInterval(() => {
     const fresh = times.filter(t => now - t < 60_000);
     if (fresh.length) reportRate.set(id, fresh); else reportRate.delete(id);
   }
+  for (const [id, times] of reactionRate) {
+    const fresh = times.filter(t => now - t < 10_000);
+    if (fresh.length) reactionRate.set(id, fresh); else reactionRate.delete(id);
+  }
 }, 60_000);
 
 /* ============================================================
@@ -1658,6 +1718,11 @@ setInterval(
   },
   10 * 1000
 );
+
+setInterval(() => {
+  const cutoff=Date.now()-15*60_000;
+  for(const [id,e] of chatMessageRegistry){if(e.createdAt<cutoff){chatMessageRegistry.delete(id);messageReactions.delete(id);}}
+},60_000);
 
 /* ============================================================
    START SERWERA
