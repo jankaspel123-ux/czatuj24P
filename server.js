@@ -58,6 +58,59 @@ app.use((req, res, next) => {
 server.keepAliveTimeout = 65000;
 server.headersTimeout = 70000;
 
+// Google AdSense / ads.txt — publisher ID zostanie uzupełniony po otrzymaniu go z AdSense.
+// Nie wolno wpisywać losowego ID, ponieważ Google wymaga dokładnie ID z konta wydawcy.
+const ADS_TXT_PUBLISHER_ID = 'pub-5073295199353493';
+
+const SITEMAP_URLS = [
+  '/',
+  '/jak-dziala',
+  '/bezpieczenstwo',
+  '/zasady',
+  '/regulamin',
+  '/polityka-prywatnosci',
+  '/kontakt'
+];
+
+app.get('/ads.txt', (req, res) => {
+  const publisherId = String(ADS_TXT_PUBLISHER_ID).trim();
+  res.status(200);
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=300');
+  if (!/^pub-\d{16}$/.test(publisherId)) {
+    return res.send('# Czatuj24 ads.txt\n# Uzupełnij ADS_TXT_PUBLISHER_ID dokładnym ID wydawcy z Google AdSense.\n');
+  }
+  return res.send(`google.com, ${publisherId}, DIRECT, f08c47fec0942fa0\n`);
+});
+
+// Sitemap jest obsługiwany bezpośrednio przez Express przed middleware statycznym,
+// dzięki czemu /sitemap.xml nigdy nie może zostać potraktowane jako index.html.
+app.get('/sitemap.xml', (req, res) => {
+  const body = SITEMAP_URLS
+    .map(url => `  <url><loc>${CANONICAL_ORIGIN}${url}</loc></url>`)
+    .join('\n');
+  const xml = `<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n${body}\n</urlset>\n`;
+  res.status(200);
+  res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  return res.send(xml);
+});
+
+app.get('/robots.txt', (req, res) => {
+  res.status(200);
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=300');
+  return res.send([
+    'User-agent: *',
+    'Allow: /',
+    'Disallow: /uploads/',
+    'Disallow: /healthz',
+    '',
+    `Sitemap: ${CANONICAL_ORIGIN}/sitemap.xml`,
+    ''
+  ].join('\n'));
+});
+
 app.get('/healthz', (req, res) => {
   res.status(200).json({
     ok: true,
@@ -171,24 +224,6 @@ function renderSeoPage(req, res, page) {
   }).map(([href,label]) => `<a href=\"${href}\">${escapeHtml(label)}</a>`).join('');
   res.status(200).type('html').send(`<!doctype html><html lang=\"pl\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><meta name=\"robots\" content=\"index,follow,max-image-preview:large\"><meta name=\"description\" content=\"${escapeHtml(page.description)}\"><link rel=\"canonical\" href=\"${canonical}\"><meta property=\"og:type\" content=\"article\"><meta property=\"og:site_name\" content=\"Czatuj24\"><meta property=\"og:locale\" content=\"pl_PL\"><meta property=\"og:title\" content=\"${escapeHtml(page.title)}\"><meta property=\"og:description\" content=\"${escapeHtml(page.description)}\"><meta property=\"og:url\" content=\"${canonical}\"><title>${escapeHtml(page.title)}</title><style>:root{color-scheme:dark;--g:#39ff14;--bg:#030703;--panel:#0a110b;--text:#effff0;--muted:#91a793;--line:rgba(57,255,20,.2)}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,rgba(57,255,20,.08),transparent 32%),linear-gradient(135deg,#010201,#071007 60%,#020402);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;line-height:1.65}main{width:min(900px,calc(100% - 28px));margin:0 auto;padding:30px 0 45px}.brand{display:inline-flex;align-items:center;gap:10px;color:var(--text);text-decoration:none;font-weight:900;font-size:1.2rem}.brand b{color:var(--g)}.hero,section{border:1px solid var(--line);background:rgba(10,17,11,.82);border-radius:20px;box-shadow:0 18px 60px rgba(0,0,0,.25)}.hero{padding:24px;margin:20px 0 12px}.hero h1{margin:0 0 8px;font-size:clamp(1.65rem,4vw,2.35rem);letter-spacing:-.04em}.hero p{margin:0;color:var(--muted)}section{padding:19px 21px;margin:10px 0}h2{margin:0 0 6px;font-size:1rem;color:var(--g)}section p{margin:0;color:#d8e6d9;font-size:.9rem}nav{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:16px;padding:12px 0;border-top:1px solid var(--line)}nav a{color:var(--g);text-decoration:none;font-size:.82rem}nav a:hover{text-decoration:underline}.note{margin-top:15px;color:var(--muted);font-size:.72rem}@media(max-width:600px){main{padding-top:18px}.hero{padding:18px}.hero h1{font-size:1.55rem}section{padding:15px}section p{font-size:.82rem}}</style></head><body><main><a class=\"brand\" href=\"/\">Czatuj<b>24</b></a><div class=\"hero\"><h1>${escapeHtml(page.h1)}</h1><p>${escapeHtml(page.description)}</p></div>${sections}<nav aria-label=\"Informacje o Czatuj24\">${nav}</nav><p class=\"note\">Czatuj24 – darmowy czat online 1 na 1 bez rejestracji.</p></main></body></html>`);
 }
-
-app.get('/robots.txt', (req, res) => {
-  res.status(200).type('text/plain').send([
-    'User-agent: *',
-    'Allow: /',
-    'Disallow: /uploads/',
-    'Disallow: /healthz',
-    '',
-    'Sitemap: https://www.czatuj24.pl/sitemap.xml',
-    ''
-  ].join('\n'));
-});
-
-app.get('/sitemap.xml', (req, res) => {
-  const urls = ['/', ...Object.keys(SEO_PAGES)];
-  const body = urls.map(url => `<url><loc>${CANONICAL_ORIGIN}${url}</loc></url>`).join('');
-  res.status(200).type('application/xml').send(`<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">${body}</urlset>`);
-});
 
 for (const [route, page] of Object.entries(SEO_PAGES)) {
   app.get(route, (req, res) => renderSeoPage(req, res, page));
