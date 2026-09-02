@@ -1756,3 +1756,4 @@ process.on('unhandledRejection', reason => {
   console.error('Nieobsłużone odrzucenie Promise:', reason);
 });
 
+.
