@@ -413,6 +413,8 @@ function isLikelyImageFile(filePath, mime) {
 ============================================================ */
 
 app.post('/upload', (req, res) => {
+  const ip = String(req.ip || req.socket.remoteAddress || 'unknown');
+  if (!allowBurst(uploadRate, ip, 6, 60_000)) return res.status(429).json({error:'Za dużo prób przesłania pliku. Spróbuj później.'});
   upload.single('photo')(req, res, err => {
     if (err) {
       return res.status(400).json({
@@ -726,12 +728,15 @@ const gameRate = new Map();
 const messageRate = new Map();
 const reportRate = new Map();
 const reactionRate = new Map();
+const profileRate = new Map();
+const chatControlRate = new Map();
+const uploadRate = new Map();
 
 const GAME_INVITE_TIMEOUT = 30 * 1000;
 const GAME_MAX_DURATION = 10 * 60 * 1000;
 const GAME_ACTION_COOLDOWN = 140;
-const DRAW_ACTION_COOLDOWN = 45;
-const DRAW_MAX_STROKES_PER_SECOND = 24;
+const DRAW_ACTION_COOLDOWN = 32;
+const DRAW_MAX_STROKES_PER_SECOND = 28;
 const GAME_MAX_ROUNDS = 8;
 const DRAW_MAX_ROUNDS = 5;
 const RISK_MAX_PICKS_PER_TURN = 2;
@@ -1078,6 +1083,7 @@ function rotateDrawRound(session, winnerId) {
 function handleDraw(socket, session, data) {
   if (data.action === 'stroke') {
     if (socket.id !== session.data.drawer) return;
+    if (!allowBurst(gameRate, `${socket.id}:draw-stroke`, DRAW_MAX_STROKES_PER_SECOND, 1000)) return;
     const from = data.from, to = data.to;
     if (!from || !to) return;
     const clean = p => ({
@@ -1392,6 +1398,8 @@ function cleanupRateState(socketId) {
   reportRate.delete(socketId);
   gameRate.delete(socketId);
   reactionRate.delete(socketId);
+  profileRate.delete(socketId);
+  chatControlRate.delete(socketId);
 }
 
 /* ============================================================
@@ -1416,6 +1424,7 @@ io.on(
     socket.on(
       'startChat',
       data => {
+        if (!allowBurst(chatControlRate, socket.id, 8, 30_000)) return;
         if (!isConnected(socket.id)) return;
         publicProfiles.set(socket.id, sanitizePublicProfile(data?.profile));
 
@@ -1506,6 +1515,7 @@ io.on(
     ======================================================== */
 
     socket.on('profile:update', data => {
+      if(!allowBurst(profileRate, socket.id, 8, 10_000)) return;
       if(!data?.profile) return;
       publicProfiles.set(socket.id, sanitizePublicProfile(data.profile));
       const partnerId=getPartner(socket.id);
@@ -1513,6 +1523,7 @@ io.on(
     });
 
     socket.on('typing', active => {
+      if(!allowBurst(profileRate, socket.id, 40, 10_000)) return;
       const partnerId = getPartner(socket.id);
       if(!partnerId) return;
       io.to(partnerId).emit('typing', active === true);
@@ -1825,6 +1836,7 @@ io.on(
     socket.on(
       'stopChat',
       () => {
+        if (!allowBurst(chatControlRate, socket.id, 12, 30_000)) return;
         if (
           !pairs[socket.id] &&
           !waitingUsers.includes(
@@ -1932,6 +1944,14 @@ setInterval(() => {
   for (const [id, times] of reactionRate) {
     const fresh = times.filter(t => now - t < 10_000);
     if (fresh.length) reactionRate.set(id, fresh); else reactionRate.delete(id);
+  }
+  for (const [id, times] of profileRate) {
+    const fresh = times.filter(t => now - t < 10_000);
+    if (fresh.length) profileRate.set(id, fresh); else profileRate.delete(id);
+  }
+  for (const [id, times] of uploadRate) {
+    const fresh = times.filter(t => now - t < 60_000);
+    if (fresh.length) uploadRate.set(id, fresh); else uploadRate.delete(id);
   }
 }, 60_000);
 
