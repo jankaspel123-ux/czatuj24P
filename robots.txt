@@ -2,5 +2,8 @@ User-agent: *
 Allow: /
 Disallow: /uploads/
 Disallow: /healthz
+Disallow: /api/
+Disallow: /chat/
+Disallow: /room/
 
 Sitemap: https://www.czatuj24.pl/sitemap.xml

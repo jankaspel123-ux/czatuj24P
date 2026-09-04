@@ -11,7 +11,15 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: true,
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      try {
+        const u = new URL(origin);
+        const allowed = u.protocol === 'https:' && (u.hostname === 'www.czatuj24.pl' || u.hostname === 'czatuj24.pl');
+        const local = u.hostname === 'localhost' || u.hostname === '127.0.0.1' || u.hostname === '::1';
+        return callback(null, allowed || local);
+      } catch { return callback(null, false); }
+    },
     credentials: false
   },
   maxHttpBufferSize: 256 * 1024,
@@ -64,13 +72,20 @@ const ADS_TXT_PUBLISHER_ID = 'pub-5073295199353493';
 
 const SITEMAP_URLS = [
   '/',
+  '/anonimowy-czat',
+  '/czat-1-na-1',
+  '/czat-bez-rejestracji',
+  '/czat-online',
+  '/czat-z-nieznajomymi',
+  '/gry-online-1-na-1',
   '/jak-dziala',
   '/faq',
   '/bezpieczenstwo',
+  '/6obcy-alternatywa',
+  '/kontakt',
   '/zasady',
   '/regulamin',
-  '/polityka-prywatnosci',
-  '/kontakt'
+  '/polityka-prywatnosci'
 ];
 
 app.get('/ads.txt', (req, res) => {
@@ -128,123 +143,214 @@ app.use(express.static(publicPath, {
   }
 }));
 app.use(express.json({ limit: '100kb' }));
+app.use(express.urlencoded({ extended: false, limit: '50kb' }));
+
+// Dynamic/technical paths must never become accidental SEO landing pages.
+app.use((req, res, next) => {
+  if (/^\/(?:chat|room|rooms|match|socket|api)(?:\/|$)/i.test(req.path)) {
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  }
+  next();
+});
 
 /* ============================================================
    GOOGLE / SEO — ROBOTS, SITEMAP I PUBLICZNE STRONY
    Te adresy są lekkie, statyczne logicznie i nie korzystają z Socket.IO.
 ============================================================ */
 const SEO_PAGES = {
-  '/jak-dziala': {
-    title: 'Jak działa Czatuj24? – Darmowy czat online 16+',
-    description: 'Jak działa Czatuj24: losowe rozmowy 1 na 1 bez rejestracji, profil lokalny, reakcje, zdjęcie na sesję i gry.',
-    h1: 'Jak działa Czatuj24?',
+  '/anonimowy-czat': {
+    title: 'Anonimowy czat online bez rejestracji | Czatuj24',
+    description: 'Anonimowy czat online bez rejestracji. Rozmawiaj 1 na 1 z losową osobą bez zakładania konta i bez logowania.',
+    h1: 'Anonimowy czat online bez rejestracji',
     sections: [
-      ['Czat online bez rejestracji', 'Kliknij START, aby dołączyć do kolejki. Czatuj24 szuka dostępnej osoby i łączy dwie osoby w bieżącej sesji 1 na 1.'],
-      ['Profil podczas rozmowy', 'Ustawienia profilu są przechowywane lokalnie w przeglądarce. Podczas połączenia partner może otrzymać nick, wiek, cel rozmowy, status i biogram na potrzeby bieżącej sesji.'],
-      ['Wiadomości i reakcje', 'Możesz pisać, otrzymywać sygnał „Partner pisze…” i reagować na wiadomości. Standardowa rozmowa nie jest udostępniana jako trwała historia po zakończeniu sesji.'],
-      ['Zdjęcie', 'W jednej sesji można wysłać maksymalnie jedno zdjęcie. Nie wysyłaj nagości ani materiałów intymnych.'],
-      ['Gry 1 na 1', 'Po połączeniu możesz wysłać partnerowi zaproszenie do jednej z dostępnych gier. Gra rozpoczyna się po akceptacji zaproszenia.'],
-      ['Wiek', 'Czatuj24 jest przeznaczony wyłącznie dla osób, które ukończyły 16 lat. Serwis nie deklaruje pełnej weryfikacji tożsamości ani wieku.']
+      ['Anonimowa rozmowa 1 na 1', 'Czatuj24 łączy dwie osoby w bieżącej sesji rozmowy. Nie musisz zakładać konta ani tworzyć publicznego profilu.'],
+      ['Jak rozpocząć czat?', 'Kliknij START, poczekaj na dopasowanie i rozpocznij rozmowę. Po zakończeniu możesz ponownie rozpocząć wyszukiwanie kolejnej osoby.'],
+      ['Bez rejestracji i logowania', 'Podstawowe ustawienia profilu są przechowywane lokalnie w przeglądarce. Bieżącej rozmowie służą tylko informacje potrzebne do działania funkcji partnera.'],
+      ['Prywatność i bezpieczeństwo', 'Nie podawaj haseł, adresu zamieszkania, danych płatniczych ani innych wrażliwych informacji. Możesz zgłosić naruszenie zasad i szybko zakończyć rozmowę.'],
+      ['Dodatkowe funkcje', 'Podczas rozmowy dostępne są reakcje, jedno zdjęcie na sesję oraz gry 1 na 1, których uruchomienie wymaga akceptacji partnera.'],
+      ['Dla kogo jest serwis?', 'Czatuj24 jest przeznaczone dla osób, które ukończyły 16 lat. Serwis nie deklaruje pełnej weryfikacji wieku ani tożsamości.']
+    ]
+  },
+  '/czat-1-na-1': {
+    title: 'Czat 1 na 1 z losową osobą online | Czatuj24',
+    description: 'Czat 1 na 1 z losową osobą online. Zacznij rozmowę bez rejestracji, bez logowania i bez publicznego profilu.',
+    h1: 'Czat 1 na 1 z losową osobą online',
+    sections: [
+      ['Rozmowa tylko z jednym partnerem', 'Po dopasowaniu otrzymujesz prywatną sesję 1 na 1. Kolejny partner jest wyszukiwany dopiero po zakończeniu bieżącej rozmowy.'],
+      ['Prosty start', 'Nie musisz przechodzić przez rozbudowaną konfigurację. Ustaw lokalny profil, kliknij START i poczekaj na połączenie.'],
+      ['Profil podczas sesji', 'Partner może zobaczyć wybrane informacje udostępniane na potrzeby rozmowy, takie jak nick, wiek, cel, status i biogram. Profil nie jest publiczną stroną.'],
+      ['Zakończenie i kolejna rozmowa', 'STOP kończy bieżącą sesję. Następnie możesz wrócić do wyszukiwania kolejnej osoby.'],
+      ['Bezpieczne korzystanie', 'Szanuj rozmówcę, nie wysyłaj treści seksualnych i korzystaj z funkcji zgłaszania, gdy ktoś narusza zasady.']
+    ]
+  },
+  '/czat-bez-rejestracji': {
+    title: 'Czat bez rejestracji i logowania | Czatuj24',
+    description: 'Czat bez rejestracji i logowania. Rozmawiaj z losową osobą online bez zakładania konta.',
+    h1: 'Czat bez rejestracji i logowania',
+    sections: [
+      ['Nie zakładasz konta', 'Czatuj24 nie wymaga klasycznej rejestracji konta. Możesz rozpocząć rozmowę bez podawania imienia czy tworzenia publicznego profilu.'],
+      ['Ustawienia zapisane lokalnie', 'Wybrane ustawienia profilu i lokalne statystyki są przechowywane w przeglądarce użytkownika.'],
+      ['Co dzieje się podczas rozmowy?', 'System dopasowuje dostępne osoby i utrzymuje bieżącą sesję 1 na 1. Po zakończeniu stan rozmowy jest czyszczony.'],
+      ['Bezpieczeństwo', 'Brak rejestracji nie oznacza pełnej anonimowości technicznej. Infrastruktura może przetwarzać dane potrzebne do działania i ochrony serwisu.']
+    ]
+  },
+  '/czat-online': {
+    title: 'Czat online z losowymi osobami | Czatuj24',
+    description: 'Darmowy czat online z losowymi osobami. Rozmowy 1 na 1 bez rejestracji i bez logowania.',
+    h1: 'Darmowy czat online z losowymi osobami',
+    sections: [
+      ['Losowe dopasowanie', 'Kliknięcie START dodaje Cię do kolejki. Gdy znajdzie się druga dostępna osoba, serwis łączy Was w rozmowę 1 na 1.'],
+      ['Rozmowa w przeglądarce', 'Czat działa bez instalowania osobnej aplikacji. Interfejs jest przygotowany do korzystania na telefonie i komputerze.'],
+      ['Funkcje rozmowy', 'Możesz wysyłać wiadomości, reagować, korzystać z profilu sesyjnego, wysłać jedno zdjęcie i zaprosić partnera do gry.'],
+      ['Masz kontrolę', 'Rozmowę można zakończyć, a naruszenia zasad można zgłosić.']
+    ]
+  },
+  '/czat-z-nieznajomymi': {
+    title: 'Czat z nieznajomymi online | Czatuj24',
+    description: 'Czat z nieznajomymi online w formule 1 na 1. Rozmawiaj z losowo dobraną osobą bez rejestracji.',
+    h1: 'Czat z nieznajomymi online',
+    sections: [
+      ['Rozmawiaj z nowymi osobami', 'Czatuj24 służy do spontanicznych rozmów 1 na 1 z losowo dobranym rozmówcą.'],
+      ['Nie musisz ujawniać tożsamości', 'Do rozpoczęcia rozmowy nie potrzebujesz konta ani publicznego profilu. Mimo to nie udostępniaj wrażliwych danych osobom poznanym w internecie.'],
+      ['Szanuj granice', 'Każda osoba może zakończyć rozmowę. Nie nękaj, nie groź i nie naciskaj na rozmówcę.'],
+      ['Bez treści seksualnych', 'Czatuj24 nie jest serwisem erotycznym. Zabronione są treści seksualne, pornograficzne i intymne oraz nakłanianie do ich przesyłania.']
+    ]
+  },
+  '/gry-online-1-na-1': {
+    title: 'Gry online dla 2 osób podczas czatu | Czatuj24',
+    description: 'Gry online dla dwóch osób podczas rozmowy: kółko i krzyżyk, kamień papier nożyce, rysuj i zgaduj, łańcuch słów, refleks i Ryzykant.',
+    h1: 'Gry online dla 2 osób podczas czatu',
+    sections: [
+      ['Kółko i krzyżyk', 'Klasyczna gra dla dwóch osób. Serwer pilnuje planszy i kolejności ruchów.'],
+      ['Kamień, papier, nożyce', 'Wybory są ukryte do momentu, gdy obie osoby dokonają ruchu. Gra składa się z pięciu rund.'],
+      ['Rysuj i zgaduj', 'Jedna osoba rysuje w czasie rzeczywistym, a druga próbuje odgadnąć hasło. Kolejne rundy zmieniają role.'],
+      ['Łańcuch słów', 'Gracze naprzemiennie dodają słowa zgodnie z aktualną literą. Serwer sprawdza kolejkę i powtórzenia.'],
+      ['Refleks', 'Obie osoby potwierdzają gotowość, a następnie reagują na sygnał. Wynik opiera się na czasie reakcji.'],
+      ['Ryzykant', 'Odkrywasz zakryte pola z dodatnimi lub ujemnymi wartościami i decydujesz, czy ryzykujesz dalej, czy zachowujesz wynik.'],
+      ['Jak zaprosić?', 'Wybierz grę z katalogu podczas aktywnej rozmowy. Partner musi zaakceptować zaproszenie, zanim gra się rozpocznie.']
+    ]
+  },
+  '/6obcy-alternatywa': {
+    title: 'Alternatywa dla 6obcy – anonimowy czat 1 na 1 | Czatuj24',
+    description: 'Szukasz alternatywy dla 6obcy? Czatuj24 oferuje anonimowe rozmowy 1 na 1 bez klasycznej rejestracji, z dodatkowymi funkcjami i zasadami bezpieczeństwa.',
+    h1: 'Alternatywa dla 6obcy – anonimowy czat 1 na 1',
+    sections: [
+      ['Czym jest Czatuj24?', 'Czatuj24 to niezależny polski serwis do losowych rozmów 1 na 1. Nie jest oficjalnym serwisem 6obcy i nie jest z nim powiązany.'],
+      ['Podobna intencja, własne funkcje', 'Jeśli szukasz miejsca do spontanicznej rozmowy z nieznajomą osobą, Czatuj24 oferuje dopasowanie 1 na 1 bez klasycznej rejestracji, lokalny profil, reakcje i gry.'],
+      ['Co wyróżnia Czatuj24?', 'Poza samą rozmową dostępne są gry 1 na 1, możliwość wysłania jednego zdjęcia na sesję, zgłaszanie nadużyć oraz proste zakończenie rozmowy i wyszukanie kolejnego partnera.'],
+      ['Prywatność', 'Profil nie jest publicznym katalogiem. Wybrane informacje profilowe są udostępniane partnerowi tylko na potrzeby bieżącej sesji.'],
+      ['Bezpieczeństwo', 'Serwis jest przeznaczony dla osób 16+. Zabronione są treści erotyczne, pornograficzne i intymne. Użytkownik może zgłosić naruszenie zasad.'],
+      ['Ważne rozróżnienie', 'Czatuj24 nie używa nazwy, identyfikacji wizualnej ani komunikatów sugerujących oficjalne powiązanie z marką 6obcy. Określenie „alternatywa dla 6obcy” służy wyłącznie opisowi kategorii i intencji wyszukiwania.']
+    ]
+  },
+  '/jak-dziala': {
+    title: 'Jak działa anonimowy czat 1 na 1? | Czatuj24',
+    description: 'Dowiedz się, jak działa anonimowy czat 1 na 1 Czatuj24: START, losowe dopasowanie, rozmowa, STOP, profil lokalny i bezpieczeństwo.',
+    h1: 'Jak działa anonimowy czat 1 na 1?',
+    sections: [
+      ['1. Wejdź na Czatuj24', 'Serwis działa bez klasycznej rejestracji konta. Ustawienia profilu możesz przygotować lokalnie w przeglądarce.'],
+      ['2. Kliknij START', 'Po kliknięciu START system wyszukuje dostępną osobę i tworzy połączenie 1 na 1.'],
+      ['3. Rozpocznij rozmowę', 'Po znalezieniu partnera możesz wysyłać wiadomości, reakcje, jedno zdjęcie na sesję i zaproszenia do gier.'],
+      ['4. Zadbaj o prywatność', 'Nie podawaj haseł, danych płatniczych, adresu zamieszkania ani dokumentów. Profil nie jest publicznym katalogiem.'],
+      ['5. Zakończ lub zgłoś', 'STOP kończy rozmowę. Jeśli partner narusza zasady, użyj funkcji zgłoszenia.']
     ]
   },
   '/faq': {
-    title: 'FAQ Czatuj24 – Najczęstsze pytania',
-    description: 'FAQ Czatuj24: wiek 16+, prywatność, profil, wiadomości, zgłoszenia, zdjęcia, reklamy i gry.',
-    h1: 'FAQ – najczęstsze pytania',
+    title: 'FAQ – anonimowy czat bez rejestracji | Czatuj24',
+    description: 'FAQ Czatuj24: rejestracja, anonimowość, rozmowy 1 na 1, zdjęcia, gry, bezpieczeństwo, prywatność i minimalny wiek.',
+    h1: 'FAQ – anonimowy czat bez rejestracji',
     sections: [
-      ['Czy Czatuj24 zapisuje rozmowy?', 'Standardowa rozmowa służy bieżącej sesji 1 na 1 i nie jest prowadzona jako trwała historia dostępna po jej zakończeniu. Treść przekazana w ramach zgłoszenia może zostać przetworzona w zakresie potrzebnym do analizy bezpieczeństwa.'],
-      ['Czy mój profil jest publiczny?', 'Nie. Profil nie jest publiczną stroną ani katalogiem użytkowników. Podczas połączenia partner może zobaczyć nick, wiek, cel rozmowy, status i biogram udostępnione dla bieżącej sesji.'],
-      ['Gdzie zapisuje się mój profil?', 'Ustawienia profilu są przechowywane lokalnie w przeglądarce. Część danych profilowych jest przekazywana serwerowi podczas dopasowania, aby partner mógł zobaczyć informacje przewidziane dla bieżącej sesji.'],
-      ['Czy mogę korzystać anonimowo?', 'Czatuj24 nie wymaga zakładania konta, ale nie oznacza to pełnej anonimowości. Serwis i jego infrastruktura mogą przetwarzać dane techniczne potrzebne do działania, bezpieczeństwa i diagnostyki.'],
-      ['Czy Czatuj24 sprzedaje moje dane?', 'Czatuj24 nie sprzedaje danych osobowych użytkowników. Dostawcy infrastruktury i usług zewnętrznych mogą jednak przetwarzać dane w zakresie potrzebnym do świadczenia swoich usług.'],
-      ['Czy mogę wysyłać treści erotyczne?', 'Nie. Czatuj24 nie jest serwisem erotycznym ani platformą do wymiany treści seksualnych. Zabronione są treści erotyczne, pornograficzne i intymne oraz nakłanianie do ich przesyłania.'],
-      ['Od ilu lat jest Czatuj24?', 'Od ukończenia 16 lat. Interfejs nie pozwala ustawić wieku niższego niż 16 lat. Serwis nie deklaruje pełnej weryfikacji prawdziwości podanego wieku.'],
-      ['Co zrobić, gdy ktoś narusza zasady?', 'Użyj funkcji zgłoszenia podczas rozmowy lub bezpośrednio po jej zakończeniu. Wybierz kategorię i, jeśli potrzebujesz, dodaj krótki opis.'],
-      ['Czy są reklamy?', 'Czatuj24 korzysta z Google AdSense. Zewnętrzny dostawca reklam może przetwarzać dane techniczne, cookies lub identyfikatory zgodnie z własnymi zasadami i ustawieniami reklam.'],
-      ['Jak skontaktować się z Czatuj24?', 'W sprawach serwisu, prywatności, bezpieczeństwa i problemów technicznych napisz na kontaktczatuj24@gmail.com.']
+      ['Czy Czatuj24 jest darmowy?', 'Podstawowe korzystanie z czatu jest bezpłatne. Serwis może wyświetlać reklamy.'],
+      ['Czy trzeba się rejestrować?', 'Nie. Do rozpoczęcia rozmowy nie jest wymagane klasyczne konto ani logowanie.'],
+      ['Czy trzeba podawać imię?', 'Nie. Możesz korzystać z nicku. Nie udostępniaj jednak danych, których nie chcesz ujawniać obcej osobie.'],
+      ['Czy Czatuj24 jest anonimowy?', 'Serwis nie wymaga klasycznej rejestracji, ale nie oznacza to pełnej anonimowości technicznej. Infrastruktura może przetwarzać dane potrzebne do działania i bezpieczeństwa.'],
+      ['Jak rozpocząć rozmowę?', 'Kliknij START i poczekaj na dopasowanie.'],
+      ['Jak znaleźć nowego rozmówcę?', 'Zakończ bieżącą rozmowę przyciskiem STOP, a następnie rozpocznij kolejne wyszukiwanie.'],
+      ['Czy można zakończyć rozmowę?', 'Tak. STOP kończy bieżącą sesję.'],
+      ['Czy rozmowy są zapisywane?', 'Standardowa rozmowa służy bieżącej sesji i nie jest prowadzona jako trwała historia dostępna po jej zakończeniu. Treści przekazane w zgłoszeniu mogą być przetwarzane na potrzeby bezpieczeństwa.'],
+      ['Czy można zablokować użytkownika?', 'Serwis udostępnia mechanizmy bezpieczeństwa i zgłaszania. Bieżącą rozmowę można szybko zakończyć.'],
+      ['Jak zgłosić użytkownika?', 'Podczas rozmowy użyj przycisku zgłoszenia i wybierz odpowiednią kategorię.'],
+      ['Czy można wysyłać zdjęcia?', 'Tak, maksymalnie jedno zdjęcie na sesję. Zabronione są nagość i materiały intymne.'],
+      ['Czy Czatuj24 działa na telefonie?', 'Tak. Interfejs jest przygotowany do korzystania na nowoczesnych telefonach i komputerach.'],
+      ['Czy Czatuj24 działa na komputerze?', 'Tak, aplikacja działa w nowoczesnej przeglądarce.'],
+      ['Czy można grać podczas rozmowy?', 'Tak. Dostępne są gry 1 na 1, a rozpoczęcie gry wymaga akceptacji partnera.'],
+      ['Od jakiego wieku można korzystać z serwisu?', 'Od ukończenia 16 lat. Interfejs nie pozwala ustawić niższego wieku, ale serwis nie deklaruje pełnej weryfikacji wieku.'],
+      ['Jak działa profil użytkownika?', 'Profil jest ustawieniem lokalnym. Podczas aktywnej sesji partner może otrzymać wybrane informacje profilowe przeznaczone do bieżącej rozmowy.'],
+      ['Czy mój profil jest publiczny?', 'Nie. Nie ma publicznego katalogu profili użytkowników.']
     ]
   },
   '/bezpieczenstwo': {
-    title: 'Bezpieczeństwo – Czatuj24 16+',
-    description: 'Zasady bezpiecznego korzystania z Czatuj24: 16+, granice, zakaz treści seksualnych, zgłoszenia i prywatność.',
-    h1: 'Bezpieczeństwo na Czatuj24',
+    title: 'Bezpieczeństwo i anonimowość na Czatuj24',
+    description: 'Zasady bezpiecznego korzystania z anonimowego czatu: prywatność, zgłaszanie, zdjęcia, treści seksualne i ochrona użytkowników 16+.',
+    h1: 'Bezpieczeństwo i anonimowość na Czatuj24',
     sections: [
-      ['16+ i ochrona młodszych użytkowników', 'Z serwisu mogą korzystać wyłącznie osoby, które ukończyły 16 lat. Osoby poniżej 18 lat wymagają szczególnej ostrożności i ochrony przed seksualizacją.'],
-      ['Zero treści seksualnych', 'Nie wysyłaj, nie proponuj i nie nakłaniaj do wymiany treści erotycznych, pornograficznych ani intymnych. Czatuj24 nie jest serwisem erotycznym.'],
-      ['Granice i zachowanie', 'Nie groź, nie nękaj, nie wyłudzaj, nie oszukuj, nie podszywaj się pod inne osoby i respektuj odmowę rozmówcy.'],
-      ['Zgłaszanie nadużyć', 'Partnera można zgłosić podczas rozmowy lub bezpośrednio po jej zakończeniu. Zgłoszenia są analizowane indywidualnie.'],
-      ['Zdjęcia', 'W jednej sesji można wysłać maksymalnie jedno zdjęcie. Nie wysyłaj nagości ani materiałów intymnych.'],
-      ['Prywatność', 'Nie udostępniaj obcej osobie haseł, adresu zamieszkania, dokumentów, danych płatniczych ani innych wrażliwych informacji.']
+      ['Nie udostępniaj wrażliwych danych', 'Nie podawaj haseł, kodów, danych bankowych, dokumentów, adresu zamieszkania ani innych informacji, które mogą narazić Cię na szkodę.'],
+      ['16+ i szczególna ochrona osób poniżej 18 lat', 'Korzystanie z serwisu jest dozwolone od ukończenia 16 lat. Osoby poniżej 18 lat wymagają szczególnej ochrony przed seksualizacją i naciskiem na przesyłanie intymnych materiałów.'],
+      ['Zero treści seksualnych', 'Zabronione jest wysyłanie, proponowanie, nakłanianie lub wymuszanie wymiany treści erotycznych, pornograficznych albo intymnych.'],
+      ['Zgłaszanie', 'Jeżeli partner narusza zasady, użyj zgłoszenia podczas rozmowy lub bezpośrednio po jej zakończeniu.'],
+      ['Zakończenie rozmowy', 'Nie musisz kontynuować rozmowy. Użyj STOP, gdy chcesz zakończyć sesję.']
     ]
   },
   '/zasady': {
-    title: 'Zasady Czatuj24 – Zasady korzystania',
-    description: 'Najważniejsze zasady Czatuj24: 16+, szacunek, zakaz treści seksualnych, prywatność i zgłaszanie nadużyć.',
+    title: 'Zasady Czatuj24 – bezpieczeństwo i kultura rozmowy',
+    description: 'Zasady korzystania z Czatuj24: 16+, szacunek, zakaz treści seksualnych, prywatność, zdjęcia i zgłaszanie nadużyć.',
     h1: 'Zasady korzystania z Czatuj24',
     sections: [
-      ['1. Korzystaj od 16 roku życia', 'Serwis jest przeznaczony dla osób, które ukończyły 16 lat. Nie podawaj fałszywego wieku i nie obchodź ograniczeń.'],
-      ['2. Szanuj rozmówcę', 'Nie nękaj, nie groź, nie obrażaj i nie wysyłaj spamu. Szanuj granice oraz odmowę drugiej osoby.'],
-      ['3. Zakaz treści erotycznych i seksualnych', 'Nie wysyłaj ani nie proponuj treści erotycznych, pornograficznych lub intymnych. Zabronione są również próby nakłaniania lub wymuszania takich materiałów.'],
-      ['4. Szczególna ochrona osób poniżej 18 lat', 'Nie proś, nie namawiaj i nie wywieraj presji na osobę poniżej 18 lat w sprawie nagich lub intymnych zdjęć albo materiałów.'],
-      ['5. Zgłaszaj problemy', 'Jeśli rozmówca narusza zasady, użyj przycisku zgłoszenia i wybierz odpowiednią kategorię.'],
-      ['6. Dbaj o prywatność', 'Nie udostępniaj pochopnie danych osobowych, haseł, adresów ani danych płatniczych.']
+      ['1. Minimalny wiek: 16 lat', 'Z serwisu mogą korzystać wyłącznie osoby, które ukończyły 16 lat.'],
+      ['2. Szanuj rozmówcę', 'Nie groź, nie nękaj, nie obrażaj, nie spamuj i respektuj odmowę.'],
+      ['3. Zakaz treści seksualnych', 'Czatuj24 nie jest serwisem erotycznym. Zabronione są treści erotyczne, pornograficzne i intymne oraz nakłanianie do ich przesyłania.'],
+      ['4. Zdjęcia', 'Maksymalnie jedno zdjęcie na sesję. Nie wysyłaj nagości ani materiałów intymnych.'],
+      ['5. Prywatność', 'Nie żądaj od innych danych wrażliwych i nie udostępniaj własnych danych, jeśli nie jest to konieczne.'],
+      ['6. Zgłoszenia', 'Naruszenia zasad można zgłaszać w aplikacji.'],
+      ['7. Gry', 'Zaproszenie do gry wymaga akceptacji drugiej osoby. Nie używaj gier do obchodzenia zasad bezpieczeństwa.']
     ]
   },
   '/regulamin': {
-    title: 'Regulamin Czatuj24 – Darmowy czat online 16+',
-    description: 'Regulamin Czatuj24: zasady korzystania z czatu, minimalny wiek 16 lat, zakazane treści, zgłoszenia i gry.',
+    title: 'Regulamin Czatuj24',
+    description: 'Regulamin korzystania z Czatuj24: zakres usługi, wymagania wiekowe, zasady rozmów, zdjęć, gier, zgłoszeń i bezpieczeństwa.',
     h1: 'Regulamin Czatuj24',
     sections: [
-      ['1. Postanowienia ogólne', 'Czatuj24 udostępnia usługę losowych rozmów 1 na 1 bez konieczności zakładania konta. Korzystanie z serwisu oznacza obowiązek przestrzegania prawa i zasad opisanych na stronie.'],
-      ['2. Wiek użytkownika', 'Korzystanie z serwisu jest dozwolone wyłącznie po ukończeniu 16 lat. Interfejs nie pozwala ustawić niższego wieku. Serwis nie deklaruje pełnej weryfikacji tożsamości ani wieku.'],
-      ['3. Odpowiedzialność za treści', 'Użytkownik odpowiada za treści, które wysyła drugiej osobie, i nie może wykorzystywać serwisu do działań bezprawnych, oszukańczych lub naruszających prawa innych osób.'],
-      ['4. Zakazane zachowania', 'Zakazane są w szczególności groźby, nękanie, uporczywe naruszanie granic, spam, oszustwa, podszywanie się, próby obchodzenia zabezpieczeń oraz inne naruszenia prawa lub zasad serwisu.'],
-      ['5. Treści erotyczne i seksualne', 'Czatuj24 nie jest serwisem erotycznym. Zabronione jest wysyłanie, proponowanie, nakłanianie, wymuszanie lub organizowanie wymiany treści erotycznych, pornograficznych i intymnych.'],
-      ['6. Osoby poniżej 18 lat', 'Zabronione jest proponowanie, proszenie, nakłanianie lub wywieranie presji na osobę poniżej 18 lat w sprawie wysyłania, odbierania lub udostępniania nagich lub intymnych materiałów.'],
-      ['7. Zdjęcia', 'W jednej sesji można wysłać maksymalnie jedno zdjęcie. Użytkownik nie powinien wysyłać nagości ani materiałów intymnych.'],
-      ['8. Zgłoszenia i działania bezpieczeństwa', 'Partnera można zgłosić podczas rozmowy lub bezpośrednio po jej zakończeniu. W zależności od rodzaju naruszenia serwis może zakończyć sesję, ograniczyć funkcje lub zablokować dostęp.'],
-      ['9. Gry i funkcje dodatkowe', 'Gry 1 na 1 są dostępne po połączeniu z partnerem i wymagają akceptacji zaproszenia. Funkcje dodatkowe działają zgodnie z bieżącą implementacją serwisu.'],
-      ['10. Reklamy', 'Serwis może wyświetlać reklamy dostarczane przez Google AdSense. Zewnętrzny dostawca reklam może przetwarzać dane zgodnie ze swoimi zasadami.'],
-      ['11. Kontakt', 'W sprawach serwisu i bezpieczeństwa dostępny jest kontakt pod adresem kontaktczatuj24@gmail.com.']
+      ['1. Charakter usługi', 'Czatuj24 udostępnia internetowy czat losowy 1 na 1 wraz z wybranymi funkcjami dodatkowymi.'],
+      ['2. Wiek', 'Korzystanie z serwisu jest dozwolone wyłącznie osobom, które ukończyły 16 lat.'],
+      ['3. Treści zabronione', 'Zabronione są treści seksualne, pornografia, nagość, materiały intymne, groźby, nękanie, spam, oszustwa i obchodzenie zabezpieczeń.'],
+      ['4. Zdjęcia i gry', 'Jedna sesja pozwala na maksymalnie jedno zdjęcie. Gry są uruchamiane po zaakceptowaniu zaproszenia przez partnera.'],
+      ['5. Moderacja i zgłoszenia', 'Serwis może ograniczać działania użytkowników i analizować zgłoszenia w zakresie potrzebnym do bezpieczeństwa.'],
+      ['6. Dostępność', 'Działanie serwisu zależy od infrastruktury, połączenia internetowego i przeglądarki. Serwis nie gwarantuje nieprzerwanej dostępności.']
     ]
   },
   '/polityka-prywatnosci': {
     title: 'Polityka prywatności Czatuj24',
-    description: 'Polityka prywatności Czatuj24: profil lokalny, dane techniczne, wiadomości, zgłoszenia, zdjęcia, reklamy i prawa użytkownika.',
+    description: 'Polityka prywatności Czatuj24: dane profilu, sesje rozmów, zgłoszenia, zdjęcia, localStorage, dane techniczne, reklamy i prawa użytkownika.',
     h1: 'Polityka prywatności Czatuj24',
     sections: [
-      ['1. Informacje ogólne', 'Niniejsza polityka opisuje sposób działania prywatności w Czatuj24 i odnosi się do danych przetwarzanych w związku z korzystaniem z serwisu.'],
-      ['2. Operator i kontakt', 'Kontakt w sprawach serwisu, prywatności i bezpieczeństwa: kontaktczatuj24@gmail.com. Administratorem danych jest podmiot prowadzący serwis Czatuj24. W sprawach dotyczących danych i prywatności kontakt odbywa się pod adresem kontaktczatuj24@gmail.com.'],
-      ['3. Jakie dane mogą być przetwarzane', 'W zależności od funkcji i infrastruktury mogą być przetwarzane dane profilowe podane przez użytkownika, dane techniczne połączenia, dane zgłoszeń, przesyłane zdjęcia oraz informacje niezbędne do obsługi bezpieczeństwa.'],
-      ['4. Dane profilu', 'Profil jest przechowywany lokalnie w przeglądarce. Podczas bieżącej sesji do serwera mogą być przekazywane informacje przeznaczone dla partnera: nick, wiek, cel rozmowy, status i biogram. Nie jest to publiczny profil indeksowany w wyszukiwarce.'],
-      ['5. Wiadomości i historia', 'Standardowa rozmowa nie jest utrzymywana jako trwała historia dostępna operatorowi po zakończeniu sesji. Dane przekazane w ramach zgłoszenia mogą zostać przetworzone w zakresie potrzebnym do analizy bezpieczeństwa.'],
-      ['6. Zgłoszenia', 'Zgłoszenie może zawierać kategorię, opis oraz informacje techniczne potrzebne do obsługi bezpieczeństwa. Zgłoszenia mogą być przechowywane przez czas niezbędny do rozpatrzenia sprawy i ochrony serwisu.'],
-      ['7. Zdjęcia i pliki', 'Zdjęcie przesłane podczas sesji jest obsługiwane przez serwer i może być technicznie zapisane w katalogu uploadów. Jedna sesja pozwala na maksymalnie jedno zdjęcie.'],
-      ['8. Reakcje i funkcje dodatkowe', 'Reakcje na wiadomości, sygnał pisania oraz gry są funkcjami bieżącej sesji. Lokalna aktywność użytkownika, w tym statystyki rozmów, wiadomości, gier, wygranych, reakcji i zdjęć, jest przechowywana w localStorage.'],
-      ['9. Dane techniczne i logi', 'W zależności od infrastruktury mogą być przetwarzane identyfikatory połączeń, znaczniki czasu, adres IP, user-agent i inne dane techniczne potrzebne do działania, diagnostyki i przeciwdziałania nadużyciom.'],
-      ['10. Cookies i localStorage', 'Czatuj24 wykorzystuje localStorage do ustawień profilu, zgody, motywu, dźwięku i lokalnych statystyk. Usługi zewnętrzne, w tym reklamowe, mogą stosować własne cookies lub podobne technologie.'],
-      ['11. Reklamy – Google AdSense', 'Czatuj24 korzysta z Google AdSense. Google może przetwarzać dane techniczne, cookies i identyfikatory zgodnie z ustawieniami reklam oraz własnymi zasadami. Zakres personalizacji reklam zależy od konfiguracji usługi i obowiązujących mechanizmów zgody.'],
-      ['12. Odbiorcy danych', 'Dane mogą być przetwarzane przez dostawców hostingu, infrastruktury, komunikacji i usług technicznych oraz przez zewnętrznych dostawców reklam. Zakres przekazywanych danych wynika z rzeczywistej konfiguracji tych usług.'],
-      ['13. Brak sprzedaży danych', 'Czatuj24 nie sprzedaje danych osobowych użytkowników. Nie oznacza to jednak, że dostawcy infrastruktury lub usług zewnętrznych nie mogą przetwarzać danych technicznych w ramach swoich usług.'],
-      ['14. Okres przechowywania', 'Okres przechowywania zależy od rodzaju danych i rzeczywistej konfiguracji infrastruktury. Dane sesji czatu i stan bieżącej rozmowy są utrzymywane na potrzeby aktywnej sesji; po jej zakończeniu stan rozmowy jest czyszczony. Dla uploadów, logów technicznych i zgłoszeń obowiązują zasady retencji wynikające z konfiguracji usług.'],
-      ['15. Bezpieczeństwo', 'Serwis stosuje mechanizmy techniczne ograniczające nadużycia, m.in. limity wysyłania, ograniczenia zdjęć, walidację działań gier i mechanizmy zgłoszeń. Żadne zabezpieczenie nie daje gwarancji całkowitego wyeliminowania nadużyć.'],
-      ['16. Prawa użytkownika', 'W zakresie wynikającym z obowiązujących przepisów użytkownik może żądać dostępu do danych, sprostowania, usunięcia, ograniczenia przetwarzania lub przeniesienia danych, a także wnieść sprzeciw, gdy dane prawo ma zastosowanie.'],
-      ['17. Kontakt w sprawie danych', 'W sprawach dotyczących prywatności i danych skontaktuj się pod adresem kontaktczatuj24@gmail.com.'],
-      ['18. Zmiany polityki', 'Polityka może być aktualizowana wraz ze zmianami technicznymi, prawnymi lub organizacyjnymi serwisu. Aktualna wersja jest publikowana na tej stronie.']
+      ['1. Informacje ogólne', 'Niniejsza polityka opisuje zasady przetwarzania danych związanych z korzystaniem z Czatuj24. Zakres faktycznego przetwarzania zależy od używanych funkcji i infrastruktury.'],
+      ['2. Administrator i kontakt', 'Administratorem danych jest podmiot prowadzący serwis Czatuj24. Kontakt w sprawach prywatności, bezpieczeństwa i danych: kontaktczatuj24@gmail.com.'],
+      ['3. Dane profilu', 'Ustawienia profilu są przechowywane lokalnie w przeglądarce. Podczas bieżącej sesji serwer może otrzymać nick, wiek, cel rozmowy, status i biogram przeznaczone do udostępnienia partnerowi.'],
+      ['4. Wiadomości i sesja', 'Standardowy czat jest obsługiwany jako bieżąca sesja 1 na 1. Stan rozmowy jest czyszczony po jej zakończeniu; treści przekazane w zgłoszeniu mogą być przetwarzane w zakresie potrzebnym do bezpieczeństwa.'],
+      ['5. Zgłoszenia', 'Zgłoszenia mogą zawierać kategorię, opis i informacje techniczne potrzebne do rozpatrzenia sprawy. Mogą być przechowywane przez okres niezbędny do obsługi bezpieczeństwa i ochrony serwisu.'],
+      ['6. Zdjęcia', 'Zdjęcie wysłane podczas sesji jest obsługiwane przez serwer i może być technicznie zapisane w katalogu uploadów. Limit aplikacji to jedno zdjęcie na sesję.'],
+      ['7. LocalStorage', 'Przeglądarka może przechowywać ustawienia profilu, zgodę, motyw, ustawienia dźwięku i lokalne statystyki aktywności.'],
+      ['8. Dane techniczne', 'Infrastruktura może przetwarzać adres IP, user-agent, identyfikatory połączeń, znaczniki czasu i inne dane techniczne potrzebne do działania, diagnostyki i przeciwdziałania nadużyciom.'],
+      ['9. Reklamy i Google AdSense', 'Czatuj24 korzysta z Google AdSense. Usługa reklamowa może używać cookies, identyfikatorów i innych danych technicznych zgodnie z własnymi zasadami oraz mechanizmami zgody i ustawieniami reklam.'],
+      ['10. Odbiorcy danych', 'Dane mogą być przetwarzane przez dostawców hostingu, infrastruktury, komunikacji, usług technicznych i reklamowych, w zakresie wynikającym z rzeczywistej konfiguracji serwisu.'],
+      ['11. Brak sprzedaży danych', 'Czatuj24 nie sprzedaje danych osobowych użytkowników. Nie wyklucza to przetwarzania danych przez dostawców usług niezbędnych do działania serwisu.'],
+      ['12. Retencja', 'Okres przechowywania zależy od rodzaju danych i rzeczywistej konfiguracji usług. Dla zgłoszeń, uploadów i danych technicznych należy stosować okres niezbędny do odpowiedniego celu, obowiązków prawnych i bezpieczeństwa.'],
+      ['13. Prawa użytkownika', 'W zakresie wynikającym z obowiązujących przepisów możesz żądać dostępu do danych, ich sprostowania, usunięcia lub ograniczenia przetwarzania, a także skorzystać z innych praw, gdy mają zastosowanie.'],
+      ['14. Kontakt', 'W sprawach dotyczących danych osobowych skontaktuj się pod adresem kontaktczatuj24@gmail.com.'],
+      ['15. Aktualizacje', 'Polityka może być aktualizowana wraz ze zmianami technicznymi, prawnymi lub organizacyjnymi serwisu.']
     ]
   },
   '/kontakt': {
     title: 'Kontakt – Czatuj24',
-    description: 'Kontakt z Czatuj24 w sprawach technicznych, bezpieczeństwa, prywatności i zgłoszeń.',
+    description: 'Kontakt z Czatuj24 w sprawach technicznych, prywatności, bezpieczeństwa i zgłoszeń.',
     h1: 'Kontakt z Czatuj24',
     sections: [
-      ['Kontakt główny', 'Adres kontaktowy: kontaktczatuj24@gmail.com. Za pośrednictwem tego adresu można zgłaszać problemy techniczne, pytania dotyczące serwisu, kwestie prywatności i sprawy bezpieczeństwa.'],
-      ['Zgłoszenia nadużyć', 'Jeżeli naruszenie dotyczy bieżącej rozmowy, w pierwszej kolejności użyj funkcji zgłoszenia dostępnej w aplikacji.'],
-      ['Bezpieczeństwo', 'W zgłoszeniu opisz możliwie konkretnie problem i nie przesyłaj dodatkowych danych osobowych, które nie są potrzebne do rozpatrzenia sprawy.']
+      ['Kontakt główny', 'Adres: kontaktczatuj24@gmail.com. Możesz napisać w sprawie problemu technicznego, prywatności, bezpieczeństwa lub działania serwisu.'],
+      ['Nadużycia', 'Jeśli problem dotyczy bieżącej rozmowy, w pierwszej kolejności użyj funkcji zgłoszenia dostępnej w aplikacji.'],
+      ['Dane w zgłoszeniu', 'Podaj tylko informacje potrzebne do rozpatrzenia sprawy i nie przesyłaj zbędnych danych osobowych.']
     ]
   }
 };
-
 function escapeHtml(value) {
   return String(value ?? '')
     .replace(/&/g, '&amp;')
@@ -258,17 +364,45 @@ function renderSeoPage(req, res, page) {
   const pathName = req.path;
   const canonical = CANONICAL_ORIGIN + pathName;
   const sections = page.sections.map(([heading, text]) => `<section><h2>${escapeHtml(heading)}</h2><p>${escapeHtml(text)}</p></section>`).join('');
-  const nav = Object.entries({
-    '/': 'Czatuj24', '/jak-dziala': 'Jak działa', '/faq': 'FAQ', '/bezpieczenstwo': 'Bezpieczeństwo', '/zasady': 'Zasady', '/regulamin': 'Regulamin', '/polityka-prywatnosci': 'Prywatność', '/kontakt': 'Kontakt'
-  }).map(([href,label]) => `<a href=\"${href}\">${escapeHtml(label)}</a>`).join('');
-  res.status(200).type('html').send(`<!doctype html><html lang=\"pl\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><meta name=\"robots\" content=\"index,follow,max-image-preview:large\"><meta name=\"description\" content=\"${escapeHtml(page.description)}\"><link rel=\"canonical\" href=\"${canonical}\"><meta property=\"og:type\" content=\"article\"><meta property=\"og:site_name\" content=\"Czatuj24\"><meta property=\"og:locale\" content=\"pl_PL\"><meta property=\"og:title\" content=\"${escapeHtml(page.title)}\"><meta property=\"og:description\" content=\"${escapeHtml(page.description)}\"><meta property=\"og:url\" content=\"${canonical}\"><title>${escapeHtml(page.title)}</title><style>:root{color-scheme:dark;--g:#39ff14;--bg:#030703;--panel:#0a110b;--text:#effff0;--muted:#91a793;--line:rgba(57,255,20,.2)}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,rgba(57,255,20,.08),transparent 32%),linear-gradient(135deg,#010201,#071007 60%,#020402);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;line-height:1.65}main{width:min(900px,calc(100% - 28px));margin:0 auto;padding:30px 0 45px}.brand{display:inline-flex;align-items:center;gap:10px;color:var(--text);text-decoration:none;font-weight:900;font-size:1.2rem}.brand b{color:var(--g)}.hero,section{border:1px solid var(--line);background:rgba(10,17,11,.82);border-radius:20px;box-shadow:0 18px 60px rgba(0,0,0,.25)}.hero{padding:24px;margin:20px 0 12px}.hero h1{margin:0 0 8px;font-size:clamp(1.65rem,4vw,2.35rem);letter-spacing:-.04em}.hero p{margin:0;color:var(--muted)}section{padding:19px 21px;margin:10px 0}h2{margin:0 0 6px;font-size:1rem;color:var(--g)}section p{margin:0;color:#d8e6d9;font-size:.9rem}nav{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:16px;padding:12px 0;border-top:1px solid var(--line)}nav a{color:var(--g);text-decoration:none;font-size:.82rem}nav a:hover{text-decoration:underline}.note{margin-top:15px;color:var(--muted);font-size:.72rem}@media(max-width:600px){main{padding-top:18px}.hero{padding:18px}.hero h1{font-size:1.55rem}section{padding:15px}section p{font-size:.82rem}}</style></head><body><main><a class=\"brand\" href=\"/\">Czatuj<b>24</b></a><div class=\"hero\"><h1>${escapeHtml(page.h1)}</h1><p>${escapeHtml(page.description)}</p></div>${sections}<nav aria-label=\"Informacje o Czatuj24\">${nav}</nav><p class=\"note\">Czatuj24 – darmowy czat online 1 na 1 bez rejestracji.</p></main></body></html>`);
+  const links = [
+    ['/', 'Strona główna'],
+    ['/anonimowy-czat', 'Anonimowy czat'],
+    ['/czat-1-na-1', 'Czat 1 na 1'],
+    ['/czat-bez-rejestracji', 'Bez rejestracji'],
+    ['/czat-online', 'Czat online'],
+    ['/czat-z-nieznajomymi', 'Czat z nieznajomymi'],
+    ['/gry-online-1-na-1', 'Gry 1 na 1'],
+    ['/jak-dziala', 'Jak działa'],
+    ['/faq', 'FAQ'],
+    ['/bezpieczenstwo', 'Bezpieczeństwo'],
+    ['/6obcy-alternatywa', 'Alternatywa dla 6obcy'],
+    ['/kontakt', 'Kontakt'],
+    ['/zasady', 'Zasady'],
+    ['/regulamin', 'Regulamin'],
+    ['/polityka-prywatnosci', 'Prywatność']
+  ];
+  const nav = links.map(([href,label]) => `<a href="${href}">${escapeHtml(label)}</a>`).join('');
+  const breadcrumb = [
+    {"@type":"ListItem","position":1,"name":"Czatuj24","item":CANONICAL_ORIGIN+'/'},
+    {"@type":"ListItem","position":2,"name":page.h1,"item":canonical}
+  ];
+  const graph = [
+    {"@type":"WebSite","name":"Czatuj24","url":CANONICAL_ORIGIN+'/',"inLanguage":"pl-PL"},
+    {"@type":"WebApplication","name":"Czatuj24","url":CANONICAL_ORIGIN+'/',"applicationCategory":"CommunicationApplication","operatingSystem":"Web","inLanguage":"pl-PL"},
+    {"@type":"BreadcrumbList","itemListElement":breadcrumb}
+  ];
+  if (pathName === '/faq') {
+    graph.push({"@type":"FAQPage","mainEntity":page.sections.map(([name,text]) => ({"@type":"Question","name":name,"acceptedAnswer":{"@type":"Answer","text":text}}))});
+  }
+  const jsonLd = JSON.stringify({"@context":"https://schema.org","@graph":graph}).replace(/</g,'\\u003c');
+  res.status(200).type('html').send(`<!doctype html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1"><meta name="description" content="${escapeHtml(page.description)}"><meta name="referrer" content="strict-origin-when-cross-origin"><link rel="canonical" href="${canonical}"><meta property="og:type" content="website"><meta property="og:site_name" content="Czatuj24"><meta property="og:locale" content="pl_PL"><meta property="og:title" content="${escapeHtml(page.title)}"><meta property="og:description" content="${escapeHtml(page.description)}"><meta property="og:url" content="${canonical}"><meta property="og:image" content="${CANONICAL_ORIGIN}/czatuj24-logo.png"><meta property="og:image:alt" content="Czatuj24"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${escapeHtml(page.title)}"><meta name="twitter:description" content="${escapeHtml(page.description)}"><meta name="twitter:image" content="${CANONICAL_ORIGIN}/czatuj24-logo.png"><link rel="icon" href="/czatuj24-logo.png"><title>${escapeHtml(page.title)}</title><script type="application/ld+json">${jsonLd}</script><style>:root{color-scheme:dark;--g:#39ff14;--bg:#030703;--panel:#0a110b;--text:#effff0;--muted:#91a793;--line:rgba(57,255,20,.2)}*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0;min-height:100vh;background:radial-gradient(circle at 20% 0,rgba(57,255,20,.08),transparent 32%),linear-gradient(135deg,#010201,#071007 60%,#020402);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.65}main{width:min(920px,calc(100% - 28px));margin:0 auto;padding:30px 0 45px}.brand{display:inline-flex;align-items:center;gap:10px;color:var(--text);text-decoration:none;font-weight:900;font-size:1.2rem}.brand b{color:var(--g)}.hero,section{border:1px solid var(--line);background:rgba(10,17,11,.82);border-radius:20px;box-shadow:0 18px 60px rgba(0,0,0,.25)}.hero{padding:25px;margin:20px 0 12px}.hero h1{margin:0 0 8px;font-size:clamp(1.65rem,4vw,2.45rem);letter-spacing:-.04em;line-height:1.12}.hero p{margin:0;color:var(--muted)}section{padding:19px 21px;margin:10px 0}h2{margin:0 0 6px;font-size:1rem;color:var(--g)}section p{margin:0;color:#d8e6d9;font-size:.9rem}nav{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:16px;padding:14px 0;border-top:1px solid var(--line)}nav a{color:var(--g);text-decoration:none;font-size:.82rem}nav a:hover{text-decoration:underline}.note{margin-top:15px;color:var(--muted);font-size:.72rem}@media(max-width:600px){main{width:min(100% - 18px,920px);padding:18px 0 32px}.hero{padding:18px}.hero h1{font-size:1.55rem}section{padding:15px}section p{font-size:.82rem}nav{gap:7px 11px}nav a{font-size:.76rem}}</style></head><body><main><a class="brand" href="/">Czatuj<b>24</b></a><div class="hero"><h1>${escapeHtml(page.h1)}</h1><p>${escapeHtml(page.description)}</p></div>${sections}<nav aria-label="Informacje o Czatuj24">${nav}</nav><p class="note">Czatuj24 – darmowy czat online 1 na 1 bez rejestracji.</p></main></body></html>`);
 }
 
 for (const [route, page] of Object.entries(SEO_PAGES)) {
   app.get(route, (req, res) => renderSeoPage(req, res, page));
 }
 
-app.get(['/jak-dziala/', '/faq/', '/bezpieczenstwo/', '/zasady/', '/regulamin/', '/polityka-prywatnosci/', '/kontakt/'], (req, res) => {
+app.get(['/anonimowy-czat/', '/czat-1-na-1/', '/czat-bez-rejestracji/', '/czat-online/', '/czat-z-nieznajomymi/', '/gry-online-1-na-1/', '/jak-dziala/', '/faq/', '/bezpieczenstwo/', '/6obcy-alternatywa/', '/kontakt/', '/zasady/', '/regulamin/', '/polityka-prywatnosci/'], (req, res) => {
   return res.redirect(301, req.path.slice(0, -1));
 });
 
@@ -460,7 +594,11 @@ app.use(
   '/uploads',
   express.static(uploadFolder, {
     fallthrough: false,
-    maxAge: '1h'
+    maxAge: '1h',
+    setHeaders: res => {
+      res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+      res.setHeader('Cache-Control', 'private, max-age=3600');
+    }
   })
 );
 
@@ -1019,7 +1157,8 @@ function initializeGame(session) {
       scores:{...session.data.bank},
       myTurn:id===session.data.turn,
       picksLeft:RISK_MAX_PICKS_PER_TURN,
-      status:id===session.data.turn?'Twój ruch — wybierz zakryte pole.':'Czekasz na wybór partnera.'
+      status:id===session.data.turn?'Twój ruch — wybierz zakryte pole.':'Czekasz na wybór partnera.',
+      newRound:true
     }));
     return;
   }
@@ -1306,6 +1445,7 @@ function handleRisk(socket, session, data) {
     }
     if(used>=RISK_MAX_PICKS_PER_TURN) return gameError(socket,'Limit ryzyka został wykorzystany.');
     resetRiskBoard(session);
+    session.data.revealed = Object.create(null);
     emitRiskState(session,'Nowe zakryte pola — możesz ryzykować dalej.');
   }
 }
