@@ -370,7 +370,6 @@ body.light .c24-games-drawer{background:linear-gradient(155deg,rgba(255,255,255,
 @media(max-width:390px){.c24-games-catalog{grid-template-columns:1fr}.c24-choice-grid{grid-template-columns:1fr}.c24-invite-actions{grid-template-columns:1fr}.c24-risk-board{gap:5px}.c24-risk-card{border-radius:11px}.c24-rps{gap:6px}.c24-rps button{min-height:82px}.c24-rps-icon{font-size:1.65rem}}
 
 .games-top-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;width:auto!important;padding:0 10px!important;color:var(--text);font-size:.68rem!important;font-weight:800!important}.games-pad-icon{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.games-label{line-height:1}.games-top-btn:hover{color:var(--lime)}@media(max-width:820px){.games-top-btn{width:40px!important;padding:0!important}.games-label{display:none}.games-pad-icon{width:20px;height:20px}}
-<style>
 .c24-scorebar{grid-template-columns:repeat(4,1fr)}
 .c24-game-result{min-height:26px}
 @media(max-width:520px){.c24-scorebar{grid-template-columns:1fr 1fr}.c24-reflex-big{font-size:2.8rem}}
@@ -396,6 +395,104 @@ body.light .c24-games-drawer{background:linear-gradient(155deg,rgba(255,255,255,
 /* C24 identity details: special logo components are earned, not decorative placeholders */
 .c24-user-logo .logo-special{position:absolute;z-index:8;opacity:0;display:grid;place-items:center;color:var(--lime);text-shadow:0 0 13px rgba(57,255,20,.7);font-weight:900;pointer-events:none}.special-star{right:-3px;top:42px;font-size:12px}.special-legend{left:-1px;top:35px;font-size:11px}.special-collector{right:3px;bottom:27px;font-size:8px}.c24-user-logo.logo-star .special-star{opacity:1}.c24-user-logo.logo-legend .special-legend{opacity:1}.c24-user-logo.logo-collector .special-collector{opacity:1}
 .c24-mini-logo .mini-special{position:absolute;z-index:8;opacity:0;color:var(--lime);font-size:7px;text-shadow:0 0 7px rgba(57,255,20,.8)}.mini-star{right:-2px;top:7px}.mini-legend{left:-2px;top:5px}.c24-mini-logo.logo-star .mini-star,.c24-mini-logo.logo-legend .mini-legend{opacity:1}
+
+/* ==========================================================
+   C24 FINAL MOBILE + LOGO + DRAW PATCH
+   ========================================================== */
+html,body{width:100%;min-width:0;overflow:hidden;overscroll-behavior:none}
+body{touch-action:pan-y}
+.age-check{position:relative;align-items:center;min-height:48px;padding:12px 13px;border-radius:15px;border:1px solid rgba(57,255,20,.18);background:linear-gradient(145deg,rgba(57,255,20,.055),rgba(255,255,255,.018));transition:border-color .18s,background .18s,box-shadow .18s}
+.age-check input{appearance:none!important;-webkit-appearance:none!important;width:22px;height:22px;margin:0;flex:0 0 22px;border-radius:7px;border:1.5px solid rgba(57,255,20,.45);background:rgba(0,0,0,.22);display:grid;place-items:center;position:relative;cursor:pointer}
+.age-check input::after{content:"";width:10px;height:6px;border-left:2px solid #041004;border-bottom:2px solid #041004;transform:rotate(-45deg) scale(0);transition:transform .16s cubic-bezier(.2,.9,.2,1)}
+.age-check input:checked{background:var(--lime);border-color:var(--lime);box-shadow:0 0 0 4px rgba(57,255,20,.07),0 0 18px rgba(57,255,20,.18)}
+.age-check input:checked::after{transform:rotate(-45deg) scale(1)}
+.age-check:has(input:checked){border-color:rgba(57,255,20,.42);background:linear-gradient(145deg,rgba(57,255,20,.10),rgba(255,255,255,.02));box-shadow:0 0 24px rgba(57,255,20,.045)}
+
+/* Logo: use explicit active classes instead of level-only decoration. */
+.c24-user-logo{isolation:isolate!important;overflow:visible!important}
+.c24-user-logo .logo-core{z-index:20!important;position:relative!important}
+.c24-user-logo .logo-aura,.c24-user-logo .logo-ring,.c24-user-logo .logo-frame,.c24-user-logo .logo-orbit,.c24-user-logo .logo-orbit2{z-index:2!important;display:block!important}
+.c24-user-logo.logo-aura-on .logo-aura{opacity:1!important}
+.c24-user-logo.logo-ring-on .logo-ring{opacity:1!important}
+.c24-user-logo.logo-frame-on .logo-frame{opacity:1!important}
+.c24-user-logo.logo-spark-on .logo-spark{opacity:1!important}
+.c24-user-logo.logo-soft .logo-ring-inner{opacity:1!important}
+.c24-user-logo.logo-star .special-star,.c24-user-logo.logo-legend .special-legend,.c24-user-logo.logo-collector .special-collector,.c24-user-logo.logo-night .special-night,.c24-user-logo.logo-game .special-game,.c24-user-logo.logo-return .special-return{opacity:1!important}
+.c24-user-logo.logo-star .special-star,.c24-user-logo.logo-legend .special-legend,.c24-user-logo.logo-collector .special-collector,.c24-user-logo.logo-night .special-night,.c24-user-logo.logo-game .special-game,.c24-user-logo.logo-return .special-return{z-index:30!important}
+.c24-user-logo.logo-ring-on .logo-ring{animation:c24RingSpin 12s linear infinite}
+.c24-user-logo.logo-frame-on .logo-frame{box-shadow:0 0 0 1px rgba(57,255,20,.08),inset 0 0 24px rgba(57,255,20,.055),0 0 20px rgba(57,255,20,.06)}
+.logo-special{font-family:ui-sans-serif,system-ui,sans-serif!important}
+.special-star{right:-10px!important;top:12px!important;font-size:16px!important}
+.special-legend{left:-9px!important;top:18px!important;font-size:13px!important}
+.special-collector{right:-7px!important;bottom:12px!important;font-size:11px!important}
+.special-night{left:3px!important;bottom:3px!important;font-size:12px!important}
+.special-game{right:10px!important;bottom:-2px!important;font-size:10px!important}
+.special-return{left:-7px!important;bottom:27px!important;font-size:13px!important}
+
+/* The chat identity gets a real layered logo, not an empty frame. */
+.c24-chat-identity{isolation:isolate!important;overflow:visible!important;background:transparent!important;border-color:transparent!important;box-shadow:none!important}
+.c24-chat-identity img{z-index:10!important;position:relative!important;border-radius:12px!important}
+.c24-chat-identity .chat-logo-layer{z-index:2!important}
+.c24-chat-identity .chat-logo-special{z-index:20!important}
+.c24-chat-identity.logo-aura-on .chat-logo-aura{opacity:1!important}
+.c24-chat-identity.logo-ring-on .chat-logo-ring{opacity:1!important}
+.c24-chat-identity.logo-frame-on .chat-logo-frame{opacity:1!important}
+
+/* Compact but complete mobile layout: no accidental overflow/zoom. */
+@media(max-width:820px){
+  .app-shell{width:100%;max-width:100%;overflow:hidden}
+  .topbar{width:100%;max-width:100%;box-sizing:border-box}
+  .main{width:100%;max-width:100%;box-sizing:border-box;overflow:hidden}
+  .chat{width:100%;max-width:100%;min-width:0}
+  .chat-head,.messages,.controls{min-width:0;max-width:100%}
+  .chat-title{min-width:0;overflow:hidden}
+  .chat-title strong,.chat-title span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .partner-card-trigger{max-width:min(42vw,150px);min-width:0}
+  .partner-mini-avatar{flex:0 0 28px}
+  .controls{padding-bottom:max(7px,env(safe-area-inset-bottom))}
+  .c24-games-drawer,.c24-progress-drawer,.profile-panel{max-width:100vw}
+  .c24-games-drawer{width:100vw;right:0;border-left:0;border-radius:18px 0 0 18px}
+  .c24-games-body{-webkit-overflow-scrolling:touch;padding-bottom:max(18px,env(safe-area-inset-bottom))}
+  .c24-game-panel{overflow:hidden}
+  .c24-canvas-wrap{width:100%;max-width:100%;aspect-ratio:760/460}
+  #c24DrawCanvas{width:100%!important;height:100%!important;min-height:0}
+  .c24-tools{max-width:100%;overflow:hidden}
+}
+@media(max-width:430px){
+  .topbar{padding-top:max(7px,env(safe-area-inset-top));}
+  .header-center{min-width:0}
+  .online-indicator{max-width:44vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .small-status{display:none}
+  .chat-head{gap:5px}
+  .chat-head-actions{gap:4px}
+  .partner-card-trigger{max-width:37vw}
+  .partner-mini-copy{min-width:0}
+  .c24-games-catalog{grid-template-columns:1fr 1fr!important;gap:8px}
+  .c24-game-card{min-height:138px;padding:11px;border-radius:17px}
+  .c24-game-icon{width:46px;height:46px;margin-bottom:9px}
+  .c24-game-card strong{font-size:.72rem}
+  .c24-game-card span:not(.c24-card-state){font-size:.55rem}
+  .c24-game-view.active .c24-game-title{font-size:1.08rem}
+  .c24-canvas-wrap{border-radius:12px}
+  .c24-tools{gap:5px;padding:6px}
+  .c24-tool{min-width:36px;height:34px}
+  .c24-size-wrap{width:100%;order:20}
+  .c24-game-input{font-size:16px!important}
+}
+@media(max-width:360px){
+  .c24-games-catalog{grid-template-columns:1fr!important}
+  .partner-card-trigger{max-width:34vw}
+  .btn-send,.btn-start{min-width:58px}
+}
+
+/* iOS/Android viewport stability */
+.app-shell{height:100dvh}
+@media(max-width:820px){
+  .app-shell{height:var(--c24-vh,100dvh)!important;min-height:320px!important}
+  .topbar{flex:0 0 auto}
+  .main{flex:1 1 auto;min-height:0}
+  .chat{flex:1 1 auto;min-height:0}
+}
 </style>
 
 
@@ -932,6 +1029,20 @@ body.light .c24-progress-head{background:rgba(250,253,250,.98)}
 </div>
 <div class="toast" id="toast"></div>
 
+<script>
+(function(){
+  function c24Viewport(){
+    const h=(window.visualViewport&&window.visualViewport.height)||window.innerHeight;
+    document.documentElement.style.setProperty('--c24-vh',Math.max(320,h)+'px');
+    const shell=document.querySelector('.app-shell');
+    if(shell&&window.matchMedia('(max-width: 820px)').matches) shell.style.height=Math.max(320,h)+'px';
+  }
+  c24Viewport();
+  window.addEventListener('resize',c24Viewport,{passive:true});
+  window.visualViewport?.addEventListener('resize',c24Viewport,{passive:true});
+  window.visualViewport?.addEventListener('scroll',c24Viewport,{passive:true});
+})();
+</script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
 'use strict';
@@ -1652,7 +1763,7 @@ function initGame(game,st){if(game==='drawguess')drawGuessInit(st);if(game==='tt
 
 /* DRAW */
 const canvas=$('c24DrawCanvas'),ctx=canvas.getContext('2d',{alpha:false});
-function clearCanvas(){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);remoteDrawPoint=null}
+function clearCanvas(){ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);remoteDrawPoint=null}
 let drawLastSend=0,drawQueue=[],drawTimer=null,drawStrokeStarted=false,remoteStrokeSeq=0;
 const drawSize=$('c24DrawSize'),drawSizeValue=$('c24DrawSizeValue');
 function currentDrawWidth(){return Math.max(2,Math.min(18,Number(drawSize?.value)||5))}
@@ -1661,36 +1772,50 @@ updateDrawSize();
 drawSize?.addEventListener('input',updateDrawSize);
 function drawInit(){
   if(drawReady)return;
-  drawReady=true; clearCanvas();
+  drawReady=true;
+  const resizeCanvas=()=>{
+    if(!canvas)return;
+    const r=canvas.getBoundingClientRect();
+    if(!r.width||!r.height)return;
+    const dpr=Math.min(2,window.devicePixelRatio||1);
+    const old=document.createElement('canvas'); old.width=canvas.width; old.height=canvas.height;
+    try{old.getContext('2d').drawImage(canvas,0,0)}catch{}
+    canvas.width=Math.round(r.width*dpr);
+    canvas.height=Math.round(r.height*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,r.width,r.height);
+    try{ctx.drawImage(old,0,0,old.width,old.height,0,0,r.width,r.height)}catch{}
+    ctx.setTransform(1,0,0,1,0,0);
+  };
+  const resetCanvas=()=>{canvas.width=760;canvas.height=460;ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);remoteDrawPoint=null};
+  resetCanvas();
   const pos=e=>{const r=canvas.getBoundingClientRect();return{x:Math.max(0,Math.min(canvas.width,(e.clientX-r.left)*canvas.width/r.width)),y:Math.max(0,Math.min(canvas.height,(e.clientY-r.top)*canvas.height/r.height))}};
-  const flush=()=>{
-    drawTimer=null;
-    if(!drawQueue.length)return;
-    const packet=drawQueue.shift();
-    drawLastSend=Date.now();
-    emit('game:action',packet,true);
-    if(drawQueue.length) drawTimer=setTimeout(flush,Math.max(18,30-(Date.now()-drawLastSend)));
-  };
-  const enqueue=stroke=>{
-    if(drawQueue.length>48) drawQueue.splice(0,drawQueue.length-48);
-    drawQueue.push(stroke);
-    if(!drawTimer)flush();
-  };
-  canvas.addEventListener('pointerdown',e=>{
-    if(mode!=='active'||drawRole!=='drawer')return;
+  let queueTimer=null;
+  const flush=()=>{queueTimer=null;if(!drawQueue.length||!socket?.connected)return;const packet=drawQueue.shift();socket.emit('game:action',packet);drawLastSend=Date.now();if(drawQueue.length)queueTimer=setTimeout(flush,36)};
+  const enqueue=stroke=>{if(drawQueue.length>24)drawQueue.splice(0,drawQueue.length-24);drawQueue.push(stroke);if(!queueTimer)flush()};
+  const begin=e=>{
+    if(mode!=='active'||drawRole!=='drawer'||!canvas)return;
     e.preventDefault();
-    drawing=true;drawStrokeStarted=true;const p=pos(e);lx=p.x;ly=p.y;canvas.setPointerCapture?.(e.pointerId);
-  },{passive:false});
-  canvas.addEventListener('pointermove',e=>{
+    try{canvas.setPointerCapture?.(e.pointerId)}catch{}
+    drawing=true;drawStrokeStarted=true;const p=pos(e);lx=p.x;ly=p.y;
+    ctx.beginPath();ctx.arc(lx,ly,Math.max(1,currentDrawWidth()/2),0,Math.PI*2);ctx.fillStyle=eraser?'#fff':color;ctx.fill();
+  };
+  const move=e=>{
     if(!drawing||drawRole!=='drawer')return;
     e.preventDefault();
     const p=pos(e);
+    if(Math.abs(p.x-lx)+Math.abs(p.y-ly)<0.5)return;
     const stroke={game:'drawguess',action:'stroke',from:{x:lx/canvas.width,y:ly/canvas.height},to:{x:p.x/canvas.width,y:p.y/canvas.height},color:eraser?'#fff':color,width:eraser?Math.max(10,currentDrawWidth()*3):currentDrawWidth(),start:drawStrokeStarted,end:false};
     ctx.strokeStyle=stroke.color;ctx.lineWidth=stroke.width;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;drawStrokeStarted=false;enqueue(stroke);
-  },{passive:false});
+  };
   const finish=e=>{drawing=false;drawStrokeStarted=false;try{if(e?.pointerId!=null)canvas.releasePointerCapture?.(e.pointerId)}catch{}};
-  ['pointerup','pointercancel','lostpointercapture'].forEach(x=>canvas.addEventListener(x,finish));
+  canvas.addEventListener('pointerdown',begin,{passive:false});
+  canvas.addEventListener('pointermove',move,{passive:false});
+  ['pointerup','pointercancel','lostpointercapture'].forEach(x=>canvas.addEventListener(x,finish,{passive:false}));
+  canvas.addEventListener('contextmenu',e=>e.preventDefault());
+  window.addEventListener('resize',()=>{if(mode==='active')requestAnimationFrame(resizeCanvas)},{passive:true});
 }
+
 function drawGuessInit(st){drawInit();drawRole=st.role||'spectator';safe($('c24DrawRound'),`${st.round||1}/${st.maxRounds||5}`);safe($('c24DrawRole'),drawRole==='drawer'?'Ty — Rysujesz':drawRole==='guesser'?'Ty — Zgadujesz':'Oczekiwanie…');$('c24DrawGuessInput').disabled=drawRole!=='guesser';$('c24DrawGuessSend').disabled=drawRole!=='guesser';$('c24Clear').disabled=drawRole!=='drawer';$('c24DrawPrompt').innerHTML=drawRole==='drawer'?'<b>Twoje hasło</b><br>'+String(st.word||''):'<b>Hasło</b><br>Nie widzisz go. Patrz na rysunek i zgaduj.';const scores=st.scores||{};const me=socket?.id;const ids=Object.keys(scores);const other=ids.find(id=>id!==me);safe($('c24DrawMyScore'),me&&scores[me]!=null?scores[me]:st.score??0);safe($('c24DrawPartnerScore'),other&&scores[other]!=null?scores[other]:st.opponentScore??0);if(st.winnerView==='self')safe($('c24DrawWinner'),'TY WYGRYWASZ');else if(st.winnerView==='partner')safe($('c24DrawWinner'),'PARTNER WYGRYWA');else if(st.winnerView==='draw')safe($('c24DrawWinner'),'REMIS');if(st.resetCanvas)clearCanvas()}
 document.querySelectorAll('.c24-tool[data-color]').forEach(b=>b.onclick=()=>{color=b.dataset.color;eraser=false;document.querySelectorAll('.c24-tool').forEach(x=>x.classList.remove('active'));b.classList.add('active');updateDrawSize()});$('c24Erase').onclick=()=>{eraser=true;document.querySelectorAll('.c24-tool').forEach(x=>x.classList.remove('active'));$('c24Erase').classList.add('active')};$('c24Clear').onclick=()=>{if(drawRole==='drawer'){clearCanvas();emit('game:action',{game:'drawguess',action:'clear'})}};$('c24DrawGuessSend').onclick=()=>{const a=$('c24DrawGuessInput').value.trim();if(a&&emit('game:action',{game:'drawguess',action:'guess',answer:a}))$('c24DrawGuessInput').value=''};$('c24DrawGuessInput').onkeydown=e=>{if(e.key==='Enter')$('c24DrawGuessSend').click()};
 /* TTT */
@@ -1874,7 +1999,7 @@ window.Czatuj24Games={open:openGames,close:closeGames,leave:leaveGame,state:()=>
   function isLogoUnlocked(item){return typeof item[3]==='function'?!!item[3](d):!!item[3]}
   function isLogoApplied(id){return (d.appliedLogo||['rdzen']).includes(id)}
   function toggleLogo(id){const item=LOGO_ITEMS.find(x=>x[0]===id);if(!item||!isLogoUnlocked(item))return;let arr=Array.isArray(d.appliedLogo)?d.appliedLogo.slice():['rdzen'];if(id==='rdzen'){if(!arr.includes('rdzen'))arr.unshift('rdzen')}else if(arr.includes(id)){arr=arr.filter(x=>x!==id)}else{arr.push(id)};if(!arr.includes('rdzen'))arr.unshift('rdzen');d.appliedLogo=[...new Set(arr)].slice(0,12);save();renderLogo();renderLogoItems();publishProgress();toast(isLogoApplied(id)?'Element dodany do Twojego logo.':'Element zdjęty z logo.')}
-  function renderLogo(){const active=d.appliedLogo||['rdzen'];const map={aura:'logo-aura-on',ring:'logo-ring-on',spark:'logo-spark-on',frame:'logo-frame-on',soft:'logo-soft',night:'logo-night',game:'logo-game',return:'logo-return',star:'logo-star',legend:'logo-legend',collector:'logo-collector'};const apply=(el,base)=>{if(!el)return;el.className=base;active.forEach(id=>{if(map[id])el.classList.add(map[id])})};apply($('c24UserLogo'),'c24-user-logo level-'+Math.min(10,d.level));apply(document.querySelector('.c24-chat-identity'),'chat-avatar c24-chat-identity')}
+  function renderLogo(){const active=[...new Set(d.appliedLogo||['rdzen'])];const map={aura:'logo-aura-on',ring:'logo-ring-on',spark:'logo-spark-on',frame:'logo-frame-on',soft:'logo-soft',night:'logo-night',game:'logo-game',return:'logo-return',star:'logo-star',legend:'logo-legend',collector:'logo-collector'};const apply=(el,base)=>{if(!el)return;el.className=base+' level-'+Math.min(10,d.level);active.forEach(id=>{if(map[id])el.classList.add(map[id])});if(active.includes('star'))el.classList.add('logo-star');if(active.includes('legend'))el.classList.add('logo-legend');if(active.includes('collector'))el.classList.add('logo-collector');if(active.includes('night'))el.classList.add('logo-night');if(active.includes('game'))el.classList.add('logo-game');if(active.includes('return'))el.classList.add('logo-return');};apply($('c24UserLogo'),'c24-user-logo');apply(document.querySelector('.c24-chat-identity'),'chat-avatar c24-chat-identity');const chatImg=$('chatAvatarImg');if(chatImg)chatImg.src=avatarPreview?.src||defaultAvatar}
   function renderDaily(){const card=dailyDef();$('c24FocusTitle').textContent=d.daily.done?'Dzisiejsza Karta Dnia wykonana.':card.title;$('c24FocusText').textContent=d.daily.done?'Jutro pojawi się kolejna karta.':'Karta działa bezpośrednio w czacie — losuj temat lub małe wyzwanie wtedy, kiedy masz ochotę.'}
   function render(){ensureDaily();renderLogo();const row=levelRow(),next=nextLevel();$('c24RankName').textContent=row[2];$('c24RankLevel').textContent=String(d.level).padStart(2,'0');$('c24RankProgress').style.width=(next?Math.max(0,Math.min(100,((d.xp-row[1])/(next[1]-row[1]))*100)):100)+'%';$('c24RankPrev').textContent=d.level>1?'Poprzednia: '+LEVELS[d.level-2][2]:'Początek drogi';$('c24RankNext').textContent=next?'Następna: '+next[2]:'Najwyższa ranga';$('c24ProgressLevel').textContent='Poziom '+d.level+' · '+row[2];$('c24XpText').textContent=d.xp+' XP';$('c24XpNext').textContent=next?next[1]+' XP':'Maksymalny poziom';const base=row[1],end=next?next[1]:Math.max(base+1000,d.xp);const pct=next?Math.max(0,Math.min(100,((d.xp-base)/(end-base))*100)):100;$('c24XpFill').style.width=pct+'%';$('c24Streak').textContent='Seria: '+d.streak+' '+(d.streak===1?'dzień':'dni');$('c24StreakHint').textContent=d.longestStreak>0?'Najdłuższa: '+d.longestStreak+' dni':'Zacznij rozmowę, aby ją rozpocząć.';$('c24Unlocked').textContent=d.achievements.length+' odblokowanych';$('c24UnlockedHint').textContent='Osiągnięcia i elementy logo';$('c24PChats').textContent=d.stats.chats;$('c24PMessages').textContent=d.stats.messages;$('c24PGames').textContent=d.stats.games;$('c24PWins').textContent=d.stats.wins;$('c24PReactions').textContent=d.stats.reactions;$('c24PCards').textContent=d.stats.cards;$('c24AchCount').textContent=d.achievements.length+' / '+ACH.length;renderDaily();renderAchievements(currentFilter);renderLogoItems();save()}
   let currentFilter='all';
@@ -1882,7 +2007,7 @@ window.Czatuj24Games={open:openGames,close:closeGames,leave:leaveGame,state:()=>
   function openAchievement(a){const got=d.achievements.includes(a.id);const secret=a.hidden&&!got;$('c24AchModalIcon').innerHTML=iconSvg(secret?'secret':a.icon);$('c24AchModalCat').textContent=got?'ZDOBYTE OSIĄGNIĘCIE':secret?'TAJEMNICA':'OSIĄGNIĘCIE DO ODKRYCIA';$('c24AchModalTitle').textContent=secret?'Tajemnicze osiągnięcie':a.name;$('c24AchModalDesc').textContent=secret?'Warunek jest ukryty. Graj, rozmawiaj i wracaj — możesz je odkryć.':a.desc;$('c24AchModalState').textContent=got?'Odblokowane — możesz zachować element logo w swojej konfiguracji.':'Jeszcze nieodblokowane.';$('c24AchModalReward').textContent=got?'Nagroda: +'+a.xp+' XP':'Nagroda po odkryciu: +'+a.xp+' XP';$('c24AchModal').classList.add('open');$('c24AchModal').setAttribute('aria-hidden','false')}
   function renderAchievements(filter){const grid=$('c24AchGrid');grid.innerHTML='';ACH.filter(a=>filter==='all'||a.cat===filter).forEach(a=>{const got=d.achievements.includes(a.id),secret=a.hidden&&!got;const el=document.createElement('button');el.type='button';el.className='c24-ach '+(got?'unlocked':'locked')+(secret?' secret':'');el.innerHTML='<span class="ach-icon">'+iconSvg(secret?'secret':a.icon)+'</span><strong>'+ (secret?'Tajemnica':a.name) +'</strong><small>'+ (secret?'Warunek ukryty · kliknij, aby zobaczyć podpowiedź.':a.desc) +'</small><span class="ach-state">'+(got?'ZDOBYTE':secret?'TAJEMNICA':'DO ODKRYCIA')+'</span>';el.onclick=()=>openAchievement(a);grid.appendChild(el)})}
   function renderLogoItems(){const box=$('c24LogoItems');box.innerHTML='';let unlocked=0,active=0;LOGO_ITEMS.forEach(item=>{const ok=isLogoUnlocked(item),on=isLogoApplied(item);if(ok)unlocked++;if(on)active++;const el=document.createElement('div');el.className='c24-logo-item '+(ok?'unlocked':'locked')+(on?' active':'');const label=ok?(on?'NA LOGO':'DODAJ NA LOGO'):'ZABLOKOWANE';el.innerHTML='<span class="logo-item-art art-'+item[0]+'">'+iconSvg(item[2])+'</span><div class="logo-item-copy"><strong>'+item[1]+'</strong><small>'+item[4]+'</small></div><button type="button" class="logo-apply" '+(ok?'':'disabled')+'>'+label+'</button>';el.querySelector('.logo-apply').onclick=(e)=>{e.stopPropagation();toggleLogo(item[0])};box.appendChild(el)});$('c24LogoCount').textContent=unlocked+' / '+LOGO_ITEMS.length;$('c24LogoActiveCount').textContent=active+' aktywn'+(active===1?'y':'e')+' na logo'}
-  function renderPartnerLogo(pr){const x=pr||{};const level=Math.max(1,Math.min(10,Number(x.level)||1));const logo=Array.isArray(x.logo)?x.logo:[];partnerMiniLogo.className='c24-mini-logo partner-mini-avatar level-'+level+(logo.includes('aura')?' logo-aura-on':'')+(logo.includes('ring')?' logo-ring-on':'')+(logo.includes('frame')?' logo-frame-on':'')+(logo.includes('spark')?' logo-spark-on':'')+(logo.includes('soft')?' logo-soft':'')+(logo.includes('night')?' logo-night':'')+(logo.includes('game')?' logo-game':'')+(logo.includes('return')?' logo-return':'')+(logo.includes('star')?' logo-star':'')+(logo.includes('legend')?' logo-legend':'')+(logo.includes('collector')?' logo-collector':'');partnerMiniAvatar.src=defaultAvatar;const ml=$('partnerModalLogo');if(ml){ml.className='c24-modal-logo';logo.forEach(id=>{if(['aura','ring','frame','star','legend'].includes(id))ml.classList.add(id==='aura'?'logo-aura-on':id==='ring'?'logo-ring-on':id==='frame'?'logo-frame-on':'logo-'+id)})}}
+  function renderPartnerLogo(pr){const x=pr||{};const level=Math.max(1,Math.min(10,Number(x.level)||1));const logo=Array.isArray(x.logo)?x.logo:[];partnerMiniLogo.className='c24-mini-logo partner-mini-avatar level-'+level+(logo.includes('aura')?' logo-aura-on':'')+(logo.includes('ring')?' logo-ring-on':'')+(logo.includes('frame')?' logo-frame-on':'')+(logo.includes('spark')?' logo-spark-on':'')+(logo.includes('soft')?' logo-soft':'')+(logo.includes('night')?' logo-night':'')+(logo.includes('game')?' logo-game':'')+(logo.includes('return')?' logo-return':'')+(logo.includes('star')?' logo-star':'')+(logo.includes('legend')?' logo-legend':'')+(logo.includes('collector')?' logo-collector':'');partnerMiniAvatar.src=defaultAvatar;const ml=$('partnerModalLogo');if(ml){ml.className='c24-modal-logo';logo.forEach(id=>{const m={aura:'logo-aura-on',ring:'logo-ring-on',frame:'logo-frame-on',spark:'logo-spark-on',star:'logo-star',legend:'logo-legend',collector:'logo-collector',night:'logo-night',game:'logo-game',return:'logo-return'}[id];if(m)ml.classList.add(m)})}}
   window.Czatuj24GetPublicProgress=()=>({level:d.level,rank:levelRow()[2],streak:d.streak,achievements:d.achievements.length,logo:(d.appliedLogo||['rdzen']).slice(0,12),night:!!d.special.logoNight,game:!!d.special.logoGame});
 function publishProgress(){try{if(socket.connected&&typeof window.Czatuj24GetPublicProgress==='function')socket.emit('profile:update',{profile:getPublicProfile()})}catch{}}
 function closeAchievement(){$('c24AchModal').classList.remove('open');$('c24AchModal').setAttribute('aria-hidden','true')}
