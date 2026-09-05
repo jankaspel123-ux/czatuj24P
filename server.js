@@ -329,12 +329,12 @@ const SEO_PAGES = {
       ['4. Wiadomości i sesja', 'Standardowy czat jest obsługiwany jako bieżąca sesja 1 na 1. Stan rozmowy jest czyszczony po jej zakończeniu; treści przekazane w zgłoszeniu mogą być przetwarzane w zakresie potrzebnym do bezpieczeństwa.'],
       ['5. Zgłoszenia', 'Zgłoszenia mogą zawierać kategorię, opis i informacje techniczne potrzebne do rozpatrzenia sprawy. Mogą być przechowywane przez okres niezbędny do obsługi bezpieczeństwa i ochrony serwisu.'],
       ['6. Zdjęcia', 'Zdjęcie wysłane podczas sesji jest obsługiwane przez serwer i może być technicznie zapisane w katalogu uploadów. Limit aplikacji to jedno zdjęcie na sesję.'],
-      ['7. LocalStorage', 'Przeglądarka może przechowywać ustawienia profilu, zgodę, motyw, ustawienia dźwięku i lokalne statystyki aktywności.'],
+      ['7. LocalStorage i system progresu', 'Przeglądarka może przechowywać ustawienia profilu, zgodę, motyw, ustawienia dźwięku oraz lokalny system progresu Czatuj24. System obejmuje anonimowy poziom, XP, serię kolejnych dni, osiągnięcia, elementy rozwijanego logo, Kolekcję, Kartę Dnia i wybrane statystyki aktywności. Te dane są przechowywane lokalnie na urządzeniu i nie stanowią publicznego profilu. System nie zapisuje w Kolekcji treści prywatnych rozmów.'],
       ['8. Dane techniczne', 'Infrastruktura może przetwarzać adres IP, user-agent, identyfikatory połączeń, znaczniki czasu i inne dane techniczne potrzebne do działania, diagnostyki i przeciwdziałania nadużyciom.'],
       ['9. Reklamy i Google AdSense', 'Czatuj24 korzysta z Google AdSense. Usługa reklamowa może używać cookies, identyfikatorów i innych danych technicznych zgodnie z własnymi zasadami oraz mechanizmami zgody i ustawieniami reklam.'],
       ['10. Odbiorcy danych', 'Dane mogą być przetwarzane przez dostawców hostingu, infrastruktury, komunikacji, usług technicznych i reklamowych, w zakresie wynikającym z rzeczywistej konfiguracji serwisu.'],
       ['11. Brak sprzedaży danych', 'Czatuj24 nie sprzedaje danych osobowych użytkowników. Nie wyklucza to przetwarzania danych przez dostawców usług niezbędnych do działania serwisu.'],
-      ['12. Retencja', 'Okres przechowywania zależy od rodzaju danych i rzeczywistej konfiguracji usług. Dla zgłoszeń, uploadów i danych technicznych należy stosować okres niezbędny do odpowiedniego celu, obowiązków prawnych i bezpieczeństwa.'],
+      ['12. Retencja', 'Okres przechowywania zależy od rodzaju danych i rzeczywistej konfiguracji usług. Lokalny system progresu może pozostawać w pamięci przeglądarki do czasu jego usunięcia przez użytkownika lub wyczyszczenia danych witryny. Dla zgłoszeń, uploadów i danych technicznych należy stosować okres niezbędny do odpowiedniego celu, obowiązków prawnych i bezpieczeństwa.'],
       ['13. Prawa użytkownika', 'W zakresie wynikającym z obowiązujących przepisów możesz żądać dostępu do danych, ich sprostowania, usunięcia lub ograniczenia przetwarzania, a także skorzystać z innych praw, gdy mają zastosowanie.'],
       ['14. Kontakt', 'W sprawach dotyczących danych osobowych skontaktuj się pod adresem kontaktczatuj24@gmail.com.'],
       ['15. Aktualizacje', 'Polityka może być aktualizowana wraz ze zmianami technicznymi, prawnymi lub organizacyjnymi serwisu.']
@@ -1791,6 +1791,10 @@ io.on(
           socket.id,
           count + 1
         );
+
+        // Potwierdzenie dla nadawcy pozwala warstwie progresu naliczyć
+        // aktywność bez dublowania zdjęcia w interfejsie czatu.
+        socket.emit('photoAccepted');
 
         io.to(
           partnerId
