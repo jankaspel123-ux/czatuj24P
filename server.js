@@ -167,7 +167,7 @@ const SEO_PAGES = {
       ['Jak rozpocząć czat?', 'Kliknij START, poczekaj na dopasowanie i rozpocznij rozmowę. Po zakończeniu możesz ponownie rozpocząć wyszukiwanie kolejnej osoby.'],
       ['Bez rejestracji i logowania', 'Podstawowe ustawienia profilu są przechowywane lokalnie w przeglądarce. Bieżącej rozmowie służą tylko informacje potrzebne do działania funkcji partnera.'],
       ['Prywatność i bezpieczeństwo', 'Nie podawaj haseł, adresu zamieszkania, danych płatniczych ani innych wrażliwych informacji. Możesz zgłosić naruszenie zasad i szybko zakończyć rozmowę.'],
-      ['Dodatkowe funkcje', 'Podczas rozmowy dostępne są reakcje, jedno zdjęcie na sesję oraz gry 1 na 1, których uruchomienie wymaga akceptacji partnera. Aktywność może budować lokalny XP, reputację, ligę i wynik Pucharu.'],
+      ['Dodatkowe funkcje', 'Podczas rozmowy dostępne są reakcje, jedno zdjęcie na sesję oraz gry 1 na 1, których uruchomienie wymaga akceptacji partnera. Aktywność może budować XP, reputację, ligę i wynik Pucharu. Osiągnięcia automatycznie rozwijają wizualne logo i odblokowują kolejne bezpieczne avatary.'],
       ['Dla kogo jest serwis?', 'Czatuj24 jest przeznaczone dla osób, które ukończyły 16 lat. Serwis nie deklaruje pełnej weryfikacji wieku ani tożsamości.']
     ]
   },
@@ -319,8 +319,8 @@ const SEO_PAGES = {
     ]
   },
   '/polityka-prywatnosci': {
-    title: 'Polityka prywatności Czatuj24',
-    description: 'Polityka prywatności Czatuj24: profil, sesje rozmów, zgłoszenia, zdjęcia, localStorage, XP, reputacja, ligi, Puchar, ranking, bezpieczeństwo, dane techniczne, reklamy i prawa użytkownika.',
+    title: 'Polityka prywatności Czatuj24 — aktualizacja 6 września 2026',
+    description: 'Polityka prywatności Czatuj24: profil, sesje rozmów, zgłoszenia, zdjęcia, localStorage, XP, reputacja, jakość rozmowy, chemia rozmowy, ligi, Puchar, ranking, automatyczne logo, avatary, wydarzenia i bezpieczeństwo.',
     h1: 'Polityka prywatności Czatuj24',
     sections: [
       ['1. Informacje ogólne', 'Niniejsza polityka opisuje zasady przetwarzania danych związanych z korzystaniem z Czatuj24. Zakres faktycznego przetwarzania zależy od używanych funkcji i infrastruktury.'],
@@ -329,9 +329,9 @@ const SEO_PAGES = {
       ['4. Wiadomości i sesja', 'Standardowy czat jest obsługiwany jako bieżąca sesja 1 na 1. Stan rozmowy jest czyszczony po jej zakończeniu; treści przekazane w zgłoszeniu mogą być przetwarzane w zakresie potrzebnym do bezpieczeństwa.'],
       ['5. Zgłoszenia', 'Zgłoszenia mogą zawierać kategorię, opis i informacje techniczne potrzebne do rozpatrzenia sprawy. Mogą być przechowywane przez okres niezbędny do obsługi bezpieczeństwa i ochrony serwisu.'],
       ['6. Zdjęcia', 'Zdjęcie wysłane podczas sesji jest obsługiwane przez serwer i może być technicznie zapisane w katalogu uploadów. Limit aplikacji to jedno zdjęcie na sesję.'],
-      ['7. Aktualizacja z 6 września 2026 r. — progres i nowe funkcje', 'W dniu 6 września 2026 r. zmieniono i rozszerzono serwis o system XP i poziomów, automatyczne osiągnięcia i odznaki, reputację rozmówcy, ocenę jakości rozmowy, tygodniowe ligi, Puchar Czatuj24, ranking TOP 10, bezpieczne avatary, rozwijane logo oraz funkcje ponownego połączenia. Lokalne statystyki, część konfiguracji profilu i progres pozostają w pamięci przeglądarki. Wybrane pseudonimowe dane wynikowe mogą być przekazywane serwerowi do obsługi bieżącego profilu, reputacji, ligi i rankingu.'],
-      ['8. Reputacja, jakość, ligi i Puchar', 'Reputacja jest wynikiem bezpieczeństwa i jakości zachowania w serwisie. System jakości rozmowy uwzględnia m.in. długość sesji, wiadomości, reakcje, gry, zgłoszenia, ponowne połączenie i sposób zakończenia. XP i aktywność mogą wpływać na poziom oraz tygodniową ligę. Puchar jest oddzielnym rankingiem punktowym z prezentacją TOP 10; kolejność może się zmieniać, gdy użytkownicy zdobywają lub tracą przewagę punktową.'],
-      ['9. Ranking i pseudonimowy identyfikator', 'W serwisie bez klasycznych kont identyfikacja rankingowa opiera się na losowym pseudonimowym identyfikatorze przechowywanym lokalnie w przeglądarce. Ranking może pokazywać nick, bezpieczny avatar Czatuj24, poziom, reputację, jakość, ligę, liczbę osiągnięć, powroty i punkty. Ranking nie wymaga podawania prawdziwego imienia ani własnego zdjęcia. Trwałość rankingu zależy od infrastruktury serwera; brak klasycznego konta oznacza, że identyfikator można utracić po usunięciu danych witryny.'],
+      ['7. Aktualizacja z 6 września 2026 r. — progres, avatary, automatyczne logo i wydarzenia', 'W dniu 6 września 2026 r. rozszerzono serwis o XP i poziomy, automatyczne osiągnięcia i odznaki, reputację, jakość oraz bieżącą chemię rozmowy, tygodniowe ligi, osobny Puchar Czatuj24 i ranking TOP 10, bezpieczne avatary, automatyczne warstwy logo, funkcję ponownego połączenia oraz okresowe wydarzenia Czatuj24, w tym wydarzenie 24. dnia miesiąca. Odblokowane elementy logo nie wymagają ręcznego przypinania: po spełnieniu warunku są automatycznie aktywowane i zapisywane. Lokalny progres pozostaje w pamięci przeglądarki, a wybrane pseudonimowe dane wynikowe są synchronizowane z serwerem w zakresie potrzebnym do profilu, reputacji, rankingu i prezentacji partnera.'],
+      ['8. Reputacja, jakość, chemia, ligi i Puchar', 'Reputacja jest wynikiem bezpieczeństwa i jakości zachowania w serwisie. Jakość rozmowy uwzględnia m.in. długość sesji, wiadomości, reakcje, gry, zgłoszenia, ponowne połączenie i sposób zakończenia. Podczas rozmowy może być pokazywany wspólny pasek chemii, którego wynik rośnie wraz z aktywnością rozmowy. XP i aktywność wpływają na poziom oraz tygodniową ligę. Puchar jest oddzielnym rankingiem punktowym z prezentacją TOP 10; kolejność może się zmieniać, gdy użytkownicy zdobywają przewagę punktową.'],
+      ['9. Ranking, avatary i pseudonimowy identyfikator', 'W serwisie bez klasycznych kont identyfikacja rankingowa opiera się na losowym pseudonimowym identyfikatorze przechowywanym lokalnie w przeglądarce. Ranking może pokazywać nick, bezpieczny avatar Czatuj24, poziom, reputację, jakość, ligę, liczbę osiągnięć, powroty, punkty oraz bezpieczne elementy identyfikacji wizualnej. Ranking nie wymaga podawania prawdziwego imienia ani własnego zdjęcia. Trwałość rankingu zależy od infrastruktury serwera; brak klasycznego konta oznacza, że identyfikator można utracić po usunięciu danych witryny.'],
       ['10. Dane techniczne', 'Infrastruktura może przetwarzać adres IP, user-agent, identyfikatory połączeń, znaczniki czasu i inne dane techniczne potrzebne do działania, diagnostyki i przeciwdziałania nadużyciom.'],
       ['11. Reklamy i Google AdSense', 'Czatuj24 korzysta z Google AdSense. Usługa reklamowa może używać cookies, identyfikatorów i innych danych technicznych zgodnie z własnymi zasadami oraz mechanizmami zgody i ustawieniami reklam.'],
       ['12. Odbiorcy danych', 'Dane mogą być przetwarzane przez dostawców hostingu, infrastruktury, komunikacji, usług technicznych i reklamowych, w zakresie wynikającym z rzeczywistej konfiguracji serwisu.'],
@@ -397,7 +397,7 @@ function renderSeoPage(req, res, page) {
     graph.push({"@type":"FAQPage","mainEntity":page.sections.map(([name,text]) => ({"@type":"Question","name":name,"acceptedAnswer":{"@type":"Answer","text":text}}))});
   }
   const jsonLd = JSON.stringify({"@context":"https://schema.org","@graph":graph}).replace(/</g,'\\u003c');
-  res.status(200).type('html').send(`<!doctype html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1"><meta name="description" content="${escapeHtml(page.description)}"><meta name="referrer" content="strict-origin-when-cross-origin"><link rel="canonical" href="${canonical}"><meta property="og:type" content="website"><meta property="og:site_name" content="Czatuj24"><meta property="og:locale" content="pl_PL"><meta property="og:title" content="${escapeHtml(page.title)}"><meta property="og:description" content="${escapeHtml(page.description)}"><meta property="og:url" content="${canonical}"><meta property="og:image" content="${CANONICAL_ORIGIN}/czatuj24-logo.png"><meta property="og:image:alt" content="Czatuj24"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${escapeHtml(page.title)}"><meta name="twitter:description" content="${escapeHtml(page.description)}"><meta name="twitter:image" content="${CANONICAL_ORIGIN}/czatuj24-logo.png"><link rel="icon" href="/czatuj24-logo.png"><title>${escapeHtml(page.title)}</title><script type="application/ld+json">${jsonLd}</script><style>:root{color-scheme:dark;--g:#39ff14;--bg:#030703;--panel:#0a110b;--text:#effff0;--muted:#91a793;--line:rgba(57,255,20,.2)}*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0;min-height:100vh;background:radial-gradient(circle at 20% 0,rgba(57,255,20,.08),transparent 32%),linear-gradient(135deg,#010201,#071007 60%,#020402);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.65}main{width:min(920px,calc(100% - 28px));margin:0 auto;padding:30px 0 45px}.brand{display:inline-flex;align-items:center;gap:10px;color:var(--text);text-decoration:none;font-weight:900;font-size:1.2rem}.brand b{color:var(--g)}.hero,section{border:1px solid var(--line);background:rgba(10,17,11,.82);border-radius:20px;box-shadow:0 18px 60px rgba(0,0,0,.25)}.hero{padding:25px;margin:20px 0 12px}.hero h1{margin:0 0 8px;font-size:clamp(1.65rem,4vw,2.45rem);letter-spacing:-.04em;line-height:1.12}.hero p{margin:0;color:var(--muted)}section{padding:19px 21px;margin:10px 0}h2{margin:0 0 6px;font-size:1rem;color:var(--g)}section p{margin:0;color:#d8e6d9;font-size:.9rem}nav{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:16px;padding:14px 0;border-top:1px solid var(--line)}nav a{color:var(--g);text-decoration:none;font-size:.82rem}nav a:hover{text-decoration:underline}.note{margin-top:15px;color:var(--muted);font-size:.72rem}@media(max-width:600px){main{width:min(100% - 18px,920px);padding:18px 0 32px}.hero{padding:18px}.hero h1{font-size:1.55rem}section{padding:15px}section p{font-size:.82rem}nav{gap:7px 11px}nav a{font-size:.76rem}}</style></head><body><main><a class="brand" href="/">Czatuj<b>24</b></a><div class="hero"><h1>${escapeHtml(page.h1)}</h1><p>${escapeHtml(page.description)}</p></div>${sections}<nav aria-label="Informacje o Czatuj24">${nav}</nav><p class="note">Czatuj24 – darmowy czat online 1 na 1 bez rejestracji.</p></main></body></html>`);
+  res.status(200).type('html').send(`<!doctype html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1"><meta name="description" content="${escapeHtml(page.description)}"><meta name="referrer" content="strict-origin-when-cross-origin"><link rel="canonical" href="${canonical}"><meta property="og:type" content="website"><meta property="og:site_name" content="Czatuj24"><meta property="og:locale" content="pl_PL"><meta property="og:title" content="${escapeHtml(page.title)}"><meta property="og:description" content="${escapeHtml(page.description)}"><meta property="og:url" content="${canonical}"><meta property="og:image" content="${CANONICAL_ORIGIN}/czatuj24-logo.png?v=20260906"><meta property="og:image:alt" content="Czatuj24"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${escapeHtml(page.title)}"><meta name="twitter:description" content="${escapeHtml(page.description)}"><meta name="twitter:image" content="${CANONICAL_ORIGIN}/czatuj24-logo.png?v=20260906"><link rel="icon" href="/czatuj24-logo.png?v=20260906"><title>${escapeHtml(page.title)}</title><script type="application/ld+json">${jsonLd}</script><style>:root{color-scheme:dark;--g:#39ff14;--bg:#030703;--panel:#0a110b;--text:#effff0;--muted:#91a793;--line:rgba(57,255,20,.2)}*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0;min-height:100vh;background:radial-gradient(circle at 20% 0,rgba(57,255,20,.08),transparent 32%),linear-gradient(135deg,#010201,#071007 60%,#020402);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.65}main{width:min(920px,calc(100% - 28px));margin:0 auto;padding:30px 0 45px}.brand{display:inline-flex;align-items:center;gap:10px;color:var(--text);text-decoration:none;font-weight:900;font-size:1.2rem}.brand b{color:var(--g)}.hero,section{border:1px solid var(--line);background:rgba(10,17,11,.82);border-radius:20px;box-shadow:0 18px 60px rgba(0,0,0,.25)}.hero{padding:25px;margin:20px 0 12px}.hero h1{margin:0 0 8px;font-size:clamp(1.65rem,4vw,2.45rem);letter-spacing:-.04em;line-height:1.12}.hero p{margin:0;color:var(--muted)}section{padding:19px 21px;margin:10px 0}h2{margin:0 0 6px;font-size:1rem;color:var(--g)}section p{margin:0;color:#d8e6d9;font-size:.9rem}nav{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:16px;padding:14px 0;border-top:1px solid var(--line)}nav a{color:var(--g);text-decoration:none;font-size:.82rem}nav a:hover{text-decoration:underline}.note{margin-top:15px;color:var(--muted);font-size:.72rem}@media(max-width:600px){main{width:min(100% - 18px,920px);padding:18px 0 32px}.hero{padding:18px}.hero h1{font-size:1.55rem}section{padding:15px}section p{font-size:.82rem}nav{gap:7px 11px}nav a{font-size:.76rem}}</style></head><body><main><a class="brand" href="/">Czatuj<b>24</b></a><div class="hero"><h1>${escapeHtml(page.h1)}</h1><p>${escapeHtml(page.description)}</p></div>${sections}<nav aria-label="Informacje o Czatuj24">${nav}</nav><p class="note">Czatuj24 – darmowy czat online 1 na 1 bez rejestracji.</p></main></body></html>`);
 }
 
 for (const [route, page] of Object.entries(SEO_PAGES)) {
@@ -645,8 +645,8 @@ try { if(fs.existsSync(leaderboardFile)) leaderboardState = JSON.parse(fs.readFi
 function saveLeaderboard(){try{fs.writeFileSync(leaderboardFile,JSON.stringify(leaderboardState,null,2),'utf8')}catch(e){console.error('Nie udało się zapisać leaderboard.json:',e.message)}}
 function safePlayerId(v){const x=String(v||'').trim();return /^[a-zA-Z0-9_-]{12,80}$/.test(x)?x:''}
 function ensureLeaderboard(playerId){if(!playerId)return null;if(!leaderboardState[playerId])leaderboardState[playerId]={points:0,updatedAt:Date.now(),nick:'Anonim',avatar:'avatar01',level:1,reputation:500,quality:0,league:'Bronze',returns:0,achievements:0,logo:['rdzen'],badges:[]};return leaderboardState[playerId]}
-function syncLeaderboard(socketId){const pr=publicProfiles.get(socketId)||{};const id=safePlayerId(pr.playerId);if(!id)return null;const x=ensureLeaderboard(id);x.nick=String(pr.nick||'Anonim').slice(0,20)||'Anonim';x.avatar=['avatar01','avatar02','avatar03','avatar04','avatar05','avatar06','avatar07','avatar08'].includes(pr.avatar)?pr.avatar:'avatar01';x.level=Math.max(1,Math.min(10,Number(pr.progress?.level)||1));x.reputation=Math.max(0,Math.min(1000,Number(pr.progress?.reputation?.score)||500));x.quality=Math.max(0,Math.min(100,Number(pr.progress?.quality?.score)||0));x.league=leagueName(x.points);x.achievements=Math.max(0,Math.min(99,Number(pr.progress?.achievements)||0));x.returns=Math.max(0,Math.min(999,Number(pr.progress?.streak)||0));x.logo=Array.isArray(pr.progress?.logo)?pr.progress.logo.filter(v=>typeof v==='string').slice(0,12):['rdzen'];x.badges=Array.isArray(pr.progress?.badges)?pr.progress.badges.filter(v=>typeof v==='string').slice(0,3):[];x.updatedAt=Date.now();saveLeaderboard();return id}
-function leaderboardRows(){return Object.entries(leaderboardState).map(([playerId,v])=>({playerId,nick:String(v.nick||'Anonim').slice(0,20),avatar:v.avatar||'avatar01',level:Number(v.level)||1,reputation:Number(v.reputation)||500,quality:Number(v.quality)||0,league:leagueName(v.points||0),points:Math.round(v.points||0),achievements:Number(v.achievements)||0,returns:Number(v.returns)||0,logo:Array.isArray(v.logo)?v.logo.slice(0,12):['rdzen'],badges:Array.isArray(v.badges)?v.badges.slice(0,3):[],updatedAt:v.updatedAt||0})).sort((a,b)=>b.points-a.points||b.reputation-a.reputation||b.quality-a.quality||b.updatedAt-a.updatedAt)}
+function syncLeaderboard(socketId){const pr=publicProfiles.get(socketId)||{};const id=safePlayerId(pr.playerId);if(!id)return null;const x=ensureLeaderboard(id);x.nick=String(pr.nick||'Anonim').slice(0,20)||'Anonim';x.avatar=['avatar01','avatar02','avatar03','avatar04','avatar05','avatar06','avatar07','avatar08','avatar09','avatar10','avatar11','avatar12','avatar13','avatar14','avatar15','avatar16'].includes(pr.avatar)?pr.avatar:'avatar01';x.level=Math.max(1,Math.min(10,Number(pr.progress?.level)||1));x.reputation=Math.max(0,Math.min(1000,Number(pr.progress?.reputation?.score)||500));x.quality=Math.max(0,Math.min(100,Number(pr.progress?.quality?.score)||0));x.league=leagueName(x.points);x.achievements=Math.max(0,Math.min(99,Number(pr.progress?.achievements)||0));x.returns=Math.max(0,Math.min(999,Number(pr.progress?.streak)||0));x.logo=Array.isArray(pr.progress?.logo)?pr.progress.logo.filter(v=>typeof v==='string').slice(0,24):['rdzen'];x.badges=Array.isArray(pr.progress?.badges)?pr.progress.badges.filter(v=>typeof v==='string').slice(0,3):[];x.updatedAt=Date.now();saveLeaderboard();return id}
+function leaderboardRows(){return Object.entries(leaderboardState).map(([playerId,v])=>({playerId,nick:String(v.nick||'Anonim').slice(0,20),avatar:v.avatar||'avatar01',level:Number(v.level)||1,reputation:Number(v.reputation)||500,quality:Number(v.quality)||0,league:leagueName(v.points||0),points:Math.round(v.points||0),achievements:Number(v.achievements)||0,returns:Number(v.returns)||0,logo:Array.isArray(v.logo)?v.logo.slice(0,24):['rdzen'],badges:Array.isArray(v.badges)?v.badges.slice(0,3):[],updatedAt:v.updatedAt||0})).sort((a,b)=>b.points-a.points||b.reputation-a.reputation||b.quality-a.quality||b.updatedAt-a.updatedAt)}
 function emitLeaderboard(socketId){if(!isConnected(socketId))return;const pr=publicProfiles.get(socketId)||{};const me=safePlayerId(pr.playerId);const rows=leaderboardRows();const rank=me?Math.max(1,rows.findIndex(x=>x.playerId===me)+1):0;const top=rows.slice(0,10);io.to(socketId).emit('leaderboard:update',{rank,points:me?(ensureLeaderboard(me)?.points||0):0,players:rows.length,top})}
 function emitLeaderboardAll(){for(const id of io.sockets.sockets.keys())emitLeaderboard(id)}
 
@@ -696,6 +696,8 @@ function initConversation(a,b){
   conversationState.set(a,state); conversationState.set(b,state);
   return state;
 }
+function conversationChemistry(state){if(!state)return 0;const totalMsgs=(state.messages[state.a]||0)+(state.messages[state.b]||0);const totalReact=(state.reactions[state.a]||0)+(state.reactions[state.b]||0);const totalGames=(state.games[state.a]||0)+(state.games[state.b]||0);const mins=Math.max(0,(Date.now()-state.startedAt)/60000);return Math.round(Math.max(0,Math.min(100,8+Math.min(42,totalMsgs*2.2)+Math.min(20,totalReact*3)+Math.min(15,totalGames*5)+Math.min(15,mins*2.5))));}
+function emitConversationChemistry(state){const score=conversationChemistry(state);for(const id of [state.a,state.b])if(isConnected(id))io.to(id).emit('conversation:chemistry',{score});}
 function sessionQuality(socketId, state, normalEnd){
   const other=state.a===socketId?state.b:state.a;
   const mins=Math.max(0,(Date.now()-state.startedAt)/60000);
@@ -851,9 +853,9 @@ function sanitizePublicProfile(profile, socketId=null){
   const age = Math.max(16, Math.min(100, Number(p.age) || 25));
   const purpose = allowedPurposes.has(p.purpose) ? p.purpose : 'rozmowa';
   const pr=p.progress&&typeof p.progress==='object'?p.progress:{};
-  const logo=Array.isArray(pr.logo)?pr.logo.filter(x=>typeof x==='string').slice(0,12):[];
+  const logo=Array.isArray(pr.logo)?pr.logo.filter(x=>typeof x==='string').slice(0,24):[];
   const badges=Array.isArray(pr.badges)?pr.badges.filter(x=>typeof x==='string').slice(0,3):[];
-  const avatarIds=new Set(['avatar01','avatar02','avatar03','avatar04','avatar05','avatar06','avatar07','avatar08']);
+  const avatarIds=new Set(['avatar01','avatar02','avatar03','avatar04','avatar05','avatar06','avatar07','avatar08','avatar09','avatar10','avatar11','avatar12','avatar13','avatar14','avatar15','avatar16']);
   return {
     playerId:safePlayerId(p.playerId),
     avatar:avatarIds.has(p.avatar)?p.avatar:'avatar01',
@@ -862,7 +864,7 @@ function sanitizePublicProfile(profile, socketId=null){
     purpose,
     status: allowedStatuses.has(p.status) ? p.status : 'dostepny',
     bio: String(p.bio || '').trim().slice(0,200),
-    progress:{level:Math.max(1,Math.min(10,Number(pr.level)||1)),rank:String(pr.rank||'Nowy rozmówca').slice(0,40),streak:Math.max(0,Math.min(999,Number(pr.streak)||0)),achievements:Math.max(0,Math.min(99,Number(pr.achievements)||0)),logo,badges,night:!!pr.night,game:!!pr.game,reputation:socketId?publicReputation(socketId):(pr.reputation&&typeof pr.reputation==='object'?{score:Math.max(0,Math.min(1000,Number(pr.reputation.score)||500)),tier:String(pr.reputation.tier||'Normal').slice(0,20)}:undefined),quality:{score:Math.max(0,Math.min(100,Number(pr.quality?.score)||0))},league:{league:String(pr.league?.league||'Bronze').slice(0,20),points:Math.max(0,Math.min(99999,Number(pr.league?.points)||0))}}
+    progress:{level:Math.max(1,Math.min(10,Number(pr.level)||1)),rank:String(pr.rank||'Nowy rozmówca').slice(0,40),streak:Math.max(0,Math.min(999,Number(pr.streak)||0)),achievements:Math.max(0,Math.min(99,Number(pr.achievements)||0)),logo,badges,night:!!pr.night,game:!!pr.game,reputation:socketId?publicReputation(socketId):(pr.reputation&&typeof pr.reputation==='object'?{score:Math.max(0,Math.min(1000,Number(pr.reputation.score)||500)),tier:String(pr.reputation.tier||'Normal').slice(0,20)}:undefined),quality:{score:Math.max(0,Math.min(100,Number(pr.quality?.score)||0))},league:{league:String(pr.league?.league||'Bronze').slice(0,20),points:Math.max(0,Math.min(99999,Number(pr.league?.points)||0))},chemistry:{current:Math.max(0,Math.min(100,Number(pr.chemistry?.current)||0)),best:Math.max(0,Math.min(100,Number(pr.chemistry?.best)||0))},event24:{unlocked:!!pr.event24?.unlocked}}
   };
 }
 
@@ -975,6 +977,7 @@ function matchWaitingUser(socketId) {
   io.to(socketId).emit('partnerFound');
   io.to(partnerId).emit('partnerFound');
   emitPartnerProfiles(socketId, partnerId);
+  const matchConv=conversationState.get(socketId); if(matchConv) emitConversationChemistry(matchConv);
 
   console.log(`Para utworzona: ${socketId} <-> ${partnerId}`);
   emitOnlineCount();
@@ -1133,6 +1136,7 @@ function finishGame(session, result = 'Gra zakończona.', extra = {}) {
     : null;
   const { winner, ...safeExtra } = extra || {};
   // Wynik gry zasila tygodniową ligę; udział dostaje mały bonus, zwycięzca większy.
+  const conv=conversationState.get(session.a);if(conv)emitConversationChemistry(conv);
   if(winnerId){ addWeeklyPoints(winnerId,30); addCupPoints(winnerId,18); const loser=winnerId===session.a?session.b:session.a; addWeeklyPoints(loser,8); addCupPoints(loser,4); } else { addWeeklyPoints(session.a,12); addWeeklyPoints(session.b,12); }
 
   emitPair(session, id => {
@@ -1183,7 +1187,7 @@ function createGame(a, game) {
   };
   gameSessions.set(a, session);
   gameSessions.set(b, session);
-  const conv=conversationState.get(a); if(conv){conv.games[a]=(conv.games[a]||0)+1;conv.games[b]=(conv.games[b]||0)+1;}
+  const conv=conversationState.get(a); if(conv){conv.games[a]=(conv.games[a]||0)+1;conv.games[b]=(conv.games[b]||0)+1;emitConversationChemistry(conv);}
   addWeeklyPoints(a,12); addWeeklyPoints(b,12);
   session.timeout = setTimeout(() => finishGame(session, 'Czas gry minął.'), GAME_MAX_DURATION);
   return session;
@@ -1736,6 +1740,8 @@ function cleanupRateState(socketId) {
 ============================================================ */
 
 
+setInterval(()=>{const seen=new Set();for(const st of conversationState.values()){if(!st||seen.has(st))continue;seen.add(st);emitConversationChemistry(st)}},5000);
+
 io.on(
   'connection',
   socket => {
@@ -1853,6 +1859,7 @@ io.on(
         });
         const conv=conversationState.get(socket.id); if(conv) conv.messages[socket.id]=(conv.messages[socket.id]||0)+1;
         addWeeklyPoints(socket.id,1);
+        emitConversationChemistry(conv);
         io.to(socket.id).emit('receiveMessage', { ...payload, fromSelf:true });
         io.to(partnerId).emit('receiveMessage', { ...payload, fromSelf:false });
       }
@@ -1905,7 +1912,7 @@ io.on(
       if(!users){ users=new Map(); messageReactions.set(data.messageId, users); }
       if(reaction && users.get(socket.id) === reaction) reaction='';
       if(reaction) users.set(socket.id, reaction); else users.delete(socket.id);
-      if(reaction){const conv=conversationState.get(socket.id);if(conv)conv.reactions[socket.id]=(conv.reactions[socket.id]||0)+1;adjustReputation(socket.id,2,'quality');addWeeklyPoints(socket.id,5);}
+      if(reaction){const conv=conversationState.get(socket.id);if(conv){conv.reactions[socket.id]=(conv.reactions[socket.id]||0)+1;emitConversationChemistry(conv);}adjustReputation(socket.id,2,'quality');addWeeklyPoints(socket.id,5);}
       const counts = new Map();
       for(const r of users.values()) counts.set(r,(counts.get(r)||0)+1);
       const current = users.get(socket.id) || '';

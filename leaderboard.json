@@ -1,14 +1,24 @@
 {
   "p_xnh8hl10n8mtp8bnf5": {
-    "points": 48,
-    "updatedAt": 1788664256689,
+    "points": 64,
+    "updatedAt": 1788718031224,
     "nick": "Partner",
     "avatar": "avatar02",
-    "level": 3,
+    "level": 2,
     "reputation": 500,
     "quality": 0,
     "league": "Bronze",
-    "returns": 2,
-    "achievements": 8
+    "returns": 1,
+    "achievements": 3,
+    "logo": [
+      "rdzen",
+      "game",
+      "aura"
+    ],
+    "badges": [
+      "first_game",
+      "draw_artist",
+      "chats1"
+    ]
   }
 }
