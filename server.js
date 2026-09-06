@@ -160,14 +160,14 @@ app.use((req, res, next) => {
 const SEO_PAGES = {
   '/anonimowy-czat': {
     title: 'Anonimowy czat online bez rejestracji | Czatuj24',
-    description: 'Anonimowy czat online bez rejestracji. Rozmawiaj 1 na 1 z losową osobą bez zakładania konta i bez logowania.',
+    description: 'Anonimowy czat online bez rejestracji. Rozmawiaj 1 na 1 z losową osobą i korzystaj z gier, XP, reputacji oraz rankingu Pucharu Czatuj24.',
     h1: 'Anonimowy czat online bez rejestracji',
     sections: [
       ['Anonimowa rozmowa 1 na 1', 'Czatuj24 łączy dwie osoby w bieżącej sesji rozmowy. Nie musisz zakładać konta ani tworzyć publicznego profilu.'],
       ['Jak rozpocząć czat?', 'Kliknij START, poczekaj na dopasowanie i rozpocznij rozmowę. Po zakończeniu możesz ponownie rozpocząć wyszukiwanie kolejnej osoby.'],
       ['Bez rejestracji i logowania', 'Podstawowe ustawienia profilu są przechowywane lokalnie w przeglądarce. Bieżącej rozmowie służą tylko informacje potrzebne do działania funkcji partnera.'],
       ['Prywatność i bezpieczeństwo', 'Nie podawaj haseł, adresu zamieszkania, danych płatniczych ani innych wrażliwych informacji. Możesz zgłosić naruszenie zasad i szybko zakończyć rozmowę.'],
-      ['Dodatkowe funkcje', 'Podczas rozmowy dostępne są reakcje, jedno zdjęcie na sesję oraz gry 1 na 1, których uruchomienie wymaga akceptacji partnera.'],
+      ['Dodatkowe funkcje', 'Podczas rozmowy dostępne są reakcje, jedno zdjęcie na sesję oraz gry 1 na 1, których uruchomienie wymaga akceptacji partnera. Aktywność może budować lokalny XP, reputację, ligę i wynik Pucharu.'],
       ['Dla kogo jest serwis?', 'Czatuj24 jest przeznaczone dla osób, które ukończyły 16 lat. Serwis nie deklaruje pełnej weryfikacji wieku ani tożsamości.']
     ]
   },
@@ -320,7 +320,7 @@ const SEO_PAGES = {
   },
   '/polityka-prywatnosci': {
     title: 'Polityka prywatności Czatuj24',
-    description: 'Polityka prywatności Czatuj24: dane profilu, sesje rozmów, zgłoszenia, zdjęcia, localStorage, dane techniczne, reklamy i prawa użytkownika.',
+    description: 'Polityka prywatności Czatuj24: profil, sesje rozmów, zgłoszenia, zdjęcia, localStorage, XP, reputacja, ligi, Puchar, ranking, bezpieczeństwo, dane techniczne, reklamy i prawa użytkownika.',
     h1: 'Polityka prywatności Czatuj24',
     sections: [
       ['1. Informacje ogólne', 'Niniejsza polityka opisuje zasady przetwarzania danych związanych z korzystaniem z Czatuj24. Zakres faktycznego przetwarzania zależy od używanych funkcji i infrastruktury.'],
@@ -329,15 +329,17 @@ const SEO_PAGES = {
       ['4. Wiadomości i sesja', 'Standardowy czat jest obsługiwany jako bieżąca sesja 1 na 1. Stan rozmowy jest czyszczony po jej zakończeniu; treści przekazane w zgłoszeniu mogą być przetwarzane w zakresie potrzebnym do bezpieczeństwa.'],
       ['5. Zgłoszenia', 'Zgłoszenia mogą zawierać kategorię, opis i informacje techniczne potrzebne do rozpatrzenia sprawy. Mogą być przechowywane przez okres niezbędny do obsługi bezpieczeństwa i ochrony serwisu.'],
       ['6. Zdjęcia', 'Zdjęcie wysłane podczas sesji jest obsługiwane przez serwer i może być technicznie zapisane w katalogu uploadów. Limit aplikacji to jedno zdjęcie na sesję.'],
-      ['7. LocalStorage i system progresu', 'Przeglądarka może przechowywać ustawienia profilu, zgodę, motyw, ustawienia dźwięku oraz lokalny system progresu Czatuj24. System obejmuje anonimowy poziom, XP, serię kolejnych dni, osiągnięcia, elementy rozwijanego logo, Kolekcję, Kartę Dnia i wybrane statystyki aktywności. Te dane są przechowywane lokalnie na urządzeniu i nie stanowią publicznego profilu. System nie zapisuje w Kolekcji treści prywatnych rozmów.'],
-      ['8. Dane techniczne', 'Infrastruktura może przetwarzać adres IP, user-agent, identyfikatory połączeń, znaczniki czasu i inne dane techniczne potrzebne do działania, diagnostyki i przeciwdziałania nadużyciom.'],
-      ['9. Reklamy i Google AdSense', 'Czatuj24 korzysta z Google AdSense. Usługa reklamowa może używać cookies, identyfikatorów i innych danych technicznych zgodnie z własnymi zasadami oraz mechanizmami zgody i ustawieniami reklam.'],
-      ['10. Odbiorcy danych', 'Dane mogą być przetwarzane przez dostawców hostingu, infrastruktury, komunikacji, usług technicznych i reklamowych, w zakresie wynikającym z rzeczywistej konfiguracji serwisu.'],
-      ['11. Brak sprzedaży danych', 'Czatuj24 nie sprzedaje danych osobowych użytkowników. Nie wyklucza to przetwarzania danych przez dostawców usług niezbędnych do działania serwisu.'],
-      ['12. Retencja', 'Okres przechowywania zależy od rodzaju danych i rzeczywistej konfiguracji usług. Lokalny system progresu może pozostawać w pamięci przeglądarki do czasu jego usunięcia przez użytkownika lub wyczyszczenia danych witryny. Dla zgłoszeń, uploadów i danych technicznych należy stosować okres niezbędny do odpowiedniego celu, obowiązków prawnych i bezpieczeństwa.'],
-      ['13. Prawa użytkownika', 'W zakresie wynikającym z obowiązujących przepisów możesz żądać dostępu do danych, ich sprostowania, usunięcia lub ograniczenia przetwarzania, a także skorzystać z innych praw, gdy mają zastosowanie.'],
-      ['14. Kontakt', 'W sprawach dotyczących danych osobowych skontaktuj się pod adresem kontaktczatuj24@gmail.com.'],
-      ['15. Aktualizacje', 'Polityka może być aktualizowana wraz ze zmianami technicznymi, prawnymi lub organizacyjnymi serwisu.']
+      ['7. Aktualizacja z 6 września 2026 r. — progres i nowe funkcje', 'W dniu 6 września 2026 r. zmieniono i rozszerzono serwis o system XP i poziomów, automatyczne osiągnięcia i odznaki, reputację rozmówcy, ocenę jakości rozmowy, tygodniowe ligi, Puchar Czatuj24, ranking TOP 10, bezpieczne avatary, rozwijane logo oraz funkcje ponownego połączenia. Lokalne statystyki, część konfiguracji profilu i progres pozostają w pamięci przeglądarki. Wybrane pseudonimowe dane wynikowe mogą być przekazywane serwerowi do obsługi bieżącego profilu, reputacji, ligi i rankingu.'],
+      ['8. Reputacja, jakość, ligi i Puchar', 'Reputacja jest wynikiem bezpieczeństwa i jakości zachowania w serwisie. System jakości rozmowy uwzględnia m.in. długość sesji, wiadomości, reakcje, gry, zgłoszenia, ponowne połączenie i sposób zakończenia. XP i aktywność mogą wpływać na poziom oraz tygodniową ligę. Puchar jest oddzielnym rankingiem punktowym z prezentacją TOP 10; kolejność może się zmieniać, gdy użytkownicy zdobywają lub tracą przewagę punktową.'],
+      ['9. Ranking i pseudonimowy identyfikator', 'W serwisie bez klasycznych kont identyfikacja rankingowa opiera się na losowym pseudonimowym identyfikatorze przechowywanym lokalnie w przeglądarce. Ranking może pokazywać nick, bezpieczny avatar Czatuj24, poziom, reputację, jakość, ligę, liczbę osiągnięć, powroty i punkty. Ranking nie wymaga podawania prawdziwego imienia ani własnego zdjęcia. Trwałość rankingu zależy od infrastruktury serwera; brak klasycznego konta oznacza, że identyfikator można utracić po usunięciu danych witryny.'],
+      ['10. Dane techniczne', 'Infrastruktura może przetwarzać adres IP, user-agent, identyfikatory połączeń, znaczniki czasu i inne dane techniczne potrzebne do działania, diagnostyki i przeciwdziałania nadużyciom.'],
+      ['11. Reklamy i Google AdSense', 'Czatuj24 korzysta z Google AdSense. Usługa reklamowa może używać cookies, identyfikatorów i innych danych technicznych zgodnie z własnymi zasadami oraz mechanizmami zgody i ustawieniami reklam.'],
+      ['12. Odbiorcy danych', 'Dane mogą być przetwarzane przez dostawców hostingu, infrastruktury, komunikacji, usług technicznych i reklamowych, w zakresie wynikającym z rzeczywistej konfiguracji serwisu.'],
+      ['13. Brak sprzedaży danych', 'Czatuj24 nie sprzedaje danych osobowych użytkowników. Nie wyklucza to przetwarzania danych przez dostawców usług niezbędnych do działania serwisu.'],
+      ['14. Retencja', 'Okres przechowywania zależy od rodzaju danych i rzeczywistej konfiguracji usług. Lokalny system progresu może pozostawać w pamięci przeglądarki do czasu jego usunięcia przez użytkownika lub wyczyszczenia danych witryny. Dla zgłoszeń, uploadów i danych technicznych należy stosować okres niezbędny do odpowiedniego celu, obowiązków prawnych i bezpieczeństwa.'],
+      ['15. Prawa użytkownika', 'W zakresie wynikającym z obowiązujących przepisów możesz żądać dostępu do danych, ich sprostowania, usunięcia lub ograniczenia przetwarzania, a także skorzystać z innych praw, gdy mają zastosowanie.'],
+      ['16. Kontakt', 'W sprawach dotyczących danych osobowych skontaktuj się pod adresem kontaktczatuj24@gmail.com.'],
+      ['17. Aktualizacje', 'Polityka może być aktualizowana wraz ze zmianami technicznymi, prawnymi lub organizacyjnymi serwisu.']
     ]
   },
   '/kontakt': {
@@ -624,6 +626,166 @@ const photoCounts = new Map();
 
 const reportedThisSession = new Set();
 
+// ETAP 2: efemeryczna reputacja + jakość rozmowy + rematch.
+// Bez konta nie identyfikujemy użytkownika trwale po stronie serwera.
+const reputationState = new Map();
+const privateProfiles = new Map();
+const conversationState = new Map();
+const rematchState = new Map();
+const blockedPairs = new Set();
+function blockKey(a,b){return [a,b].sort().join(':')}
+function isBlockedPair(a,b){return blockedPairs.has(blockKey(a,b))}
+const safetyState = new Map();
+const weeklyLeague = new Map();
+// Puchar Czatuj24: osobna tabela bieżącego okresu serwera. Bez kont nie wiążemy wyniku z trwałą tożsamością.
+const cupState = new Map();
+const leaderboardFile = path.join(__dirname,'leaderboard.json');
+let leaderboardState = Object.create(null);
+try { if(fs.existsSync(leaderboardFile)) leaderboardState = JSON.parse(fs.readFileSync(leaderboardFile,'utf8')) || Object.create(null); } catch { leaderboardState = Object.create(null); }
+function saveLeaderboard(){try{fs.writeFileSync(leaderboardFile,JSON.stringify(leaderboardState,null,2),'utf8')}catch(e){console.error('Nie udało się zapisać leaderboard.json:',e.message)}}
+function safePlayerId(v){const x=String(v||'').trim();return /^[a-zA-Z0-9_-]{12,80}$/.test(x)?x:''}
+function ensureLeaderboard(playerId){if(!playerId)return null;if(!leaderboardState[playerId])leaderboardState[playerId]={points:0,updatedAt:Date.now(),nick:'Anonim',avatar:'avatar01',level:1,reputation:500,quality:0,league:'Bronze',returns:0,achievements:0,logo:['rdzen'],badges:[]};return leaderboardState[playerId]}
+function syncLeaderboard(socketId){const pr=publicProfiles.get(socketId)||{};const id=safePlayerId(pr.playerId);if(!id)return null;const x=ensureLeaderboard(id);x.nick=String(pr.nick||'Anonim').slice(0,20)||'Anonim';x.avatar=['avatar01','avatar02','avatar03','avatar04','avatar05','avatar06','avatar07','avatar08'].includes(pr.avatar)?pr.avatar:'avatar01';x.level=Math.max(1,Math.min(10,Number(pr.progress?.level)||1));x.reputation=Math.max(0,Math.min(1000,Number(pr.progress?.reputation?.score)||500));x.quality=Math.max(0,Math.min(100,Number(pr.progress?.quality?.score)||0));x.league=leagueName(x.points);x.achievements=Math.max(0,Math.min(99,Number(pr.progress?.achievements)||0));x.returns=Math.max(0,Math.min(999,Number(pr.progress?.streak)||0));x.logo=Array.isArray(pr.progress?.logo)?pr.progress.logo.filter(v=>typeof v==='string').slice(0,12):['rdzen'];x.badges=Array.isArray(pr.progress?.badges)?pr.progress.badges.filter(v=>typeof v==='string').slice(0,3):[];x.updatedAt=Date.now();saveLeaderboard();return id}
+function leaderboardRows(){return Object.entries(leaderboardState).map(([playerId,v])=>({playerId,nick:String(v.nick||'Anonim').slice(0,20),avatar:v.avatar||'avatar01',level:Number(v.level)||1,reputation:Number(v.reputation)||500,quality:Number(v.quality)||0,league:leagueName(v.points||0),points:Math.round(v.points||0),achievements:Number(v.achievements)||0,returns:Number(v.returns)||0,logo:Array.isArray(v.logo)?v.logo.slice(0,12):['rdzen'],badges:Array.isArray(v.badges)?v.badges.slice(0,3):[],updatedAt:v.updatedAt||0})).sort((a,b)=>b.points-a.points||b.reputation-a.reputation||b.quality-a.quality||b.updatedAt-a.updatedAt)}
+function emitLeaderboard(socketId){if(!isConnected(socketId))return;const pr=publicProfiles.get(socketId)||{};const me=safePlayerId(pr.playerId);const rows=leaderboardRows();const rank=me?Math.max(1,rows.findIndex(x=>x.playerId===me)+1):0;const top=rows.slice(0,10);io.to(socketId).emit('leaderboard:update',{rank,points:me?(ensureLeaderboard(me)?.points||0):0,players:rows.length,top})}
+function emitLeaderboardAll(){for(const id of io.sockets.sockets.keys())emitLeaderboard(id)}
+
+function ensureCup(socketId){if(!cupState.has(socketId))cupState.set(socketId,{points:0,updatedAt:Date.now()});return cupState.get(socketId)}
+function addCupPoints(socketId,points){const pr=publicProfiles.get(socketId)||{};const id=syncLeaderboard(socketId);if(id){const x=ensureLeaderboard(id);x.points=Math.max(0,Math.min(99999999,x.points+(Number(points)||0)));x.updatedAt=Date.now();x.league=leagueName(x.points);saveLeaderboard();emitLeaderboardAll();}const x=ensureCup(socketId);x.points=Math.max(0,Math.min(999999,x.points+(Number(points)||0)));x.updatedAt=Date.now();emitCup(socketId)}
+function emitCup(socketId){if(!isConnected(socketId))return;const rows=leaderboardRows();const pr=publicProfiles.get(socketId)||{};const id=safePlayerId(pr.playerId);const rank=id?Math.max(1,rows.findIndex(x=>x.playerId===id)+1):0;const me=id?ensureLeaderboard(id):null;io.to(socketId).emit('cup:update',{points:me?.points||0,rank,players:rows.length,top:rows.slice(0,10)})}
+function emitCupAll(){for(const id of io.sockets.sockets.keys())emitCup(id)}
+const WEEKLY_LEAGUE_WINDOW = 7*24*60*60*1000;
+function weekKey(){const d=new Date(); const day=(d.getUTCDay()+6)%7; const x=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate())); x.setUTCDate(x.getUTCDate()-day); return x.toISOString().slice(0,10)}
+function leagueName(points){const p=Number(points)||0; return p>=2500?'Legend':p>=1700?'Diamond':p>=1100?'Platinum':p>=650?'Gold':p>=300?'Silver':'Bronze'}
+function addWeeklyPoints(socketId,points){const now=Date.now(),wk=weekKey();let x=weeklyLeague.get(socketId);if(!x||x.week!==wk||now-x.updatedAt>WEEKLY_LEAGUE_WINDOW){x={week:wk,points:0,updatedAt:now};weeklyLeague.set(socketId,x)}x.points=Math.max(0,Math.min(99999,x.points+(Number(points)||0)));x.updatedAt=now;emitLeague(socketId);addCupPoints(socketId,Math.max(0,Math.round((Number(points)||0)*0.65)))}
+function emitLeague(socketId){const x=weeklyLeague.get(socketId)||{week:weekKey(),points:0};const list=[...weeklyLeague.entries()].filter(([id,v])=>v.week===x.week).sort((a,b)=>b[1].points-a[1].points);const rank=Math.max(1,list.findIndex(([id])=>id===socketId)+1);if(isConnected(socketId))io.to(socketId).emit('league:update',{week:x.week,points:x.points,league:leagueName(x.points),rank,players:list.length});}
+
+const TOPIC_BANK = [
+  'Jaka mała rzecz potrafi poprawić Ci humor w zwykły dzień?',
+  'Gdybyś miał jutro wolny dzień bez obowiązków, co byś zrobił?',
+  'Jaki film, serial albo gra ostatnio Cię wciągnęła?',
+  'Wolisz spontaniczne wyjście czy spokojny wieczór? Dlaczego?',
+  'Jakie miejsce chciałbyś kiedyś zobaczyć?',
+  'Jaka rzecz zawsze poprawia Ci nastrój?',
+  'Masz jakiś mały talent, o którym mało kto wie?',
+  'Jaki był ostatni naprawdę dobry dzień i co go takim zrobiło?',
+  'Gdybyś mógł nauczyć się jednej rzeczy od ręki, co by to było?',
+  'Co najbardziej cenisz w dobrej rozmowie?'
+];
+function ensureReputation(socketId){
+  if(!reputationState.has(socketId)) reputationState.set(socketId,{score:500,positive:0,negative:0,reports:0,blocks:0,spam:0,quality:500});
+  return reputationState.get(socketId);
+}
+function reputationTier(score){
+  const n=Number(score)||500;
+  return n>=900?'Btrusted':n>=750?'Very trusted':n>=600?'Good':n>=400?'Normal':'New';
+}
+function publicReputation(socketId){const r=ensureReputation(socketId);return {score:Math.max(0,Math.min(1000,Math.round(r.score))),tier:reputationTier(r.score),positive:r.positive,negative:r.negative,quality:Math.round(r.quality)}}
+function emitReputation(socketId){if(isConnected(socketId))io.to(socketId).emit('reputation:update',publicReputation(socketId));}
+function adjustReputation(socketId,delta,kind='quality'){
+  const r=ensureReputation(socketId);
+  const d=Math.max(-35,Math.min(35,Number(delta)||0));
+  r.score=Math.max(0,Math.min(1000,r.score+d));
+  if(d>0) r.positive++; if(d<0) r.negative++;
+  if(kind==='report') r.reports++; if(kind==='spam') r.spam++;
+  r.quality=Math.max(0,Math.min(1000,Math.round(r.quality+d)));
+  emitReputation(socketId);
+}
+function initConversation(a,b){
+  const state={a,b,startedAt:Date.now(),messages:{[a]:0,[b]:0},reactions:{[a]:0,[b]:0},games:{[a]:0,[b]:0},photos:{[a]:0,[b]:0},normalEnd:false,reported:new Set(),rematch:{[a]:false,[b]:false},safety:{[a]:0,[b]:0}};
+  conversationState.set(a,state); conversationState.set(b,state);
+  return state;
+}
+function sessionQuality(socketId, state, normalEnd){
+  const other=state.a===socketId?state.b:state.a;
+  const mins=Math.max(0,(Date.now()-state.startedAt)/60000);
+  const msgs=state.messages[socketId]||0; const reactions=state.reactions[socketId]||0; const games=state.games[socketId]||0;
+  const ownReports=state.reported.has(socketId)?1:0; const safety=state.safety[socketId]||0;
+  let score=45;
+  score += Math.min(20,msgs*1.5); score += Math.min(10,reactions*2); score += Math.min(8,games*4); score += Math.min(12,mins*2);
+  if(normalEnd) score+=8; if(ownReports) score-=8; score-=Math.min(25,safety*6);
+  return Math.round(Math.max(0,Math.min(100,score)));
+}
+function finalizeConversation(a,b,reason='normal'){
+  const state=conversationState.get(a)||conversationState.get(b); if(!state) return;
+  const normal=reason==='normal'; state.normalEnd=normal;
+  const results={};
+  for(const id of [state.a,state.b]){
+    const q=sessionQuality(id,state,normal); results[id]=q;
+    const delta=Math.round((q-50)*0.45);
+    adjustReputation(id,delta,'quality');
+    addWeeklyPoints(id,Math.max(0,Math.round(q/5)));
+  }
+  for(const id of [state.a,state.b]) if(isConnected(id)) io.to(id).emit('conversation:quality',{score:results[id],durationSec:Math.round((Date.now()-state.startedAt)/1000),messages:state.messages[id]||0,reactions:state.reactions[id]||0,games:state.games[id]||0,normalEnd:normal,rematch:!!state.rematch[id],report:state.reported.has(id)});
+  conversationState.delete(a); conversationState.delete(b);
+}
+function setRematchIntent(socketId,partnerId){
+  const key=[socketId,partnerId].sort().join(':'); let x=rematchState.get(key); if(!x){x={a:socketId,b:partnerId,at:Date.now(),yes:new Set(),timer:null};rematchState.set(key,x);x.timer=setTimeout(()=>rematchState.delete(key),60_000)} return x;
+}
+function clearRematch(socketId,partnerId){const key=[socketId,partnerId].sort().join(':');const x=rematchState.get(key);if(x?.timer)clearTimeout(x.timer);rematchState.delete(key);}
+function tryRematch(socketId,partnerId){
+  const x=setRematchIntent(socketId,partnerId); x.yes.add(socketId);
+  if(x.yes.has(x.a)&&x.yes.has(x.b)&&isConnected(x.a)&&isConnected(x.b)&&!pairs[x.a]&&!pairs[x.b]){
+    clearRematch(x.a,x.b); pairs[x.a]=x.b; pairs[x.b]=x.a; photoCounts.set(x.a,0);photoCounts.set(x.b,0); reportedThisSession.delete(x.a);reportedThisSession.delete(x.b); lastPartnerForReport.delete(x.a);lastPartnerForReport.delete(x.b); initConversation(x.a,x.b);
+    io.to(x.a).emit('partnerFound',{rematch:true}); io.to(x.b).emit('partnerFound',{rematch:true}); emitPartnerProfiles(x.a,x.b); return true;
+  }
+  const other=socketId===x.a?x.b:x.a; if(isConnected(other))io.to(other).emit('rematch:request');
+  return false;
+}
+function normalizeForModeration(value){return String(value||'').normalize('NFKC').toLocaleLowerCase('pl-PL').replace(/[\u0000-\u001f\u007f]/g,' ').replace(/[@$]/g,'a').replace(/0/g,'o').replace(/1/g,'i').replace(/3/g,'e').replace(/4/g,'a').replace(/5/g,'s').replace(/7/g,'t').replace(/[_./\\-]+/g,' ').replace(/\s+/g,' ').trim().slice(0,5000)}
+const safetyStrikes=new Map();
+function moderationClassify(socketId,text){
+  const t=normalizeForModeration(text);
+  const profile=privateProfiles.get(socketId)||{};
+  const partnerId=getPartner(socketId);
+  const partnerProfile=partnerId?privateProfiles.get(partnerId)||{}:{};
+  const senderAge=Math.max(16,Math.min(100,Number(profile.age)||25));
+  const partnerAge=Math.max(16,Math.min(100,Number(partnerProfile.age)||25));
+  const sexualTerms=/(nude?s?|nago|naga|nagość|nago sc|rozbier|rozbierz|rozbierzesz|rozebrana|rozebrany|bez ubr|bez ciuch|intymn|erotyczn|porn|seksown|cycki|piersi|suty|sutki|dupa|pokaz.*ciało|pokaz.*cialo|pokaż.*ciało|pokaż.*cialo|pokaż.*dupe|pokaz.*dupe|zdjęci[ae].*(nago|intym|rozebr)|fotk[ae].*(nago|intym|rozebr)|fotki.*ciał|foto.*ciał)/i;
+  const solicitation=/(wyślij|wyslij|wyślesz|wyslesz|podeślij|podeslij|prześlij|przeslij|daj|pokaż|pokaz|zrób|zrob|send|show|send me|show me).{0,45}(nude|nago|naga|nag[io]|intym|rozeb|body|ciał|cial|cycki|piersi|foto|fotk|zdję|zdjec|pic|photo)|((nude|nago|naga|intym|rozeb|body).{0,35}(pic|photo|foto|fotk|zdję|zdjec|wyslij|wyślij|pokaż|pokaz))/i;
+  const minorMention=/(16\s*(lat|l)|17\s*(lat|l)|poniżej\s*18|ponizej\s*18|nieletn|małolet|malolet|niepełnolet|niepelnolet|nie mam 18|nie mam\s*18)/i;
+  const ageRequest=/(ile\s+masz\s+lat|masz\s+18|pełnolet|pelnolet|wiek)/i;
+  const scam=/(https?:\/\/|www\.|bit\.ly|tinyurl|t\.me|telegram|whatsapp|signal|discord\.gg|crypto|bitcoin|inwestuj|przelew|wpłać|wplac|kod\s+(doładow|doladow)|bank|otp|blik)/i;
+  const aggression=/(zabij|zgin|zniszcz|pożałujesz|pozalujesz|zemsta|groźb|grozb|zastrzel|odnajdę\s+cię|odnajde\s+cie|spalę|spale)/i;
+  const repetition=(()=>{const old=safetyState.get(socketId)||{last:'',repeat:0,window:[]};const now=Date.now();old.window=(old.window||[]).filter(x=>now-x.ts<30000);if(t&&t===old.last)old.repeat++;else old.repeat=0;if(t)old.window.push({t:t.slice(0,220),ts:now});old.last=t.slice(0,220);safetyState.set(socketId,old);return {same:old.repeat,burst:old.window.length}})();
+  const senderMinor=senderAge<18, targetMinor=partnerAge<18;
+  const sexual=sexualTerms.test(t), solicitationHit=solicitation.test(t);
+  const minorSensitive=(targetMinor||senderMinor||minorMention.test(t))&&(sexual||solicitationHit);
+  let category='';let severity=0;let blocked=false;
+  if(minorSensitive){category='minor-sexual';severity=6;blocked=true}
+  else if(solicitationHit){category='sexual-solicitation';severity=5;blocked=true}
+  else if(sexual){category='sexual-content';severity=3;blocked=true}
+  else if(aggression.test(t)){category='aggression';severity=3}
+  else if(scam.test(t)){category='scam-phishing';severity=3}
+  else if(repetition.same>=2 || repetition.burst>=7){category='spam-repetition';severity=2}
+  else if(repetition.same===1){category='repetition';severity=1}
+  else if(ageRequest.test(t)&&targetMinor){category='minor-age-context';severity=1}
+  return {blocked,category,severity,age:senderAge,partnerAge,minorContext:minorSensitive||minorMention.test(t)};
+}
+
+function applySafetyResult(socketId,result){
+  if(!result||!result.severity)return;
+  const st=conversationState.get(socketId);
+  if(st)st.safety[socketId]=(st.safety[socketId]||0)+result.severity;
+  const delta=result.category==='minor-sexual'?-35:result.blocked?-18:-Math.min(10,result.severity*3);
+  adjustReputation(socketId,delta,result.severity>=3?'spam':'quality');
+  addCupPoints(socketId,result.blocked?0:Math.max(0,2-result.severity));
+  if(result.blocked){
+    const old=safetyStrikes.get(socketId)||{count:0,at:Date.now()};
+    if(Date.now()-old.at>10*60*1000)old.count=0;
+    old.count++;old.at=Date.now();safetyStrikes.set(socketId,old);
+    if(old.count>=3 && isConnected(socketId)){
+      io.to(socketId).emit('safety:event',{blocked:true,flags:result.severity,category:result.category,escalated:true,message:'Ochrona zatrzymała kolejną niedozwoloną próbę. Powtarzające się naruszenia mogą zakończyć rozmowę.'});
+      const partner=getPartner(socketId);
+      if(partner&&isConnected(partner))io.to(partner).emit('safety:event',{blocked:false,flags:1,category:'session-protection'});
+      if(old.count>=4){adjustReputation(socketId,-20,'report');breakPair(socketId,true);return;}
+    }
+  }
+  if(isConnected(socketId))io.to(socketId).emit('safety:event',{blocked:!!result.blocked,flags:result.severity,category:result.category});
+}
+function runSafetyHeuristic(socketId,text){const result=moderationClassify(socketId,text);applySafetyResult(socketId,result);return result;}
+
+
 const lastPartnerForReport = new Map();
 
 /* ============================================================
@@ -631,7 +793,7 @@ const lastPartnerForReport = new Map();
 ============================================================ */
 
 const blockedTermRegex =
-  /(^|[^a-z0-9])k\s*1\s*4([^a-z0-9]|$)/iu;
+  /(^|[^a-z0-9])k\s*1\s*(?:3|4|5)([^a-z0-9]|$)/iu;
 
 function containsBlockedTerm(text) {
   return blockedTermRegex.test(
@@ -682,18 +844,25 @@ function randomId() {
    Jeden socket = jedna pozycja w kolejce. Jedna para = dwa sockety.
 ============================================================ */
 
-function sanitizePublicProfile(profile){
+function sanitizePublicProfile(profile, socketId=null){
   const p = profile && typeof profile === 'object' ? profile : {};
   const allowedPurposes = new Set(['randka','spotkanie','rozmowa']);
   const allowedStatuses = new Set(['dostepny','zaraz']);
   const age = Math.max(16, Math.min(100, Number(p.age) || 25));
   const purpose = allowedPurposes.has(p.purpose) ? p.purpose : 'rozmowa';
+  const pr=p.progress&&typeof p.progress==='object'?p.progress:{};
+  const logo=Array.isArray(pr.logo)?pr.logo.filter(x=>typeof x==='string').slice(0,12):[];
+  const badges=Array.isArray(pr.badges)?pr.badges.filter(x=>typeof x==='string').slice(0,3):[];
+  const avatarIds=new Set(['avatar01','avatar02','avatar03','avatar04','avatar05','avatar06','avatar07','avatar08']);
   return {
+    playerId:safePlayerId(p.playerId),
+    avatar:avatarIds.has(p.avatar)?p.avatar:'avatar01',
     nick: String(p.nick || 'Partner').trim().slice(0,20) || 'Partner',
     age,
     purpose,
     status: allowedStatuses.has(p.status) ? p.status : 'dostepny',
-    bio: String(p.bio || '').trim().slice(0,200)
+    bio: String(p.bio || '').trim().slice(0,200),
+    progress:{level:Math.max(1,Math.min(10,Number(pr.level)||1)),rank:String(pr.rank||'Nowy rozmówca').slice(0,40),streak:Math.max(0,Math.min(999,Number(pr.streak)||0)),achievements:Math.max(0,Math.min(99,Number(pr.achievements)||0)),logo,badges,night:!!pr.night,game:!!pr.game,reputation:socketId?publicReputation(socketId):(pr.reputation&&typeof pr.reputation==='object'?{score:Math.max(0,Math.min(1000,Number(pr.reputation.score)||500)),tier:String(pr.reputation.tier||'Normal').slice(0,20)}:undefined),quality:{score:Math.max(0,Math.min(100,Number(pr.quality?.score)||0))},league:{league:String(pr.league?.league||'Bronze').slice(0,20),points:Math.max(0,Math.min(99999,Number(pr.league?.points)||0))}}
   };
 }
 
@@ -726,6 +895,7 @@ function breakPair(socketId, notifyPartner = true) {
   // Zapamiętaj ostatniego partnera, aby zgłoszenie po zakończeniu
   // rozmowy nadal mogło trafić do właściwego socketu, jeśli istnieje.
   if (partnerId && isConnected(partnerId)) {
+    lastPartnerForReport.set(socketId, partnerId);
     lastPartnerForReport.set(partnerId, socketId);
   }
 
@@ -734,6 +904,7 @@ function breakPair(socketId, notifyPartner = true) {
   clearInviteForPair(socketId);
   if(partnerId) clearChatMessageStateForPair(socketId, partnerId);
   publicProfiles.delete(socketId);
+  privateProfiles.delete(socketId);
 
   if (partnerId && notifyPartner && isConnected(partnerId)) {
     io.to(partnerId).emit('partnerStopped');
@@ -760,6 +931,23 @@ function enqueueUser(socketId) {
   return true;
 }
 
+function matchCompatibility(a,b){
+  const A=privateProfiles.get(a)||{},B=privateProfiles.get(b)||{}; let score=0;
+  const sexA=A.sex||'',sexB=B.sex||'',tarA=A.target||'',tarB=B.target||'';
+  if(tarA==='bi'||tarA===sexB)score+=28; if(tarB==='bi'||tarB===sexA)score+=28;
+  if(A.purpose&&B.purpose&&A.purpose===B.purpose)score+=16;
+  const ageA=Number(A.age)||25,ageB=Number(B.age)||25; score+=Math.max(0,18-Math.abs(ageA-ageB));
+  const ra=ensureReputation(a).score,rb=ensureReputation(b).score; score+=Math.max(0,10-Math.abs(ra-rb)/50);
+  return score;
+}
+function chooseWaitingCandidate(socketId){
+  const valid=[];
+  for(const candidate of waitingUsers){if(candidate&&candidate!==socketId&&isConnected(candidate)&&!pairs[candidate]&&!isBlockedPair(socketId,candidate))valid.push(candidate)}
+  if(!valid.length)return null;
+  // Soft matching: wciąż losowość, ale część dopasowań korzysta z profilu i reputacji.
+  if(Math.random()<0.70)return valid[Math.floor(Math.random()*valid.length)];
+  let best=valid[0],bestScore=-Infinity;for(const c of valid){const sc=matchCompatibility(socketId,c)+Math.random()*5;if(sc>bestScore){bestScore=sc;best=c}}return best;
+}
 function matchWaitingUser(socketId) {
   cleanWaitingQueue();
   if (!isConnected(socketId) || pairs[socketId]) return null;
@@ -767,19 +955,9 @@ function matchWaitingUser(socketId) {
   const ownIndex = waitingUsers.indexOf(socketId);
   if (ownIndex >= 0) waitingUsers.splice(ownIndex, 1);
 
-  let partnerId = null;
-  while (waitingUsers.length) {
-    const candidate = waitingUsers.shift();
-    if (
-      candidate &&
-      candidate !== socketId &&
-      isConnected(candidate) &&
-      !pairs[candidate]
-    ) {
-      partnerId = candidate;
-      break;
-    }
-  }
+  let partnerId = chooseWaitingCandidate(socketId);
+  if(partnerId){const idx=waitingUsers.indexOf(partnerId);if(idx>=0)waitingUsers.splice(idx,1);}
+  waitingUsers = waitingUsers.filter(id => id !== socketId);
 
   if (!partnerId) {
     enqueueUser(socketId);
@@ -792,6 +970,8 @@ function matchWaitingUser(socketId) {
   photoCounts.set(socketId, 0);
   photoCounts.set(partnerId, 0);
 
+  initConversation(socketId, partnerId);
+  ensureReputation(socketId); ensureReputation(partnerId); emitReputation(socketId); emitReputation(partnerId);
   io.to(socketId).emit('partnerFound');
   io.to(partnerId).emit('partnerFound');
   emitPartnerProfiles(socketId, partnerId);
@@ -874,7 +1054,7 @@ const GAME_INVITE_TIMEOUT = 30 * 1000;
 const GAME_MAX_DURATION = 10 * 60 * 1000;
 const GAME_ACTION_COOLDOWN = 140;
 const DRAW_ACTION_COOLDOWN = 32;
-const DRAW_MAX_STROKES_PER_SECOND = 28;
+const DRAW_MAX_STROKES_PER_SECOND = 32;
 const GAME_MAX_ROUNDS = 8;
 const DRAW_MAX_ROUNDS = 5;
 const RISK_MAX_PICKS_PER_TURN = 2;
@@ -952,6 +1132,8 @@ function finishGame(session, result = 'Gra zakończona.', extra = {}) {
     ? extra.winner
     : null;
   const { winner, ...safeExtra } = extra || {};
+  // Wynik gry zasila tygodniową ligę; udział dostaje mały bonus, zwycięzca większy.
+  if(winnerId){ addWeeklyPoints(winnerId,30); addCupPoints(winnerId,18); const loser=winnerId===session.a?session.b:session.a; addWeeklyPoints(loser,8); addCupPoints(loser,4); } else { addWeeklyPoints(session.a,12); addWeeklyPoints(session.b,12); }
 
   emitPair(session, id => {
     const state = {
@@ -1001,6 +1183,8 @@ function createGame(a, game) {
   };
   gameSessions.set(a, session);
   gameSessions.set(b, session);
+  const conv=conversationState.get(a); if(conv){conv.games[a]=(conv.games[a]||0)+1;conv.games[b]=(conv.games[b]||0)+1;}
+  addWeeklyPoints(a,12); addWeeklyPoints(b,12);
   session.timeout = setTimeout(() => finishGame(session, 'Czas gry minął.'), GAME_MAX_DURATION);
   return session;
 }
@@ -1480,7 +1664,7 @@ function handleGameAction(socket, data) {
   if (!session.active) return;
   if (data.game !== session.game || !validateGameName(data.game)) return gameError(socket,'Nieprawidłowy stan gry.');
   const action = typeof data.action === 'string' ? data.action : 'unknown';
-  if (!allowGameAction(socket.id, data.game, action)) return;
+  if (!(data.game==='drawguess' && action==='stroke') && !allowGameAction(socket.id, data.game, action)) return;
   switch (session.game) {
     case 'drawguess': handleDraw(socket,session,data); break;
     case 'ttt': handleTTT(socket,session,data); break;
@@ -1539,6 +1723,11 @@ function cleanupRateState(socketId) {
   gameRate.delete(socketId);
   reactionRate.delete(socketId);
   profileRate.delete(socketId);
+  conversationState.delete(socketId);
+  rematchState.forEach((v,k)=>{if(v.a===socketId||v.b===socketId){if(v.timer)clearTimeout(v.timer);rematchState.delete(k)}});
+  safetyState.delete(socketId);
+  safetyStrikes.delete(socketId);
+  cupState.delete(socketId);
   chatControlRate.delete(socketId);
 }
 
@@ -1556,6 +1745,7 @@ io.on(
     );
 
     emitOnlineCount();
+    ensureCup(socket.id);
 
     /* ========================================================
        START CZATU
@@ -1566,7 +1756,10 @@ io.on(
       data => {
         if (!allowBurst(chatControlRate, socket.id, 8, 30_000)) return;
         if (!isConnected(socket.id)) return;
-        publicProfiles.set(socket.id, sanitizePublicProfile(data?.profile));
+        ensureReputation(socket.id);
+        const rawProfile=data?.profile&&typeof data.profile==='object'?data.profile:{};
+        privateProfiles.set(socket.id,{sex:String(rawProfile.sex||'').slice(0,20),target:String(rawProfile.target||'').slice(0,20),age:Math.max(16,Math.min(100,Number(rawProfile.age)||25)),purpose:String(rawProfile.purpose||'rozmowa').slice(0,20)});
+        publicProfiles.set(socket.id, sanitizePublicProfile(rawProfile,socket.id));
 
         // START jest idempotentny: kliknięcie ponownie nie tworzy
         // drugiego połączenia ani nie pozwala połączyć użytkownika z samym sobą.
@@ -1634,6 +1827,19 @@ io.on(
           return;
         }
 
+        const moderation = runSafetyHeuristic(socket.id, rawText);
+        if (moderation.blocked || containsBlockedTerm(rawText)) {
+          const msg = moderation.category === 'minor-sexual'
+            ? 'Wiadomość została zatrzymana przez ochronę Czatuj24. Propozycje nagości lub materiałów intymnych wobec osoby niepełnoletniej są zabronione.'
+            : moderation.category === 'sexual-solicitation'
+              ? 'Wiadomość została zatrzymana. Nie wysyłaj próśb ani propozycji dotyczących nagości lub materiałów intymnych.'
+              : moderation.category === 'sexual-content'
+                ? 'Wiadomość została zatrzymana. Treści seksualne i intymne nie są dozwolone w Czatuj24.'
+                : 'Wiadomość zawiera zakazane określenie i nie została wysłana.';
+          socket.emit('messageBlocked', msg);
+          return;
+        }
+
         const messageId = randomId();
         const payload = {
           type: 'text',
@@ -1645,6 +1851,8 @@ io.on(
           b: partnerId,
           createdAt: Date.now()
         });
+        const conv=conversationState.get(socket.id); if(conv) conv.messages[socket.id]=(conv.messages[socket.id]||0)+1;
+        addWeeklyPoints(socket.id,1);
         io.to(socket.id).emit('receiveMessage', { ...payload, fromSelf:true });
         io.to(partnerId).emit('receiveMessage', { ...payload, fromSelf:false });
       }
@@ -1657,9 +1865,25 @@ io.on(
     socket.on('profile:update', data => {
       if(!allowBurst(profileRate, socket.id, 8, 10_000)) return;
       if(!data?.profile) return;
-      publicProfiles.set(socket.id, sanitizePublicProfile(data.profile));
+      publicProfiles.set(socket.id, sanitizePublicProfile(data.profile,socket.id));
+      const lbid=syncLeaderboard(socket.id);
+      if(lbid)emitLeaderboardAll();
+      emitCupAll();
       const partnerId=getPartner(socket.id);
       if(partnerId) io.to(partnerId).emit('partnerProfile', publicProfiles.get(socket.id));
+    });
+
+    socket.on('profile:save', data => {
+      if(!allowBurst(profileRate, socket.id, 8, 10_000)) return;
+      if(!data?.profile) return;
+      const safe=sanitizePublicProfile(data.profile,socket.id);
+      publicProfiles.set(socket.id,safe);
+      const lbid=syncLeaderboard(socket.id);
+      if(lbid)emitLeaderboardAll();
+      emitCupAll();
+      const partnerId=getPartner(socket.id);
+      if(partnerId) io.to(partnerId).emit('partnerProfile', safe);
+      socket.emit('profile:saved',{ok:true,playerId:safe.playerId,avatar:safe.avatar,logoCount:safe.progress.logo.length,rank:(leaderboardRows().findIndex(x=>x.playerId===safe.playerId)+1)||1});
     });
 
     socket.on('typing', active => {
@@ -1681,6 +1905,7 @@ io.on(
       if(!users){ users=new Map(); messageReactions.set(data.messageId, users); }
       if(reaction && users.get(socket.id) === reaction) reaction='';
       if(reaction) users.set(socket.id, reaction); else users.delete(socket.id);
+      if(reaction){const conv=conversationState.get(socket.id);if(conv)conv.reactions[socket.id]=(conv.reactions[socket.id]||0)+1;adjustReputation(socket.id,2,'quality');addWeeklyPoints(socket.id,5);}
       const counts = new Map();
       for(const r of users.values()) counts.set(r,(counts.get(r)||0)+1);
       const current = users.get(socket.id) || '';
@@ -1906,6 +2131,8 @@ io.on(
         reportedThisSession.add(
           socket.id
         );
+        const conv=conversationState.get(socket.id); if(conv) conv.reported.add(socket.id);
+        adjustReputation(partnerId,-20,'report');
 
         console.log(
           `Zgłoszenie: ${socket.id} zgłosił ${partnerId} — ${reason}`
@@ -1916,6 +2143,38 @@ io.on(
         );
       }
     );
+
+    /* ========================================================
+       ETAP 2 — REMATCH / TEMAT / REPUTACJA
+    ======================================================== */
+    socket.on('blockUser',()=>{
+      const partner=getPartner(socket.id)||lastPartnerForReport.get(socket.id);
+      if(!partner || !isConnected(partner)) return socket.emit('block:error',{message:'Partner nie jest już dostępny.'});
+      blockedPairs.add(blockKey(socket.id,partner));
+      adjustReputation(partner,-8,'quality');
+      const st=conversationState.get(socket.id); if(st) st.reported.add(partner);
+      breakPair(socket.id,true);
+      socket.emit('block:accepted');
+    });
+    socket.on('rematch:request',()=>{
+      if(!allowBurst(chatControlRate,socket.id,4,30_000))return;
+      const partner=lastPartnerForReport.get(socket.id);
+      if(!partner || !isConnected(partner)) return socket.emit('rematch:error',{message:'Partner nie jest już dostępny do ponownego połączenia.'});
+      const st=conversationState.get(socket.id); if(st) st.rematch[socket.id]=true;
+      const ok=tryRematch(socket.id,partner);
+      socket.emit('rematch:status',{waiting:!ok,accepted:ok});
+    });
+    socket.on('rematch:decline',()=>{const partner=lastPartnerForReport.get(socket.id);if(partner)clearRematch(socket.id,partner)});
+    socket.on('topic:request',()=>{
+      if(!allowBurst(chatControlRate,socket.id,5,60_000))return;
+      if(!getPartner(socket.id))return;
+      const topic=TOPIC_BANK[Math.floor(Math.random()*TOPIC_BANK.length)];
+      io.to(socket.id).emit('topic:result',{topic});
+    });
+    socket.on('reputation:request',()=>emitReputation(socket.id));
+    socket.on('league:request',()=>emitLeague(socket.id));
+    socket.on('cup:request',()=>emitCup(socket.id));
+    socket.on('leaderboard:request',()=>emitLeaderboard(socket.id));
 
     /* ========================================================
        START ZAPROSZENIA DO GRY
