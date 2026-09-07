@@ -1,24 +1,42 @@
 {
   "p_xnh8hl10n8mtp8bnf5": {
-    "points": 64,
-    "updatedAt": 1788718031224,
-    "nick": "Partner",
-    "avatar": "avatar02",
-    "level": 2,
+    "points": 403,
+    "updatedAt": 1788800979349,
+    "nick": "ssssssss",
+    "avatar": "avatar04",
+    "level": 3,
     "reputation": 500,
-    "quality": 0,
-    "league": "Bronze",
-    "returns": 1,
-    "achievements": 3,
+    "quality": 57,
+    "league": "Silver",
+    "returns": 2,
+    "achievements": 6,
     "logo": [
       "rdzen",
       "game",
-      "aura"
+      "aura",
+      "night",
+      "ring"
     ],
     "badges": [
-      "first_game",
-      "draw_artist",
-      "chats1"
+      "chats10",
+      "five_min",
+      "first_game"
     ]
+  },
+  "p_vnt93s26jf9mtq8tyym": {
+    "points": 12,
+    "updatedAt": 1788725301934,
+    "nick": "Partner",
+    "avatar": "avatar01",
+    "level": 1,
+    "reputation": 500,
+    "quality": 0,
+    "league": "Bronze",
+    "returns": 0,
+    "achievements": 0,
+    "logo": [
+      "rdzen"
+    ],
+    "badges": []
   }
 }

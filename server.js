@@ -319,27 +319,27 @@ const SEO_PAGES = {
     ]
   },
   '/polityka-prywatnosci': {
-    title: 'Polityka prywatności Czatuj24 — aktualizacja 6 września 2026',
+    title: 'Polityka prywatności Czatuj24 — aktualizacja 7 września 2026',
     description: 'Polityka prywatności Czatuj24: profil, sesje rozmów, zgłoszenia, zdjęcia, localStorage, XP, reputacja, jakość rozmowy, chemia rozmowy, ligi, Puchar, ranking, automatyczne logo, avatary, wydarzenia i bezpieczeństwo.',
     h1: 'Polityka prywatności Czatuj24',
     sections: [
       ['1. Informacje ogólne', 'Niniejsza polityka opisuje zasady przetwarzania danych związanych z korzystaniem z Czatuj24. Zakres faktycznego przetwarzania zależy od używanych funkcji i infrastruktury.'],
-      ['2. Administrator i kontakt', 'Administratorem danych jest podmiot prowadzący serwis Czatuj24. Kontakt w sprawach prywatności, bezpieczeństwa i danych: kontaktczatuj24@gmail.com.'],
+      ['2. Administrator i kontakt', 'Administratorem danych jest podmiot prowadzący serwis Czatuj24. Kontakt w sprawach prywatności, bezpieczeństwa i danych: kontaktdoczatuj24@gmail.com.'],
       ['3. Dane profilu', 'Ustawienia profilu są przechowywane lokalnie w przeglądarce. Podczas bieżącej sesji serwer może otrzymać nick, wiek, cel rozmowy, status i biogram przeznaczone do udostępnienia partnerowi.'],
       ['4. Wiadomości i sesja', 'Standardowy czat jest obsługiwany jako bieżąca sesja 1 na 1. Stan rozmowy jest czyszczony po jej zakończeniu; treści przekazane w zgłoszeniu mogą być przetwarzane w zakresie potrzebnym do bezpieczeństwa.'],
       ['5. Zgłoszenia', 'Zgłoszenia mogą zawierać kategorię, opis i informacje techniczne potrzebne do rozpatrzenia sprawy. Mogą być przechowywane przez okres niezbędny do obsługi bezpieczeństwa i ochrony serwisu.'],
       ['6. Zdjęcia', 'Zdjęcie wysłane podczas sesji jest obsługiwane przez serwer i może być technicznie zapisane w katalogu uploadów. Limit aplikacji to jedno zdjęcie na sesję.'],
-      ['7. Aktualizacja z 6 września 2026 r. — progres, avatary, automatyczne logo i wydarzenia', 'W dniu 6 września 2026 r. rozszerzono serwis o XP i poziomy, automatyczne osiągnięcia i odznaki, reputację, jakość oraz bieżącą chemię rozmowy, tygodniowe ligi, osobny Puchar Czatuj24 i ranking TOP 10, bezpieczne avatary, automatyczne warstwy logo, funkcję ponownego połączenia oraz okresowe wydarzenia Czatuj24, w tym wydarzenie 24. dnia miesiąca. Odblokowane elementy logo nie wymagają ręcznego przypinania: po spełnieniu warunku są automatycznie aktywowane i zapisywane. Lokalny progres pozostaje w pamięci przeglądarki, a wybrane pseudonimowe dane wynikowe są synchronizowane z serwerem w zakresie potrzebnym do profilu, reputacji, rankingu i prezentacji partnera.'],
+      ['7. Aktualizacja z 7 września 2026 r. — Pixel Wall Czatuj24', 'Dodano Pixel Wall Czatuj24: wspólną ścianę 64 × 40, czyli 2560 pól. Użytkownik może opublikować na wybranym polu własny kolor tła oraz własny pixel-art 5 × 5, a opcjonalnie także krótką informację i nazwę firmy lub projektu. Po publikacji na ścianie zapisywany jest rzeczywisty wygląd pola, a nie tylko kolor bazowy. Przy opublikowanym polu mogą być widoczne dla odwiedzających pseudonim (nick), bezpieczny avatar Czatuj24, opis, firma lub projekt oraz czas publikacji. Dane Pixel Wall są przechowywane po stronie serwera w pliku pixelwall.json. Serwis nie wymaga podawania prawdziwego imienia ani własnego zdjęcia do korzystania z tej funkcji. Użytkownik powinien publikować wyłącznie informacje, które chce udostępnić publicznie. Obowiązujący limit publikacji i zasady funkcji wynikają z aktualnej wersji aplikacji.'],
       ['8. Reputacja, jakość, chemia, ligi i Puchar', 'Reputacja jest wynikiem bezpieczeństwa i jakości zachowania w serwisie. Jakość rozmowy uwzględnia m.in. długość sesji, wiadomości, reakcje, gry, zgłoszenia, ponowne połączenie i sposób zakończenia. Podczas rozmowy może być pokazywany wspólny pasek chemii, którego wynik rośnie wraz z aktywnością rozmowy. XP i aktywność wpływają na poziom oraz tygodniową ligę. Puchar jest oddzielnym rankingiem punktowym z prezentacją TOP 10; kolejność może się zmieniać, gdy użytkownicy zdobywają przewagę punktową.'],
       ['9. Ranking, avatary i pseudonimowy identyfikator', 'W serwisie bez klasycznych kont identyfikacja rankingowa opiera się na losowym pseudonimowym identyfikatorze przechowywanym lokalnie w przeglądarce. Ranking może pokazywać nick, bezpieczny avatar Czatuj24, poziom, reputację, jakość, ligę, liczbę osiągnięć, powroty, punkty oraz bezpieczne elementy identyfikacji wizualnej. Ranking nie wymaga podawania prawdziwego imienia ani własnego zdjęcia. Trwałość rankingu zależy od infrastruktury serwera; brak klasycznego konta oznacza, że identyfikator można utracić po usunięciu danych witryny.'],
       ['10. Dane techniczne', 'Infrastruktura może przetwarzać adres IP, user-agent, identyfikatory połączeń, znaczniki czasu i inne dane techniczne potrzebne do działania, diagnostyki i przeciwdziałania nadużyciom.'],
-      ['11. Reklamy i Google AdSense', 'Czatuj24 korzysta z Google AdSense. Usługa reklamowa może używać cookies, identyfikatorów i innych danych technicznych zgodnie z własnymi zasadami oraz mechanizmami zgody i ustawieniami reklam.'],
-      ['12. Odbiorcy danych', 'Dane mogą być przetwarzane przez dostawców hostingu, infrastruktury, komunikacji, usług technicznych i reklamowych, w zakresie wynikającym z rzeczywistej konfiguracji serwisu.'],
-      ['13. Brak sprzedaży danych', 'Czatuj24 nie sprzedaje danych osobowych użytkowników. Nie wyklucza to przetwarzania danych przez dostawców usług niezbędnych do działania serwisu.'],
-      ['14. Retencja', 'Okres przechowywania zależy od rodzaju danych i rzeczywistej konfiguracji usług. Lokalny system progresu może pozostawać w pamięci przeglądarki do czasu jego usunięcia przez użytkownika lub wyczyszczenia danych witryny. Dla zgłoszeń, uploadów i danych technicznych należy stosować okres niezbędny do odpowiedniego celu, obowiązków prawnych i bezpieczeństwa.'],
-      ['15. Prawa użytkownika', 'W zakresie wynikającym z obowiązujących przepisów możesz żądać dostępu do danych, ich sprostowania, usunięcia lub ograniczenia przetwarzania, a także skorzystać z innych praw, gdy mają zastosowanie.'],
-      ['16. Kontakt', 'W sprawach dotyczących danych osobowych skontaktuj się pod adresem kontaktczatuj24@gmail.com.'],
-      ['17. Aktualizacje', 'Polityka może być aktualizowana wraz ze zmianami technicznymi, prawnymi lub organizacyjnymi serwisu.']
+      ['12. Reklamy i usługi zewnętrzne', 'Jeżeli w serwisie zostaną uruchomione zewnętrzne usługi reklamowe lub analityczne, ich dostawcy mogą przetwarzać cookies, identyfikatory i dane techniczne zgodnie z rzeczywistą konfiguracją serwisu, obowiązującymi zasadami oraz wymaganymi mechanizmami zgody. Sam plik ads.txt nie oznacza, że reklamy są aktualnie wyświetlane.'],
+      ['13. Odbiorcy danych', 'Dane mogą być przetwarzane przez dostawców hostingu, infrastruktury, komunikacji, usług technicznych i reklamowych, w zakresie wynikającym z rzeczywistej konfiguracji serwisu.'],
+      ['14. Brak sprzedaży danych', 'Czatuj24 nie sprzedaje danych osobowych użytkowników. Nie wyklucza to przetwarzania danych przez dostawców usług niezbędnych do działania serwisu.'],
+      ['15. Retencja', 'Okres przechowywania zależy od rodzaju danych i rzeczywistej konfiguracji usług. Lokalny system progresu może pozostawać w pamięci przeglądarki do czasu jego usunięcia przez użytkownika lub wyczyszczenia danych witryny. Dla zgłoszeń, uploadów i danych technicznych należy stosować okres niezbędny do odpowiedniego celu, obowiązków prawnych i bezpieczeństwa.'],
+      ['16. Prawa użytkownika', 'W zakresie wynikającym z obowiązujących przepisów możesz żądać dostępu do danych, ich sprostowania, usunięcia lub ograniczenia przetwarzania, a także skorzystać z innych praw, gdy mają zastosowanie.'],
+      ['17. Kontakt', 'W sprawach dotyczących danych osobowych skontaktuj się pod adresem kontaktdoczatuj24@gmail.com.'],
+      ['18. Aktualizacje', 'Polityka może być aktualizowana wraz ze zmianami technicznymi, prawnymi lub organizacyjnymi serwisu.']
     ]
   },
   '/kontakt': {
@@ -347,7 +347,7 @@ const SEO_PAGES = {
     description: 'Kontakt z Czatuj24 w sprawach technicznych, prywatności, bezpieczeństwa i zgłoszeń.',
     h1: 'Kontakt z Czatuj24',
     sections: [
-      ['Kontakt główny', 'Adres: kontaktczatuj24@gmail.com. Możesz napisać w sprawie problemu technicznego, prywatności, bezpieczeństwa lub działania serwisu.'],
+      ['Kontakt główny', 'Adres: kontaktdoczatuj24@gmail.com. Możesz napisać w sprawie problemu technicznego, prywatności, bezpieczeństwa lub działania serwisu.'],
       ['Nadużycia', 'Jeśli problem dotyczy bieżącej rozmowy, w pierwszej kolejności użyj funkcji zgłoszenia dostępnej w aplikacji.'],
       ['Dane w zgłoszeniu', 'Podaj tylko informacje potrzebne do rozpatrzenia sprawy i nie przesyłaj zbędnych danych osobowych.']
     ]
@@ -650,6 +650,33 @@ function leaderboardRows(){return Object.entries(leaderboardState).map(([playerI
 function emitLeaderboard(socketId){if(!isConnected(socketId))return;const pr=publicProfiles.get(socketId)||{};const me=safePlayerId(pr.playerId);const rows=leaderboardRows();const rank=me?Math.max(1,rows.findIndex(x=>x.playerId===me)+1):0;const top=rows.slice(0,10);io.to(socketId).emit('leaderboard:update',{rank,points:me?(ensureLeaderboard(me)?.points||0):0,players:rows.length,top})}
 function emitLeaderboardAll(){for(const id of io.sockets.sockets.keys())emitLeaderboard(id)}
 
+/* ============================================================
+   PIXEL WALL CZATUJ24 — 64 × 40 = 2560 pól
+   ============================================================ */
+const PIXEL_WALL_FILE=path.join(__dirname,'pixelwall.json');
+const PIXEL_WALL_COLS=64,PIXEL_WALL_ROWS=40,PIXEL_WALL_MAX_CELLS=2560,PIXEL_WALL_COOLDOWN=12*1000;
+const PIXEL_WALL_COLORS=new Set(['#39ff14','#9dff89','#2878ff','#ff5362','#ffc24c','#ffffff','#b99cff','#51d5ff','#ff8a3d','#d8dce5','#0b120c','#071c0a']);
+const PIXEL_WALL_ART_KEYS=new Set('ABCDEFGH'.split(''));
+const PIXEL_WALL_MAX_DESC=120,PIXEL_WALL_MAX_COMPANY=42;
+const pixelWallRate=new Map(),pixelWallCooldown=new Map(),pixelWallDaily=new Map();
+let pixelWallState={version:2,cols:PIXEL_WALL_COLS,rows:PIXEL_WALL_ROWS,cells:Object.create(null),updatedAt:Date.now()};
+function cleanPwText(v,max){return String(v??'').replace(/[<>]/g,'').replace(/\s+/g,' ').trim().slice(0,max)}
+function sanitizePixelWallArt(v){if(typeof v!=='string'||v.length!==25)return null;for(const ch of v)if(ch!=='.'&&!PIXEL_WALL_ART_KEYS.has(ch))return null;return v}
+function sanitizePixelWallCell(v){
+  if(!v||typeof v!=='object'||!PIXEL_WALL_COLORS.has(v.c))return null;
+  const p=v.p===null||v.p===undefined?null:sanitizePixelWallArt(v.p);
+  if(v.p!==null&&v.p!==undefined&&!p)return null;
+  return {c:v.c,p:p&&p.split('').some(ch=>ch!=='.')?p:null,ownerId:cleanPwText(v.ownerId,80),nick:cleanPwText(v.nick,20)||'Partner',description:cleanPwText(v.description,PIXEL_WALL_MAX_DESC),company:cleanPwText(v.company,PIXEL_WALL_MAX_COMPANY),avatar:['avatar01','avatar02','avatar03','avatar04','avatar05','avatar06','avatar07','avatar08','avatar09','avatar10','avatar11','avatar12','avatar13','avatar14','avatar15','avatar16'].includes(v.avatar)?v.avatar:'avatar01',placedAt:Number(v.placedAt)||Date.now()};
+}
+try{if(fs.existsSync(PIXEL_WALL_FILE)){const p=JSON.parse(fs.readFileSync(PIXEL_WALL_FILE,'utf8'));if(p&&p.cells&&typeof p.cells==='object'){for(const [k,v] of Object.entries(p.cells)){if(Object.keys(pixelWallState.cells).length>=PIXEL_WALL_MAX_CELLS)break;const n=Number(k),c=sanitizePixelWallCell(v);if(Number.isInteger(n)&&n>=0&&n<PIXEL_WALL_MAX_CELLS&&c)pixelWallState.cells[String(n)]=c}pixelWallState.updatedAt=Number(p.updatedAt)||Date.now()}}}catch(e){console.error('Nie udało się wczytać pixelwall.json:',e.message)}
+function savePixelWall(){const p={version:2,cols:PIXEL_WALL_COLS,rows:PIXEL_WALL_ROWS,cells:pixelWallState.cells,updatedAt:Date.now()},tmp=PIXEL_WALL_FILE+'.tmp';try{fs.writeFileSync(tmp,JSON.stringify(p),'utf8');fs.renameSync(tmp,PIXEL_WALL_FILE);pixelWallState.updatedAt=p.updatedAt;return true}catch(e){try{if(fs.existsSync(tmp))fs.unlinkSync(tmp)}catch{}console.error('Nie udało się zapisać pixelwall.json:',e.message);return false}}
+function pixelWallPlayerId(socket){const p=publicProfiles.get(socket.id)||{};const authId=safePlayerId(socket.handshake?.auth?.playerId||socket.handshake?.query?.playerId);return safePlayerId(p.playerId)||authId||socket.id}
+function pixelWallDay(){return new Date().toISOString().slice(0,10)}
+function pixelWallQuotaOk(socket){const id=pixelWallPlayerId(socket),day=pixelWallDay();if(pixelWallDaily.get(id)===day)return {ok:false,reason:'Dzisiejszy piksel został już wykorzystany. Wróć jutro.'};const left=Number(pixelWallCooldown.get(id)||0)-Date.now();if(left>0)return {ok:false,reason:`Odczekaj ${Math.ceil(left/1000)} s przed kolejnym pikselem.`};return {ok:true,id,day}}
+function pixelWallRows(){const owners=new Map();for(const c of Object.values(pixelWallState.cells)){if(!c?.ownerId)continue;const key=c.ownerId;const x=owners.get(key)||{ownerId:key,nick:c.nick||'Partner',avatar:c.avatar||'avatar01',surface:0};x.surface++;x.nick=c.nick||x.nick;x.avatar=c.avatar||x.avatar;owners.set(key,x)}return [...owners.values()].sort((a,b)=>b.surface-a.surface||a.nick.localeCompare(b.nick,'pl')).slice(0,3)}
+function emitPixelWallState(id){if(isConnected(id))io.to(id).emit('pixelwall:state',{cols:PIXEL_WALL_COLS,rows:PIXEL_WALL_ROWS,cells:pixelWallState.cells,updatedAt:pixelWallState.updatedAt,top:pixelWallRows()})}
+function emitPixelWallStateAll(){for(const id of io.sockets.sockets.keys())emitPixelWallState(id)}
+
 function ensureCup(socketId){if(!cupState.has(socketId))cupState.set(socketId,{points:0,updatedAt:Date.now()});return cupState.get(socketId)}
 function addCupPoints(socketId,points){const pr=publicProfiles.get(socketId)||{};const id=syncLeaderboard(socketId);if(id){const x=ensureLeaderboard(id);x.points=Math.max(0,Math.min(99999999,x.points+(Number(points)||0)));x.updatedAt=Date.now();x.league=leagueName(x.points);saveLeaderboard();emitLeaderboardAll();}const x=ensureCup(socketId);x.points=Math.max(0,Math.min(999999,x.points+(Number(points)||0)));x.updatedAt=Date.now();emitCup(socketId)}
 function emitCup(socketId){if(!isConnected(socketId))return;const rows=leaderboardRows();const pr=publicProfiles.get(socketId)||{};const id=safePlayerId(pr.playerId);const rank=id?Math.max(1,rows.findIndex(x=>x.playerId===id)+1):0;const me=id?ensureLeaderboard(id):null;io.to(socketId).emit('cup:update',{points:me?.points||0,rank,players:rows.length,top:rows.slice(0,10)})}
@@ -848,6 +875,7 @@ function randomId() {
 
 function sanitizePublicProfile(profile, socketId=null){
   const p = profile && typeof profile === 'object' ? profile : {};
+  const allowedSex = new Set(['kobieta','mezczyzna','bi']);
   const allowedPurposes = new Set(['randka','spotkanie','rozmowa']);
   const allowedStatuses = new Set(['dostepny','zaraz']);
   const age = Math.max(16, Math.min(100, Number(p.age) || 25));
@@ -859,6 +887,7 @@ function sanitizePublicProfile(profile, socketId=null){
   return {
     playerId:safePlayerId(p.playerId),
     avatar:avatarIds.has(p.avatar)?p.avatar:'avatar01',
+    sex:allowedSex.has(p.sex)?p.sex:'kobieta', target:allowedSex.has(p.target)?p.target:'kobieta',
     nick: String(p.nick || 'Partner').trim().slice(0,20) || 'Partner',
     age,
     purpose,
@@ -1753,6 +1782,28 @@ io.on(
     emitOnlineCount();
     ensureCup(socket.id);
 
+
+    /* ========================================================
+       PIXEL WALL
+       ======================================================== */
+    socket.on('pixelwall:request',()=>emitPixelWallState(socket.id));
+    socket.on('pixelwall:place',data=>{
+      if(!allowBurst(pixelWallRate,socket.id,3,10000))return socket.emit('pixelwall:error',{message:'Za dużo prób. Zwolnij na chwilę.'});
+      const q=pixelWallQuotaOk(socket);if(!q.ok)return socket.emit('pixelwall:error',{message:q.reason});
+      const x=Number(data?.x),y=Number(data?.y);if(!Number.isInteger(x)||!Number.isInteger(y)||x<0||x>=PIXEL_WALL_COLS||y<0||y>=PIXEL_WALL_ROWS)return socket.emit('pixelwall:error',{message:'Nieprawidłowe pole Pixel Wall.'});
+      const color=String(data?.color||'');if(!PIXEL_WALL_COLORS.has(color))return socket.emit('pixelwall:error',{message:'Nieprawidłowy kolor.'});
+      let art=null;if(data?.art!==null&&data?.art!==undefined){art=sanitizePixelWallArt(String(data.art));if(!art)return socket.emit('pixelwall:error',{message:'Nieprawidłowy pixel-art.'});if(!art.split('').some(ch=>ch!=='.'))art=null}
+      const profile=publicProfiles.get(socket.id)||{};
+      const key=String(y*PIXEL_WALL_COLS+x),previous=pixelWallState.cells[key]||null;
+      const ownerId=pixelWallPlayerId(socket);
+      if(!profile.playerId && ownerId!==socket.id){profile.playerId=ownerId;}
+      if(previous?.ownerId && previous.ownerId!==ownerId)return socket.emit('pixelwall:error',{message:'To miejsce należy już do innego użytkownika.'});
+      pixelWallState.cells[key]={c:color,p:art,ownerId,nick:cleanPwText(profile.nick,20)||'Partner',description:cleanPwText(data?.description,PIXEL_WALL_MAX_DESC),company:cleanPwText(data?.company,PIXEL_WALL_MAX_COMPANY),avatar:['avatar01','avatar02','avatar03','avatar04','avatar05','avatar06','avatar07','avatar08','avatar09','avatar10','avatar11','avatar12','avatar13','avatar14','avatar15','avatar16'].includes(profile.avatar)?profile.avatar:'avatar01',placedAt:Date.now()};
+      pixelWallDaily.set(q.id,q.day);pixelWallCooldown.set(q.id,Date.now()+PIXEL_WALL_COOLDOWN);
+      if(!savePixelWall()){if(previous)pixelWallState.cells[key]=previous;else delete pixelWallState.cells[key];pixelWallDaily.delete(q.id);pixelWallCooldown.delete(q.id);return socket.emit('pixelwall:error',{message:'Serwer nie zdołał zapisać piksela. Spróbuj ponownie.'})}
+      io.emit('pixelwall:update',{x,y,cell:pixelWallState.cells[key],top:pixelWallRows()});socket.emit('pixelwall:placed',{x,y});
+    });
+
     /* ========================================================
        START CZATU
     ======================================================== */
@@ -2359,6 +2410,7 @@ setInterval(() => {
     const fresh = times.filter(t => now - t < 10_000);
     if (fresh.length) profileRate.set(id, fresh); else profileRate.delete(id);
   }
+  for(const [id,times] of pixelWallRate){const fresh=times.filter(t=>now-t<10_000);if(fresh.length)pixelWallRate.set(id,fresh);else pixelWallRate.delete(id)}
   for (const [id, times] of uploadRate) {
     const fresh = times.filter(t => now - t < 60_000);
     if (fresh.length) uploadRate.set(id, fresh); else uploadRate.delete(id);
@@ -2414,6 +2466,10 @@ server.listen(
 
     console.log(
       `Dostępne gry: ${Object.keys(GAME_NAMES).join(', ')}`
+    );
+
+    console.log(
+      `Pixel Wall: ${PIXEL_WALL_COLS}×${PIXEL_WALL_ROWS} (${PIXEL_WALL_MAX_CELLS} pól)`
     );
   }
 );
